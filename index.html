@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JAP - Jornadas Docentes de Atención Primaria</title>
+    <meta name="description" content="Programa anual de sesiones clínicas para profesionales de Atención Primaria.">
+    <meta name="theme-color" content="#0b5c78">
+    <meta property="og:title" content="Jornadas Docentes de Atención Primaria">
+    <meta property="og:description" content="Programa anual de sesiones clínicas para profesionales de Atención Primaria.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="assets/icons/icon-512.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:image" content="assets/icons/icon-512.png">
+    <link rel="icon" type="image/png" href="assets/icons/favicon.png">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="#inicio" aria-label="Inicio JAP">
+          <img src="assets/icons/icon-192.png" alt="" width="48" height="48">
+          <span>
+            <strong>JAP</strong>
+            <small>Atención Primaria</small>
+          </span>
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-principal">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span class="sr-only">Menú</span>
+        </button>
+        <nav id="nav-principal" class="site-nav" aria-label="Navegación principal">
+          <a href="#inicio">Inicio</a>
+          <a href="#agenda">Agenda</a>
+          <a href="#sesiones">Sesiones</a>
+          <a href="#ponentes">Ponentes</a>
+          <a href="#recursos">Recursos</a>
+          <a href="#contacto">Contacto</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="contenido">
+      <section id="inicio" class="hero section" data-view="inicio">
+        <div class="hero-copy">
+          <img class="hero-mark" src="assets/icons/icon-512.png" alt="Icono JAP">
+          <h1>Jornadas Docentes<br>de Atención<br>Primaria</h1>
+          <p class="hero-subtitle">Programa anual de sesiones clínicas para profesionales de Atención Primaria</p>
+          <p id="program-description">Cargando programa...</p>
+          <div class="quick-links" aria-label="Accesos rápidos">
+            <a class="button primary" href="#agenda">Ver agenda</a>
+            <a class="button" href="#sesiones">Sesiones</a>
+            <a class="button" href="#ponentes">Ponentes</a>
+            <a class="button" href="#recursos">Recursos</a>
+          </div>
+        </div>
+        <figure class="hero-media">
+          <div class="hero-panel hero-stats" aria-label="Datos clave del programa">
+            <dl>
+              <div>
+                <dt>Sesiones</dt>
+                <dd>10</dd>
+              </div>
+              <div>
+                <dt>Curso</dt>
+                <dd>2026-2027</dd>
+              </div>
+              <div>
+                <dt>Formato</dt>
+                <dd id="program-modality-short">Pendiente</dd>
+              </div>
+              <div>
+                <dt>Duración</dt>
+                <dd id="program-duration-short">Pendiente</dd>
+              </div>
+            </dl>
+          </div>
+        </figure>
+      </section>
+
+      <section id="agenda" class="section" data-view="agenda" hidden>
+        <div class="section-heading">
+          <h2>Agenda</h2>
+          <p>Vista rápida del programa. Cada sesión abre su detalle completo en una ventana emergente.</p>
+        </div>
+        <div id="agenda-list" class="timeline" aria-live="polite"></div>
+      </section>
+
+      <section id="sesiones" class="section section-muted" data-view="sesiones" hidden>
+        <div class="section-heading">
+          <h2>Sesiones</h2>
+          <p>Contenido docente organizado por temas clínicos frecuentes en Atención Primaria.</p>
+        </div>
+        <div id="session-grid" class="session-grid" aria-live="polite"></div>
+      </section>
+
+      <section id="ponentes" class="section" data-view="ponentes" hidden>
+        <div class="section-heading">
+          <h2>Ponentes</h2>
+          <p>Equipo docente y coordinación según la información disponible en los materiales.</p>
+        </div>
+        <div id="speaker-grid" class="speaker-grid" aria-live="polite"></div>
+      </section>
+
+      <section id="recursos" class="section section-muted" data-view="recursos" hidden>
+        <div class="section-heading">
+          <h2>Recursos</h2>
+          <p>Material organizado por categorías compactas. Cada recurso se abre dentro de la app.</p>
+        </div>
+        <div id="resource-list" class="resource-list" aria-live="polite"></div>
+      </section>
+
+      <section id="contacto" class="section contact-section" data-view="contacto" hidden>
+        <div class="section-heading">
+          <h2>Contacto</h2>
+          <p>Datos de coordinación del programa.</p>
+        </div>
+        <div id="contact-card" class="contact-card"></div>
+      </section>
+    </main>
+
+    <dialog id="session-dialog" class="session-dialog" aria-labelledby="dialog-title">
+      <div class="dialog-head">
+        <div>
+          <p id="dialog-block" class="eyebrow"></p>
+          <h2 id="dialog-title"></h2>
+        </div>
+        <button class="icon-button" type="button" data-close-session aria-label="Cerrar detalle">×</button>
+      </div>
+      <div id="dialog-content" class="dialog-content"></div>
+    </dialog>
+
+    <dialog id="resource-dialog" class="resource-dialog" aria-labelledby="resource-dialog-title">
+      <div class="dialog-head">
+        <div>
+          <p id="resource-dialog-type" class="eyebrow"></p>
+          <h2 id="resource-dialog-title"></h2>
+        </div>
+        <button class="icon-button" type="button" data-close-resource aria-label="Cerrar recurso">×</button>
+      </div>
+      <div id="resource-dialog-content" class="resource-dialog-content"></div>
+      <div id="resource-dialog-actions" class="dialog-actions"></div>
+    </dialog>
+
+    <footer class="site-footer">
+      <img src="assets/icons/icon-192.png" alt="" width="42" height="42">
+      <p>Jornadas Docentes de Atención Primaria · Programa anual 2026-2027.</p>
+      <a class="footer-admin-link" href="admin.html">Admin</a>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

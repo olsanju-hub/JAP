@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin JAP</title>
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/png" href="assets/icons/favicon.png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+  </head>
+  <body>
+    <main class="admin-shell">
+      <header class="admin-header">
+        <a class="brand" href="index.html#inicio">
+          <img src="assets/icons/icon-192.png" alt="" width="48" height="48">
+          <span>
+            <strong>JAP Admin</strong>
+            <small>Gestión mínima</small>
+          </span>
+        </a>
+        <div class="admin-header-actions">
+          <a class="button" href="index.html#inicio">Volver al inicio</a>
+          <div id="admin-user" class="admin-user"></div>
+        </div>
+      </header>
+
+      <section id="config-warning" class="admin-notice" hidden>
+        <h1>Configura Supabase</h1>
+        <p>Crea <code>config.js</code> a partir de <code>config.example.js</code> para activar el panel.</p>
+      </section>
+
+      <section id="login-view" class="admin-card">
+        <h1>Acceso administrativo</h1>
+        <form id="login-form" class="admin-form">
+          <label>
+            Email
+            <input name="email" type="email" autocomplete="email" required>
+          </label>
+          <label>
+            Contraseña
+            <input name="password" type="password" autocomplete="current-password" required>
+          </label>
+          <button class="button primary" type="submit">Entrar</button>
+          <p id="login-message" class="form-message"></p>
+        </form>
+      </section>
+
+      <section id="admin-view" hidden>
+        <div class="admin-toolbar">
+          <div>
+            <h1>Panel administrativo</h1>
+            <p>Edición mínima de sesiones, ponentes y recursos.</p>
+          </div>
+          <button id="logout-button" class="button" type="button">Salir</button>
+        </div>
+
+        <nav class="admin-tabs" aria-label="Secciones admin">
+          <button class="button primary" type="button" data-admin-tab="sesiones">Sesiones</button>
+          <button class="button" type="button" data-admin-tab="ponentes">Ponentes</button>
+          <button class="button" type="button" data-admin-tab="recursos">Recursos</button>
+        </nav>
+        <p id="admin-message" class="form-message" role="status"></p>
+
+        <section class="admin-panel" data-admin-panel="sesiones">
+          <div class="admin-grid">
+            <form id="session-form" class="admin-form admin-card">
+              <div class="admin-form-head">
+                <h2 id="session-form-title">Crear nueva sesión</h2>
+                <button class="button" type="button" data-new-session>Nueva sesión</button>
+              </div>
+              <input name="id" type="hidden">
+              <label>Jornada <select name="jornada_id"></select></label>
+              <label>Título <input name="titulo" required></label>
+              <label>Slug <input name="slug"></label>
+              <label>Bloque <input name="bloque"></label>
+              <label>Orden <input name="orden" type="number" min="1"></label>
+              <label>Objetivo <textarea name="objetivo" rows="3"></textarea></label>
+              <label>Descripción <textarea name="descripcion" rows="4"></textarea></label>
+              <label>Contenidos clave, uno por línea <textarea name="contenidos_clave" rows="5"></textarea></label>
+              <label>Fecha <input name="fecha" type="date"></label>
+              <div class="form-row">
+                <label>Inicio <input name="hora_inicio" type="time"></label>
+                <label>Fin <input name="hora_fin" type="time"></label>
+              </div>
+              <label>Modalidad <input name="modalidad"></label>
+              <label>Teams URL <input name="teams_url"></label>
+              <label>Sede <select name="sede_id"></select></label>
+              <label>Imagen/cartel URL <input name="imagen_url"></label>
+              <label>Estado
+                <select name="estado">
+                  <option value="borrador">borrador</option>
+                  <option value="publicada">publicada</option>
+                  <option value="realizada">realizada</option>
+                </select>
+              </label>
+              <label class="check-row"><input name="is_active" type="checkbox" checked> Activa</label>
+              <button id="session-submit" class="button primary" type="submit">Crear sesión</button>
+              <button class="button" type="reset">Limpiar</button>
+            </form>
+            <div class="admin-card">
+              <div class="admin-list-head">
+                <h2>Sesiones</h2>
+                <label class="check-row"><input id="show-inactive-sessions" type="checkbox"> Ver inactivas</label>
+              </div>
+              <div id="sessions-list" class="admin-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="admin-panel" data-admin-panel="ponentes" hidden>
+          <div class="admin-grid">
+            <form id="speaker-form" class="admin-form admin-card">
+              <div class="admin-form-head">
+                <h2 id="speaker-form-title">Crear nuevo ponente</h2>
+                <button class="button" type="button" data-new-speaker>Nuevo ponente</button>
+              </div>
+              <input name="id" type="hidden">
+              <label>Nombre <input name="nombre" required></label>
+              <label>Especialidad <input name="especialidad"></label>
+              <label>Centro <input name="centro"></label>
+              <label>Bio <textarea name="bio" rows="4"></textarea></label>
+              <label>Foto URL <input name="foto_url"></label>
+              <label>Email público <input name="email_publico" type="email"></label>
+              <label class="check-row"><input name="is_active" type="checkbox" checked> Activo</label>
+              <button id="speaker-submit" class="button primary" type="submit">Crear ponente</button>
+              <button class="button" type="reset">Limpiar</button>
+            </form>
+            <div class="admin-card">
+              <div class="admin-list-head">
+                <h2>Ponentes</h2>
+                <label class="check-row"><input id="show-inactive-speakers" type="checkbox"> Ver inactivos</label>
+              </div>
+              <div id="speakers-list" class="admin-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="admin-panel" data-admin-panel="recursos" hidden>
+          <div class="admin-grid">
+            <form id="resource-form" class="admin-form admin-card">
+              <div class="admin-form-head">
+                <h2 id="resource-form-title">Crear nuevo recurso</h2>
+                <button class="button" type="button" data-new-resource>Nuevo recurso</button>
+              </div>
+              <input name="id" type="hidden">
+              <label>Título <input name="titulo" required></label>
+              <label>Tipo
+                <select name="tipo">
+                  <option value="pdf">pdf</option>
+                  <option value="pptx">pptx</option>
+                  <option value="imagen">imagen</option>
+                  <option value="cartel">cartel</option>
+                  <option value="enlace">enlace</option>
+                  <option value="bibliografia">bibliografia</option>
+                  <option value="otro">otro</option>
+                </select>
+              </label>
+              <label>Categoría
+                <select name="categoria">
+                  <option value="Programa">Programa</option>
+                  <option value="Plantilla">Plantilla</option>
+                  <option value="Carteles de sesiones">Carteles de sesiones</option>
+                  <option value="Imágenes promocionales">Imágenes promocionales</option>
+                  <option value="Otros">Otros</option>
+                </select>
+              </label>
+              <label>URL <input name="url" required></label>
+              <label>Sesión asociada <select name="sesion_id"></select></label>
+              <label>Descripción <textarea name="descripcion" rows="3"></textarea></label>
+              <label>Orden <input name="orden" type="number" min="1"></label>
+              <label class="check-row"><input name="visible" type="checkbox" checked> Visible</label>
+              <button id="resource-submit" class="button primary" type="submit">Crear recurso</button>
+              <button class="button" type="reset">Limpiar</button>
+            </form>
+            <div class="admin-card">
+              <div class="admin-list-head">
+                <h2>Recursos</h2>
+                <label class="check-row"><input id="show-hidden-resources" type="checkbox"> Ver ocultos</label>
+              </div>
+              <div id="resources-list" class="admin-list"></div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="admin.js"></script>
+  </body>
+</html>

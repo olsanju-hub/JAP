@@ -1,0 +1,349 @@
+{
+  "programa": {
+    "nombre": "Jornadas Docentes de Atención Primaria",
+    "subtitulo": "Programa anual de sesiones clínicas para profesionales de Atención Primaria",
+    "ciclo": "2026-2027",
+    "descripcion": "Espacio docente anual para profesionales de Atención Primaria, centrado en sesiones clínicas breves, aplicadas y orientadas a mejorar la práctica asistencial compartida.",
+    "enfoque": "El programa aborda problemas prevalentes de la consulta, promueve la actualización basada en evidencia y facilita criterios comunes entre profesionales mediante casos, debate y materiales prácticos.",
+    "modalidad": "Preferentemente presencial, con opción online por Teams",
+    "modalidad_resumen": "Presencial preferente + Teams",
+    "enlace_teams": "Enlace Teams pendiente de confirmar",
+    "periodicidad": "Mensual",
+    "duracion": "45-60 minutos por sesión",
+    "dirigido_a": "Médicos de familia, enfermería, residentes MIR/FIR/EIR y otros profesionales sanitarios",
+    "imagen_principal": "assets/img/programa-anual.png",
+    "imagen_promocional": "assets/img/promocion.png",
+    "icono": "assets/icons/icon-512.png"
+  },
+  "metodologia": [
+    "Caso clínico inicial",
+    "Revisión práctica de la evidencia o guía clínica principal",
+    "Discusión del manejo en Atención Primaria",
+    "Debate breve con los asistentes",
+    "Conclusiones prácticas",
+    "Material breve final: algoritmo, resumen o checklist"
+  ],
+  "objetivos": [
+    "Actualizar conocimientos clínicos basados en la evidencia en patologías prevalentes de Atención Primaria.",
+    "Homogeneizar criterios diagnósticos y terapéuticos entre profesionales del área.",
+    "Mejorar la toma de decisiones clínicas mediante herramientas prácticas.",
+    "Potenciar el abordaje integral y centrado en la persona, incluyendo prevención y promoción de la salud.",
+    "Favorecer la coordinación entre niveles asistenciales y la continuidad de cuidados.",
+    "Impulsar la participación activa y el aprendizaje colaborativo a través de casos clínicos y debate.",
+    "Reforzar las competencias docentes y de liderazgo clínico de los residentes, con supervisión de tutores."
+  ],
+  "sesiones": [
+    {
+      "id": 1,
+      "slug": "hipertension-arterial",
+      "titulo": "Hipertensión arterial en Atención Primaria",
+      "bloque": "Sesión 1",
+      "descripcion": "Diagnóstico y confirmación; estratificación del riesgo; objetivos de control; elección y ajuste de tratamiento; seguimiento, adherencia y abordaje de la HTA resistente.",
+      "objetivo": "Actualizar el abordaje diagnóstico, terapéutico y de seguimiento de la hipertensión arterial en Atención Primaria.",
+      "contenidos_clave": ["Diagnóstico y confirmación", "Estratificación del riesgo", "Objetivos de control", "Elección y ajuste de tratamiento", "Seguimiento, adherencia y HTA resistente"],
+      "fecha": "Pendiente de confirmar",
+      "hora_inicio": "Pendiente de confirmar",
+      "hora_fin": "Pendiente de confirmar",
+      "sede": "Pendiente de confirmar",
+      "ponentes": ["Pendiente de confirmar"],
+      "imagen": "assets/img/sesion-hta.png",
+      "recursos": [],
+      "estado": "Pendiente de confirmar"
+    },
+    {
+      "id": 2,
+      "slug": "diabetes-tipo-2",
+      "titulo": "Diabetes mellitus tipo 2 y protección cardiorrenal",
+      "bloque": "Sesión 2",
+      "descripcion": "Cribado y diagnóstico; objetivos individualizados; manejo escalonado; papel de iSGLT2 y arGLP-1; control de comorbilidades; seguimiento y educación terapéutica.",
+      "objetivo": "Revisar el manejo de la diabetes mellitus tipo 2 y la protección cardiorrenal desde Atención Primaria.",
+      "contenidos_clave": ["Cribado y diagnóstico", "Objetivos individualizados", "Manejo escalonado", "iSGLT2 y arGLP-1", "Comorbilidades, seguimiento y educación terapéutica"],
+      "fecha": "Pendiente de confirmar",
+      "hora_inicio": "Pendiente de confirmar",
+      "hora_fin": "Pendiente de confirmar",
+      "sede": "Pendiente de confirmar",
+      "ponentes": ["Pendiente de confirmar"],
+      "imagen": "assets/img/sesion-diabetes.png",
+      "recursos": [],
+      "estado": "Pendiente de confirmar"
+    },
+    {
+      "id": 3,
+      "slug": "dislipemia-prevencion-cardiovascular",
+      "titulo": "Dislipemia y prevención cardiovascular",
+      "bloque": "Sesión 3",
+      "descripcion": "Estimación del riesgo; indicación de estatinas y otros hipolipemiantes; objetivos de LDL; seguridad y monitorización; prevención primaria y secundaria en AP.",
+      "objetivo": "Homogeneizar criterios de prevención cardiovascular y tratamiento hipolipemiante en Atención Primaria.",
+      "contenidos_clave": ["Estimación del riesgo", "Estatinas y otros hipolipemiantes", "Objetivos de LDL", "Seguridad y monitorización", "Prevención primaria y secundaria"],
+      "fecha": "Pendiente de confirmar",
+      "hora_inicio": "Pendiente de confirmar",
+      "hora_fin": "Pendiente de confirmar",
+      "sede": "Pendiente de confirmar",
+      "ponentes": ["Pendiente de confirmar"],
+      "imagen": "assets/img/sesion-dislipemia.png",
+      "recursos": [],
+      "estado": "Pendiente de confirmar"
+    },
+    {
+      "id": 4,
+      "slug": "obesidad-estilo-vida",
+      "titulo": "Obesidad, estilo de vida y entrevista motivacional",
+      "bloque": "Sesión 4",
+      "descripcion": "Evaluación integral; objetivos realistas; intervención dietética y actividad física; entrevista motivacional; criterios de derivación; opciones farmacológicas y seguimiento.",
+      "objetivo": "Revisar el abordaje integral de la obesidad y los cambios de estilo de vida desde la consulta.",
+      "contenidos_clave": ["Evaluación integral", "Objetivos realistas", "Intervención dietética y actividad física", "Entrevista motivacional", "Derivación, opciones farmacológicas y seguimiento"],
+      "fecha": "Pendiente de confirmar",
+      "hora_inicio": "Pendiente de confirmar",
+      "hora_fin": "Pendiente de confirmar",
+      "sede": "Pendiente de confirmar",
+      "ponentes": ["Pendiente de confirmar"],
+      "imagen": "assets/img/sesion-obesidad.png",
+      "recursos": [],
+      "estado": "Pendiente de confirmar"
+    },
+    {
+      "id": 5,
+      "slug": "epoc-asma",
+      "titulo": "EPOC y asma",
+      "bloque": "Sesión 5",
+      "descripcion": "Diagnóstico y espirometría; clasificación y control; tratamiento inhalado; técnica inhalatoria; exacerbaciones; criterios de derivación y plan de acción.",
+      "objetivo": "Actualizar el diagnóstico, control y seguimiento de EPOC y asma en Atención Primaria.",
+      "contenidos_clave": ["Diagnóstico y espirometría", "Clasificación y control", "Tratamiento inhalado", "Técnica inhalatoria", "Exacerbaciones, derivación y plan de acción"],
+      "fecha": "Pendiente de confirmar",
+      "hora_inicio": "Pendiente de confirmar",
+      "hora_fin": "Pendiente de confirmar",
+      "sede": "Pendiente de confirmar",
+      "ponentes": ["Pendiente de confirmar"],
+      "imagen": "assets/img/sesion-epoc-asma.png",
+      "recursos": [],
+      "estado": "Pendiente de confirmar"
+    },
+    {
+      "id": 6,
+      "slug": "salud-mental-frecuente",
+      "titulo": "Trastornos de salud mental frecuentes",
+      "bloque": "Sesión 6",
+      "descripcion": "Abordaje de ansiedad, depresión e insomnio; evaluación del riesgo suicida; intervenciones no farmacológicas; uso prudente de psicofármacos; criterios de derivación y seguimiento.",
+      "objetivo": "Revisar el abordaje inicial, seguimiento y derivación de los trastornos de salud mental frecuentes.",
+      "contenidos_clave": ["Ansiedad, depresión e insomnio", "Evaluación del riesgo suicida", "Intervenciones no farmacológicas", "Uso prudente de psicofármacos", "Derivación y seguimiento"],
+      "fecha": "Pendiente de confirmar",
+      "hora_inicio": "Pendiente de confirmar",
+      "hora_fin": "Pendiente de confirmar",
+      "sede": "Pendiente de confirmar",
+      "ponentes": ["Pendiente de confirmar"],
+      "imagen": "assets/img/sesion-salud-mental.png",
+      "recursos": [],
+      "estado": "Pendiente de confirmar"
+    },
+    {
+      "id": 7,
+      "slug": "dolor-osteomuscular",
+      "titulo": "Dolor osteomuscular y uso prudente de pruebas complementarias",
+      "bloque": "Sesión 7",
+      "descripcion": "Lumbalgia, cervicalgia y artrosis; banderas rojas; indicación de imagen y analítica; manejo escalonado del dolor; ejercicio terapéutico; derivación y seguridad farmacológica.",
+      "objetivo": "Actualizar el manejo del dolor osteomuscular frecuente y el uso prudente de pruebas complementarias.",
+      "contenidos_clave": ["Lumbalgia, cervicalgia y artrosis", "Banderas rojas", "Imagen y analítica", "Manejo escalonado del dolor", "Ejercicio terapéutico, derivación y seguridad farmacológica"],
+      "fecha": "Pendiente de confirmar",
+      "hora_inicio": "Pendiente de confirmar",
+      "hora_fin": "Pendiente de confirmar",
+      "sede": "Pendiente de confirmar",
+      "ponentes": ["Pendiente de confirmar"],
+      "imagen": "assets/img/sesion-dolor-osteomuscular.png",
+      "recursos": [],
+      "estado": "Pendiente de confirmar"
+    },
+    {
+      "id": 8,
+      "slug": "dermatologia-atencion-primaria",
+      "titulo": "Dermatología en Atención Primaria",
+      "bloque": "Sesión 8",
+      "descripcion": "Lesiones frecuentes; criterios de alarma; dermatoscopia básica si disponible; tratamiento inicial; indicación de biopsia o derivación; educación y fotoprotección.",
+      "objetivo": "Reforzar el reconocimiento y manejo inicial de lesiones dermatológicas frecuentes en Atención Primaria.",
+      "contenidos_clave": ["Lesiones frecuentes", "Criterios de alarma", "Dermatoscopia básica si disponible", "Tratamiento inicial", "Biopsia, derivación, educación y fotoprotección"],
+      "fecha": "Pendiente de confirmar",
+      "hora_inicio": "Pendiente de confirmar",
+      "hora_fin": "Pendiente de confirmar",
+      "sede": "Pendiente de confirmar",
+      "ponentes": ["Pendiente de confirmar"],
+      "imagen": "assets/img/sesion-dermatologia.png",
+      "recursos": [],
+      "estado": "Pendiente de confirmar"
+    },
+    {
+      "id": 9,
+      "slug": "patologia-digestiva-frecuente",
+      "titulo": "Patología digestiva frecuente y señales de alarma",
+      "bloque": "Sesión 9",
+      "descripcion": "Dispepsia, ERGE y SII; manejo inicial; pruebas indicadas; anemia y sangrado digestivo; pérdida de peso y otros signos de alarma; criterios de derivación preferente.",
+      "objetivo": "Homogeneizar el manejo inicial de patología digestiva frecuente y la identificación de señales de alarma.",
+      "contenidos_clave": ["Dispepsia, ERGE y SII", "Manejo inicial", "Pruebas indicadas", "Anemia, sangrado digestivo y pérdida de peso", "Signos de alarma y derivación preferente"],
+      "fecha": "Pendiente de confirmar",
+      "hora_inicio": "Pendiente de confirmar",
+      "hora_fin": "Pendiente de confirmar",
+      "sede": "Pendiente de confirmar",
+      "ponentes": ["Pendiente de confirmar"],
+      "imagen": "assets/img/sesion-patologia-digestiva.png",
+      "recursos": [],
+      "estado": "Pendiente de confirmar"
+    },
+    {
+      "id": 10,
+      "slug": "fragilidad-pluripatologia",
+      "titulo": "Fragilidad, pluripatología y seguridad farmacológica",
+      "bloque": "Sesión 10",
+      "descripcion": "Identificación de fragilidad; revisión de medicación y deprescripción; conciliación; prevención de caídas; objetivos centrados en la persona; coordinación con enfermería y trabajo social.",
+      "objetivo": "Revisar el abordaje de fragilidad, pluripatología y seguridad farmacológica con objetivos centrados en la persona.",
+      "contenidos_clave": ["Identificación de fragilidad", "Revisión de medicación y deprescripción", "Conciliación", "Prevención de caídas", "Coordinación con enfermería y trabajo social"],
+      "fecha": "Pendiente de confirmar",
+      "hora_inicio": "Pendiente de confirmar",
+      "hora_fin": "Pendiente de confirmar",
+      "sede": "Pendiente de confirmar",
+      "ponentes": ["Pendiente de confirmar"],
+      "imagen": "assets/img/sesion-fragilidad.png",
+      "recursos": [],
+      "estado": "Pendiente de confirmar"
+    }
+  ],
+  "ponentes": [
+    {
+      "id": "julio-fernando-ospino-arias",
+      "nombre": "Julio Fernando Ospino Arias",
+      "rol": "Residente de 4.º año de Medicina Familiar y Comunitaria",
+      "bio": "Pendiente de confirmar",
+      "sesiones": []
+    },
+    {
+      "id": "guillermo-jose-olivero-sanjuanelo",
+      "nombre": "Guillermo José Olivero Sanjuanelo",
+      "rol": "Residente de 4.º año de Medicina Familiar y Comunitaria",
+      "bio": "Pendiente de confirmar",
+      "sesiones": []
+    },
+    {
+      "id": "kelly-esther-escorcia-reyes",
+      "nombre": "Kelly Esther Escorcia Reyes",
+      "rol": "Residente de 4.º año de Medicina Familiar y Comunitaria",
+      "bio": "Pendiente de confirmar",
+      "sesiones": []
+    }
+  ],
+  "recursos": [
+    {
+      "id": "programa-anual-pdf",
+      "titulo": "Programa anual de sesiones clínicas 2026-2027",
+      "tipo": "documento",
+      "formato": "PDF",
+      "archivo": "assets/docs/programa-anual.pdf"
+    },
+    {
+      "id": "plantilla-jornadas-docentes-ap",
+      "titulo": "Plantilla Jornadas Docentes AP",
+      "tipo": "presentacion",
+      "formato": "PPTX",
+      "archivo": "assets/docs/plantilla-jornadas-docentes-ap.pptx"
+    },
+    {
+      "id": "imagenes-promocionales",
+      "titulo": "Imágenes promocionales",
+      "tipo": "imagen",
+      "formato": "PNG",
+      "archivo": "assets/img/promocion.png"
+    },
+    {
+      "id": "imagen-promocional-2",
+      "titulo": "Imagen promocional complementaria",
+      "tipo": "imagen",
+      "formato": "PNG",
+      "archivo": "assets/img/promocion-2.png"
+    },
+    {
+      "id": "cartel-hipertension-arterial",
+      "titulo": "Cartel sesión 1: Hipertensión arterial",
+      "tipo": "cartel",
+      "formato": "PNG",
+      "archivo": "assets/img/sesion-hta.png"
+    },
+    {
+      "id": "cartel-diabetes",
+      "titulo": "Cartel sesión 2: Diabetes mellitus tipo 2",
+      "tipo": "cartel",
+      "formato": "PNG",
+      "archivo": "assets/img/sesion-diabetes.png"
+    },
+    {
+      "id": "cartel-dislipemia",
+      "titulo": "Cartel sesión 3: Dislipemia y prevención cardiovascular",
+      "tipo": "cartel",
+      "formato": "PNG",
+      "archivo": "assets/img/sesion-dislipemia.png"
+    },
+    {
+      "id": "cartel-obesidad",
+      "titulo": "Cartel sesión 4: Obesidad, estilo de vida y entrevista motivacional",
+      "tipo": "cartel",
+      "formato": "PNG",
+      "archivo": "assets/img/sesion-obesidad.png"
+    },
+    {
+      "id": "cartel-epoc-asma",
+      "titulo": "Cartel sesión 5: EPOC y asma",
+      "tipo": "cartel",
+      "formato": "PNG",
+      "archivo": "assets/img/sesion-epoc-asma.png"
+    },
+    {
+      "id": "cartel-salud-mental",
+      "titulo": "Cartel sesión 6: Trastornos de salud mental frecuentes",
+      "tipo": "cartel",
+      "formato": "PNG",
+      "archivo": "assets/img/sesion-salud-mental.png"
+    },
+    {
+      "id": "cartel-dolor-osteomuscular",
+      "titulo": "Cartel sesión 7: Dolor osteomuscular",
+      "tipo": "cartel",
+      "formato": "PNG",
+      "archivo": "assets/img/sesion-dolor-osteomuscular.png"
+    },
+    {
+      "id": "cartel-dermatologia",
+      "titulo": "Cartel sesión 8: Dermatología en Atención Primaria",
+      "tipo": "cartel",
+      "formato": "PNG",
+      "archivo": "assets/img/sesion-dermatologia.png"
+    },
+    {
+      "id": "cartel-patologia-digestiva",
+      "titulo": "Cartel sesión 9: Patología digestiva frecuente",
+      "tipo": "cartel",
+      "formato": "PNG",
+      "archivo": "assets/img/sesion-patologia-digestiva.png"
+    },
+    {
+      "id": "cartel-fragilidad",
+      "titulo": "Cartel sesión 10: Fragilidad, pluripatología y seguridad farmacológica",
+      "tipo": "cartel",
+      "formato": "PNG",
+      "archivo": "assets/img/sesion-fragilidad.png"
+    }
+  ],
+  "sedes": [
+    {
+      "id": "sedes-rotatorias",
+      "nombre": "Sedes rotatorias entre centros de salud del área y Hospital Can Misses",
+      "direccion": "Pendiente de confirmar",
+      "descripcion": "Se propone una rotación mensual de la sede para facilitar la asistencia, distribuir la carga organizativa y reforzar la coordinación entre Atención Primaria y el ámbito hospitalario."
+    },
+    {
+      "id": "hospital-can-misses",
+      "nombre": "Hospital Can Misses",
+      "direccion": "Pendiente de confirmar",
+      "descripcion": "Sede incluida entre las opciones organizativas del programa."
+    }
+  ],
+  "contacto": {
+    "coordinacion": "Julio Fernando Ospino Arias, Guillermo José Olivero Sanjuanelo y Kelly Esther Escorcia Reyes",
+    "email": "Pendiente de confirmar",
+    "telefono": "Pendiente de confirmar"
+  }
+}
