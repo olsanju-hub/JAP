@@ -1,1 +1,11 @@
 .DS_Store
+.env
+.env.*
+!.env.example
+supabase/.branches
+supabase/.temp
+supabase/.env
+supabase/.env.*
+*.password
+*.token
+*.secret

@@ -35,6 +35,8 @@ supabase/seed.sql
 supabase/migration-site-content.sql
 supabase/migration-security-backup.sql
 supabase/migration-session-speakers.sql
+supabase/config.toml
+supabase/migrations/
 assets/img/
 assets/docs/
 assets/icons/
@@ -137,6 +139,19 @@ El modal se cierra con el botón Cerrar, tecla Escape o clic exterior.
 
 ## Supabase
 
+El proyecto mantiene los SQL originales y una carpeta de migraciones versionadas para Supabase CLI:
+
+```text
+supabase/migrations/
+20260531090000_initial_schema.sql
+20260531091000_seed_initial_data.sql
+20260601090000_site_content.sql
+20260601100000_security_backup.sql
+20260601110000_session_speakers.sql
+```
+
+Para una instalación manual desde SQL Editor:
+
 1. Crea un proyecto en Supabase.
 2. Ejecuta `supabase/schema.sql` en el SQL Editor.
 3. Ejecuta `supabase/seed.sql` para cargar el contenido inicial.
@@ -158,6 +173,121 @@ Roles disponibles:
 - `editor`: puede crear, editar, borrar lógico, restaurar y exportar copias de seguridad de contenido.
 - `lector`: usuario autenticado sin permisos de creación, edición, borrado, restauración ni backup.
 - Anónimo: lectura pública solo de datos publicados/visibles; sin permisos de escritura.
+
+## Flujo de migraciones con Supabase CLI
+
+Usa este flujo para cambios de base de datos nuevos. No subas contraseñas, tokens, cadenas de conexión ni `.env` al repositorio.
+
+### Instalar e iniciar sesión
+
+Instala Supabase CLI según tu sistema. En macOS con Homebrew:
+
+```bash
+brew install supabase/tap/supabase
+```
+
+Inicia sesión:
+
+```bash
+supabase login
+```
+
+El token queda gestionado por la CLI en tu equipo, no en el repositorio.
+
+### Inicializar o revisar configuración
+
+Desde la raíz del proyecto:
+
+```bash
+cd /Users/olsanju/Desktop/JAP
+```
+
+Si no existiera `supabase/config.toml`, ejecuta:
+
+```bash
+supabase init
+```
+
+En este repo ya existe `supabase/config.toml`; no lo sobrescribas sin revisar el diff.
+
+### Vincular el proyecto remoto
+
+```bash
+supabase link --project-ref oyyqxkrfaoogzfplrrbt
+```
+
+La CLI puede pedir la contraseña de la base de datos. No la guardes en README, `.env`, commits ni capturas.
+
+### Sincronizar historial ya aplicado manualmente
+
+Las migraciones iniciales de JAP se ejecutaron primero desde Supabase SQL Editor. Antes de aplicar nada con CLI, revisa el estado remoto:
+
+```bash
+supabase migration list
+```
+
+Si la CLI no reconoce como aplicadas migraciones que ya ejecutaste manualmente, no hagas `db push` todavía. Marca esas versiones como reparadas/aplicadas en el historial remoto, una por una:
+
+```bash
+supabase migration repair --status applied 20260531090000
+supabase migration repair --status applied 20260531091000
+supabase migration repair --status applied 20260601090000
+supabase migration repair --status applied 20260601100000
+supabase migration repair --status applied 20260601110000
+```
+
+Si la CLI exige nombres completos por existir varias migraciones con la misma fecha, usa las versiones exactas que muestre `supabase migration list` para estos archivos:
+
+- `20260531090000_initial_schema.sql`
+- `20260531091000_seed_initial_data.sql`
+- `20260601090000_site_content.sql`
+- `20260601100000_security_backup.sql`
+- `20260601110000_session_speakers.sql`
+
+Después vuelve a comprobar:
+
+```bash
+supabase migration list
+```
+
+### Crear una nueva migración
+
+Para futuros cambios:
+
+```bash
+supabase migration new nombre_descriptivo
+```
+
+Edita el SQL generado en `supabase/migrations/`. Revisa que sea idempotente cuando proceda y que no incluya secretos.
+
+Antes de aplicar:
+
+```bash
+supabase migration list
+supabase db push --dry-run
+```
+
+Aplica solo si el dry-run es el esperado:
+
+```bash
+supabase db push
+```
+
+### Qué no hacer a ciegas
+
+No ejecutes directamente estos comandos en producción sin revisar `migration list` y `--dry-run`:
+
+```bash
+supabase db push
+supabase db reset
+supabase db remote commit
+```
+
+`supabase db reset` es para base local y puede destruir datos locales. No lo uses contra producción.
+
+### Alternativa de emergencia
+
+El SQL Editor manual sigue siendo aceptable para una corrección urgente y controlada. Si se usa, crea después una migración equivalente en `supabase/migrations/` y sincroniza el historial para que el repo vuelva a ser la fuente versionada.
 
 ## Configuración local de Supabase
 
