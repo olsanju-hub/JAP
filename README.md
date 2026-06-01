@@ -34,6 +34,7 @@ supabase/schema.sql
 supabase/seed.sql
 supabase/migration-site-content.sql
 supabase/migration-security-backup.sql
+supabase/migration-session-speakers.sql
 assets/img/
 assets/docs/
 assets/icons/
@@ -141,8 +142,9 @@ El modal se cierra con el botón Cerrar, tecla Escape o clic exterior.
 3. Ejecuta `supabase/seed.sql` para cargar el contenido inicial.
 4. Ejecuta `supabase/migration-site-content.sql` si el proyecto ya existía antes de la edición de textos globales.
 5. Ejecuta `supabase/migration-security-backup.sql` para reforzar permisos de lectura/escritura y retirar borrado físico en tablas de contenido.
-6. Crea un usuario en Authentication.
-7. Asigna permisos al usuario desde SQL:
+6. Ejecuta `supabase/migration-session-speakers.sql` para añadir roles de personas y habilitar la asociación de ponentes a sesiones.
+7. Crea un usuario en Authentication.
+8. Asigna permisos al usuario desde SQL:
 
 ```sql
 update public.profiles
@@ -182,24 +184,46 @@ Funciones disponibles:
 
 - Login/logout con Supabase Auth.
 - Listado, creación y edición de sesiones con botón `Nueva sesión`.
+- Asociación de uno o varios ponentes a cada sesión desde el bloque `Ponentes de la sesión`.
 - Slug autogenerado desde el título si se deja vacío.
 - Nueva sesión con `estado = 'publicada'`, `is_active = true`, jornada principal, modalidad Teams y siguiente orden disponible.
 - Cambio de estado: `borrador`, `publicada`, `realizada`.
-- Activar/desactivar sesiones y ponentes.
-- Listado, creación y edición de ponentes con botón `Nuevo ponente`.
+- Activar/desactivar sesiones y personas.
+- Listado, creación y edición de personas con botón `Nuevo ponente`.
+- Tipo de participación de cada persona: `organizador`, `ponente` o `apoyo`.
 - Listado, creación y edición de recursos con botón `Nuevo recurso`.
 - Asociación de recursos a sesiones.
 - Ocultar recursos con `visible = false`.
 - Borrado lógico y restauración de sesiones, ponentes y recursos.
 - Exportación de copia de seguridad JSON para usuarios `admin` y `editor`.
 
-No hay borrado físico desde el panel. Para retirar contenido, el panel usa `is_active = false`, `estado = 'borrador'` o `visible = false`.
+No hay borrado físico de sesiones, personas ni recursos desde el panel. Para retirar contenido, el panel usa `is_active = false`, `estado = 'borrador'` o `visible = false`.
+
+En `sesion_ponentes` sí se usa `DELETE` físico para quitar una relación entre una sesión y una persona. No elimina la sesión ni la persona; solo elimina la asociación.
 
 Para que un elemento aparezca en la app pública desde Supabase:
 
 - Sesión: `estado = 'publicada'` e `is_active = true`.
-- Ponente: `is_active = true`.
+- Persona/equipo: `is_active = true`.
 - Recurso: `visible = true`, con URL válida y sin apuntar a `propuesta-jornadas-docentes-ap.pdf`.
+
+### Equipo docente y ponentes por sesión
+
+La tabla `ponentes` funciona como tabla de personas. El campo `rol_persona` distingue:
+
+- `organizador`: organización y coordinación.
+- `ponente`: ponente de sesión.
+- `apoyo`: apoyo docente o colaborador.
+
+El equipo organizador inicial está formado por:
+
+- Guillermo José Olivero Sanjuanelo
+- Julio Fernando Ospino Arias
+- Kelly Esther Escorcia Reyes
+- Valenska Vania Arellano Flores
+- Jorvi José Aguilar Valero
+
+Las cinco personas figuran como residentes de 4.º año de Medicina Familiar y Comunitaria y no se asignan como ponentes de sesiones por defecto. Los ponentes reales se asocian desde el formulario de sesión mediante la tabla `sesion_ponentes`.
 
 ### Textos de la app
 
@@ -272,7 +296,7 @@ GitHub Pages redepliega automáticamente desde `main`.
 - `admin` y `editor` pueden exportar copia de seguridad desde el panel.
 - `config.js` no se precachea en el service worker.
 
-Para reforzar un proyecto Supabase ya creado, ejecuta `supabase/migration-security-backup.sql` despues de `supabase/migration-site-content.sql`.
+Para reforzar un proyecto Supabase ya creado, ejecuta `supabase/migration-security-backup.sql` despues de `supabase/migration-site-content.sql`. Para activar roles de personas y ponentes por sesión, ejecuta después `supabase/migration-session-speakers.sql`.
 
 Comprobación rápida de roles:
 
@@ -290,4 +314,4 @@ Si no ves cambios tras editar archivos cacheados:
 3. Limpia Storage si es necesario.
 4. Recarga con hard reload.
 
-El cache actual se identifica como `jap-static-v14`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.
+El cache actual se identifica como `jap-static-v15`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.

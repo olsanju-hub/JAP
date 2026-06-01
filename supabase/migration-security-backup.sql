@@ -11,11 +11,12 @@ alter table public.recursos enable row level security;
 alter table public.site_settings enable row level security;
 
 revoke insert, update, delete on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.sesion_ponentes, public.recursos, public.site_settings from anon;
-revoke delete on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.sesion_ponentes, public.recursos, public.site_settings from authenticated;
+revoke delete on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.recursos, public.site_settings from authenticated;
 
 grant usage on schema public to anon, authenticated;
 grant select on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.sesion_ponentes, public.recursos, public.site_settings to anon, authenticated;
-grant insert, update on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.sesion_ponentes, public.recursos, public.site_settings to authenticated;
+grant insert, update on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.recursos, public.site_settings to authenticated;
+grant insert, update, delete on public.sesion_ponentes to authenticated;
 grant select on public.profiles to authenticated;
 grant insert, update, delete on public.profiles to authenticated;
 grant execute on function public.is_admin() to authenticated;

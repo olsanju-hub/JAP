@@ -6,13 +6,18 @@ const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 const DEFAULT_MODALITY = "Preferentemente presencial, con opción online por Teams";
 const DEFAULT_TEAMS = "Enlace Teams pendiente de confirmar";
 const DELETE_MESSAGE = "¿Seguro que quieres borrar este elemento? No se eliminará definitivamente, pero dejará de mostrarse públicamente.";
+const PERSON_ROLE_LABELS = {
+  organizador: "organizador/coordinador",
+  ponente: "ponente",
+  apoyo: "apoyo docente"
+};
 const SITE_SETTING_DEFINITIONS = [
   { key: "home.title", group: "Inicio", label: "Título principal", type: "textarea", description: "Título visible en la portada." },
   { key: "home.subtitle", group: "Inicio", label: "Subtítulo", type: "textarea", description: "Texto destacado bajo el título principal." },
   { key: "home.description", group: "Inicio", label: "Descripción", type: "textarea", description: "Descripción breve de las jornadas." },
   { key: "home.primary_button", group: "Inicio", label: "Botón principal", type: "text", description: "Texto del botón principal de la portada." },
   { key: "home.secondary_button_sessions", group: "Inicio", label: "Botón sesiones", type: "text", description: "Texto del acceso rápido a sesiones." },
-  { key: "home.secondary_button_speakers", group: "Inicio", label: "Botón ponentes", type: "text", description: "Texto del acceso rápido a ponentes." },
+  { key: "home.secondary_button_speakers", group: "Inicio", label: "Botón equipo", type: "text", description: "Texto del acceso rápido a equipo docente." },
   { key: "home.secondary_button_resources", group: "Inicio", label: "Botón recursos", type: "text", description: "Texto del acceso rápido a recursos." },
   { key: "home.metric_sessions_label", group: "Datos clave", label: "Etiqueta sesiones", type: "text", description: "Etiqueta del dato clave de sesiones." },
   { key: "home.metric_sessions_value", group: "Datos clave", label: "Valor sesiones", type: "text", description: "Valor del dato clave de sesiones." },
@@ -26,8 +31,8 @@ const SITE_SETTING_DEFINITIONS = [
   { key: "agenda.description", group: "Agenda", label: "Descripción", type: "textarea", description: "Descripción breve de la agenda." },
   { key: "sessions.title", group: "Sesiones", label: "Título", type: "text", description: "Título de la vista Sesiones." },
   { key: "sessions.description", group: "Sesiones", label: "Descripción", type: "textarea", description: "Descripción breve de sesiones." },
-  { key: "speakers.title", group: "Ponentes", label: "Título", type: "text", description: "Título de la vista Ponentes." },
-  { key: "speakers.description", group: "Ponentes", label: "Descripción", type: "textarea", description: "Descripción breve de ponentes." },
+  { key: "speakers.title", group: "Equipo docente", label: "Título", type: "text", description: "Título de la vista Equipo docente." },
+  { key: "speakers.description", group: "Equipo docente", label: "Descripción", type: "textarea", description: "Descripción breve de equipo y ponentes." },
   { key: "resources.title", group: "Recursos", label: "Título", type: "text", description: "Título de la vista Recursos." },
   { key: "resources.description", group: "Recursos", label: "Descripción", type: "textarea", description: "Descripción breve de recursos." },
   { key: "contact.title", group: "Contacto", label: "Título", type: "text", description: "Título de la vista Contacto." },
@@ -58,6 +63,7 @@ const state = {
   sedes: [],
   sesiones: [],
   ponentes: [],
+  sesionPonentes: [],
   recursos: [],
   siteSettings: [],
   modes: {
@@ -132,8 +138,8 @@ function setMode(type, mode) {
       submit: mode === "create" ? "Crear sesión" : "Guardar cambios"
     },
     speaker: {
-      title: mode === "create" ? "Crear nuevo ponente" : "Editar ponente existente",
-      submit: mode === "create" ? "Crear ponente" : "Guardar cambios"
+      title: mode === "create" ? "Crear nueva persona" : "Editar persona existente",
+      submit: mode === "create" ? "Crear persona" : "Guardar cambios"
     },
     resource: {
       title: mode === "create" ? "Crear nuevo recurso" : "Editar recurso existente",
@@ -155,6 +161,7 @@ function resetSessionForm() {
   form.elements.teams_url.value = DEFAULT_TEAMS;
   form.elements.estado.value = "publicada";
   form.elements.is_active.checked = true;
+  renderSessionSpeakerOptions();
   setMode("session", "create");
 }
 
@@ -162,6 +169,7 @@ function resetSpeakerForm() {
   const form = $("#speaker-form");
   form.reset();
   form.elements.id.value = "";
+  form.elements.rol_persona.value = "ponente";
   form.elements.is_active.checked = true;
   setMode("speaker", "create");
 }
@@ -196,6 +204,48 @@ function setSessionOptions() {
   select.innerHTML =
     '<option value="">Sin sesión asociada</option>' +
     state.sesiones.map((session) => `<option value="${escapeHtml(session.id)}">${escapeHtml(session.orden || "")} ${escapeHtml(session.titulo)}</option>`).join("");
+}
+
+function defaultSessionRole(speaker) {
+  if (speaker.rol_persona === "apoyo") return "Apoyo docente";
+  if (speaker.rol_persona === "organizador") return "Apoyo / coordinación";
+  return "Ponente";
+}
+
+function renderSessionSpeakerOptions(sessionId = "") {
+  const container = $("#session-speaker-list");
+  const activeSpeakers = state.ponentes.filter((speaker) => speaker.is_active);
+  if (!activeSpeakers.length) {
+    container.innerHTML = '<p class="empty-note">No hay personas activas para asociar.</p>';
+    return;
+  }
+
+  const existing = new Map(
+    state.sesionPonentes
+      .filter((relation) => relation.sesion_id === sessionId)
+      .map((relation) => [relation.ponente_id, relation])
+  );
+
+  container.innerHTML = activeSpeakers
+    .map((speaker, index) => {
+      const relation = existing.get(speaker.id);
+      return `
+        <article class="session-speaker-item">
+          <label class="session-speaker-main">
+            <input type="checkbox" data-session-speaker="${escapeHtml(speaker.id)}" ${relation ? "checked" : ""}>
+            <span>
+              ${escapeHtml(speaker.nombre)}
+              <small>${escapeHtml(PERSON_ROLE_LABELS[speaker.rol_persona] || "ponente")} · ${escapeHtml(speaker.especialidad || "Sin cargo")}</small>
+            </span>
+          </label>
+          <div class="session-speaker-meta">
+            <label>Rol en la sesión <input data-session-speaker-role="${escapeHtml(speaker.id)}" value="${escapeHtml(relation?.rol || defaultSessionRole(speaker))}"></label>
+            <label>Orden <input data-session-speaker-order="${escapeHtml(speaker.id)}" type="number" min="1" value="${escapeHtml(relation?.orden || index + 1)}"></label>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
 }
 
 function renderSiteSettings() {
@@ -243,6 +293,7 @@ async function loadAdminData() {
     { data: sedes, error: venueError },
     { data: sesiones, error: sessionError },
     { data: ponentes, error: speakerError },
+    { data: sesionPonentes, error: sessionSpeakerError },
     { data: recursos, error: resourceError },
     { data: siteSettings, error: siteSettingsError }
   ] = await Promise.all([
@@ -250,11 +301,12 @@ async function loadAdminData() {
     state.supabase.from("sedes").select("*").order("nombre", { ascending: true }),
     state.supabase.from("sesiones").select("*, sedes(nombre)").order("orden", { ascending: true }),
     state.supabase.from("ponentes").select("*").order("nombre", { ascending: true }),
+    state.supabase.from("sesion_ponentes").select("*").order("orden", { ascending: true }),
     state.supabase.from("recursos").select("*, sesiones(titulo)").order("orden", { ascending: true }),
     state.supabase.from("site_settings").select("*").order("group_name", { ascending: true }).order("key", { ascending: true })
   ]);
 
-  const error = journeyError || venueError || sessionError || speakerError || resourceError;
+  const error = journeyError || venueError || sessionError || speakerError || sessionSpeakerError || resourceError;
   if (error) throw error;
   if (siteSettingsError) {
     message("La tabla site_settings no está disponible. Ejecuta supabase/migration-site-content.sql para editar textos globales.");
@@ -264,6 +316,7 @@ async function loadAdminData() {
   state.sedes = sedes || [];
   state.sesiones = sesiones || [];
   state.ponentes = ponentes || [];
+  state.sesionPonentes = sesionPonentes || [];
   state.recursos = recursos || [];
   state.siteSettings = siteSettingsError ? [] : siteSettings || [];
   setJourneyOptions();
@@ -271,7 +324,11 @@ async function loadAdminData() {
   setSessionOptions();
   renderLists();
   renderSiteSettings();
-  if (state.modes.session === "create") resetSessionForm();
+  if (state.modes.session === "create") {
+    resetSessionForm();
+  } else {
+    renderSessionSpeakerOptions($("#session-form").elements.id.value);
+  }
   if (state.modes.speaker === "create") resetSpeakerForm();
   if (state.modes.resource === "create") resetResourceForm();
 }
@@ -307,7 +364,7 @@ function renderLists() {
         .map((speaker) => `
           <article class="admin-list-item">
             <h3>${escapeHtml(speaker.nombre)}</h3>
-            <p>${escapeHtml([speaker.especialidad, speaker.centro].filter(Boolean).join(" · ") || "Sin datos profesionales")} · ${speaker.is_active ? "activo" : "inactivo"}</p>
+            <p>${escapeHtml(PERSON_ROLE_LABELS[speaker.rol_persona] || "ponente")} · ${escapeHtml([speaker.especialidad, speaker.centro].filter(Boolean).join(" · ") || "Sin datos profesionales")} · ${speaker.is_active ? "activo" : "inactivo"}</p>
             <div class="admin-actions">
               <button class="button" type="button" data-edit-speaker="${escapeHtml(speaker.id)}">Editar</button>
               ${
@@ -319,7 +376,7 @@ function renderLists() {
           </article>
         `)
         .join("")
-    : '<p class="empty-note">No hay ponentes en este listado.</p>';
+    : '<p class="empty-note">No hay personas en este listado.</p>';
 
   const resources = showHiddenResources ? state.recursos : state.recursos.filter((resource) => resource.visible);
   $("#resources-list").innerHTML = resources.length
@@ -362,6 +419,7 @@ function editSession(id) {
   const session = state.sesiones.find((item) => item.id === id);
   if (!session) return;
   fillForm($("#session-form"), session);
+  renderSessionSpeakerOptions(session.id);
   setMode("session", "edit");
   message(`Editando sesión: ${session.titulo}`);
   $("#session-form").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -372,7 +430,7 @@ function editSpeaker(id) {
   if (!speaker) return;
   fillForm($("#speaker-form"), speaker);
   setMode("speaker", "edit");
-  message(`Editando ponente: ${speaker.nombre}`);
+  message(`Editando persona: ${speaker.nombre}`);
   $("#speaker-form").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -413,11 +471,33 @@ async function saveSession(event) {
   };
   if (values.id) payload.id = values.id;
 
-  const { error } = await state.supabase.from("sesiones").upsert(payload).select().single();
+  const { data: savedSession, error } = await state.supabase.from("sesiones").upsert(payload).select().single();
   if (error) throw error;
+  await saveSessionSpeakers(savedSession.id, form);
   await loadAdminData();
   message(state.modes.session === "create" ? "Sesión creada. Si está publicada y activa, aparecerá en la app pública." : "Cambios de sesión guardados.");
   resetSessionForm();
+}
+
+async function saveSessionSpeakers(sessionId, form) {
+  const checked = Array.from(form.querySelectorAll("[data-session-speaker]:checked"));
+  const rows = checked.map((input, index) => {
+    const speakerId = input.dataset.sessionSpeaker;
+    const role = Array.from(form.querySelectorAll("[data-session-speaker-role]")).find((field) => field.dataset.sessionSpeakerRole === speakerId)?.value.trim() || "Ponente";
+    const orderValue = Array.from(form.querySelectorAll("[data-session-speaker-order]")).find((field) => field.dataset.sessionSpeakerOrder === speakerId)?.value;
+    return {
+      sesion_id: sessionId,
+      ponente_id: speakerId,
+      rol: role,
+      orden: orderValue ? Number(orderValue) : index + 1
+    };
+  });
+
+  const { error: deleteError } = await state.supabase.from("sesion_ponentes").delete().eq("sesion_id", sessionId);
+  if (deleteError) throw deleteError;
+  if (!rows.length) return;
+  const { error: insertError } = await state.supabase.from("sesion_ponentes").insert(rows);
+  if (insertError) throw insertError;
 }
 
 async function saveSpeaker(event) {
@@ -432,6 +512,7 @@ async function saveSpeaker(event) {
     bio: emptyToNull(values.bio),
     foto_url: emptyToNull(values.foto_url),
     email_publico: emptyToNull(values.email_publico),
+    rol_persona: values.rol_persona || "ponente",
     is_active: form.elements.is_active.checked
   };
   if (values.id) payload.id = values.id;
@@ -439,7 +520,7 @@ async function saveSpeaker(event) {
   const { error } = await state.supabase.from("ponentes").upsert(payload).select().single();
   if (error) throw error;
   await loadAdminData();
-  message(state.modes.speaker === "create" ? "Ponente creado." : "Cambios de ponente guardados.");
+  message(state.modes.speaker === "create" ? "Persona creada." : "Cambios de persona guardados.");
   resetSpeakerForm();
 }
 
@@ -518,7 +599,7 @@ async function exportBackup() {
   const backup = {
     generated_at: new Date().toISOString(),
     app: "JAP",
-    version: "2.7",
+    version: "2.8",
     tables: {
       jornadas: jornadas || [],
       sesiones: sesiones || [],
@@ -633,10 +714,10 @@ function bindEvents() {
     if (speakerId) editSpeaker(speakerId);
     if (resourceId) editResource(resourceId);
     if (deleteSessionId) softDelete("sesiones", deleteSessionId, { is_active: false, estado: "borrador" }, "Sesión").catch((error) => message(error.message));
-    if (deleteSpeakerId) softDelete("ponentes", deleteSpeakerId, { is_active: false }, "Ponente").catch((error) => message(error.message));
+    if (deleteSpeakerId) softDelete("ponentes", deleteSpeakerId, { is_active: false }, "Persona").catch((error) => message(error.message));
     if (deleteResourceId) softDelete("recursos", deleteResourceId, { visible: false }, "Recurso").catch((error) => message(error.message));
     if (restoreSessionId) restore("sesiones", restoreSessionId, { is_active: true, estado: "publicada" }, "Sesión").catch((error) => message(error.message));
-    if (restoreSpeakerId) restore("ponentes", restoreSpeakerId, { is_active: true }, "Ponente").catch((error) => message(error.message));
+    if (restoreSpeakerId) restore("ponentes", restoreSpeakerId, { is_active: true }, "Persona").catch((error) => message(error.message));
     if (restoreResourceId) restore("recursos", restoreResourceId, { visible: true }, "Recurso").catch((error) => message(error.message));
   });
 }

@@ -9,6 +9,11 @@ const state = {
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 const VIEW_IDS = ["inicio", "agenda", "sesiones", "ponentes", "recursos", "contacto"];
+const PERSON_ROLE_LABELS = {
+  organizador: "Organización y coordinación",
+  ponente: "Ponentes",
+  apoyo: "Apoyo docente"
+};
 
 const escapeHtml = (value) =>
   String(value ?? "")
@@ -106,7 +111,7 @@ function renderSiteContent() {
   setText("#program-description", "home.description", state.data?.programa?.descripcion || "Pendiente de confirmar");
   setText("#home-primary-button", "home.primary_button", "Ver agenda");
   setText("#home-sessions-button", "home.secondary_button_sessions", "Sesiones");
-  setText("#home-speakers-button", "home.secondary_button_speakers", "Ponentes");
+  setText("#home-speakers-button", "home.secondary_button_speakers", "Equipo docente");
   setText("#home-resources-button", "home.secondary_button_resources", "Recursos");
   setText("#metric-sessions-label", "home.metric_sessions_label", "Sesiones");
   setText("#metric-sessions-value", "home.metric_sessions_value", "10");
@@ -120,8 +125,8 @@ function renderSiteContent() {
   setText("#agenda-description", "agenda.description", "Vista rápida del programa. Cada sesión abre su detalle completo en una ventana emergente.");
   setText("#sessions-title", "sessions.title", "Sesiones");
   setText("#sessions-description", "sessions.description", "Contenido docente organizado por temas clínicos frecuentes en Atención Primaria.");
-  setText("#speakers-title", "speakers.title", "Ponentes");
-  setText("#speakers-description", "speakers.description", "Equipo docente y coordinación según la información disponible en los materiales.");
+  setText("#speakers-title", "speakers.title", "Equipo docente");
+  setText("#speakers-description", "speakers.description", "Organización, coordinación y ponentes asociados a las sesiones.");
   setText("#resources-title", "resources.title", "Recursos");
   setText("#resources-description", "resources.description", "Material organizado por categorías compactas. Cada recurso se abre dentro de la app.");
   setText("#contact-title", "contact.title", "Contacto");
@@ -193,21 +198,66 @@ function renderSessions(sesiones) {
 }
 
 function renderSpeakers(ponentes) {
-  const speakerMarkup = ponentes.length
-    ? ponentes
+  const groups = [
+    { role: "organizador", title: "Organización y coordinación", empty: "" },
+    { role: "ponente", title: "Ponentes", empty: "Los ponentes de cada sesión se incorporarán cuando estén confirmados." },
+    { role: "apoyo", title: "Apoyo docente", empty: "" }
+  ];
+
+  $("#speaker-grid").innerHTML = groups
+    .map((group) => {
+      const items = ponentes.filter((speaker) =>
+        group.role === "ponente" ? speaker.rol_persona === "ponente" || speaker.es_ponente_sesion : speaker.rol_persona === group.role
+      );
+      if (!items.length && !group.empty) return "";
+      return `
+        <section class="speaker-group">
+          <h3>${escapeHtml(group.title)}</h3>
+          <div class="speaker-group-grid">
+            ${
+              items.length
+                ? items.map(renderSpeakerCard).join("")
+                : `<article class="speaker-card"><h4>Pendiente de confirmar</h4><p>${escapeHtml(group.empty)}</p></article>`
+            }
+          </div>
+        </section>
+      `;
+    })
+    .join("");
+}
+
+function renderSpeakerCard(speaker) {
+  return `
+    <article class="speaker-card">
+      ${speaker.foto_url ? `<img src="${escapeHtml(speaker.foto_url)}" alt="Foto de ${escapeHtml(speaker.nombre)}">` : ""}
+      <h4>${escapeHtml(speaker.nombre)}</h4>
+      <p><strong>${escapeHtml(speaker.especialidad || speaker.rol || "Pendiente de confirmar")}</strong></p>
+      ${speaker.centro ? `<p>${escapeHtml(speaker.centro)}</p>` : ""}
+      ${speaker.bio && !isPending(speaker.bio) ? `<p>${escapeHtml(speaker.bio)}</p>` : ""}
+    </article>
+  `;
+}
+
+function renderSessionSpeakers(speakers) {
+  if (!speakers?.length) return "";
+  return `
+    <h3>Ponentes</h3>
+    <div class="session-speaker-detail">
+      ${speakers
         .map(
           (speaker) => `
             <article class="speaker-card">
-              <h3>${escapeHtml(speaker.nombre)}</h3>
-              <p><strong>${escapeHtml(speaker.rol)}</strong></p>
-              <p>${escapeHtml(speaker.bio)}</p>
+              ${speaker.foto_url ? `<img src="${escapeHtml(speaker.foto_url)}" alt="Foto de ${escapeHtml(speaker.nombre)}">` : ""}
+              <h4>${escapeHtml(speaker.nombre)}</h4>
+              <p><strong>${escapeHtml(speaker.rol_sesion || "Ponente")}</strong></p>
+              <p>${escapeHtml([speaker.especialidad, speaker.centro].filter(Boolean).join(" · ") || "Pendiente de confirmar")}</p>
+              ${speaker.bio && !isPending(speaker.bio) ? `<p>${escapeHtml(speaker.bio)}</p>` : ""}
             </article>
           `
         )
-        .join("")
-    : '<article class="speaker-card"><h3>Pendiente de confirmar</h3><p>La información de ponentes se añadirá cuando esté disponible.</p></article>';
-
-  $("#speaker-grid").innerHTML = speakerMarkup;
+        .join("")}
+    </div>
+  `;
 }
 
 function renderResources(recursos) {
@@ -304,8 +354,7 @@ function showSession(slug) {
         <div class="detail-box"><strong>Sede</strong>${escapeHtml(session.sede)}</div>
         <div class="detail-box"><strong>Estado</strong>${escapeHtml(session.estado)}</div>
       </div>
-      <h3>Ponentes</h3>
-      <p>${session.ponentes.map(escapeHtml).join(", ")}</p>
+      ${renderSessionSpeakers(session.ponentes_detalle)}
       <h3>Recursos asociados</h3>
       <p>${session.recursos.length ? session.recursos.map(escapeHtml).join(", ") : "Pendiente de confirmar"}</p>
       <div class="dialog-actions inline-actions">
@@ -409,7 +458,20 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
   const mappedSessions = sesiones.map((session, index) => {
     const sessionSpeakers = (session.sesion_ponentes || [])
       .sort((a, b) => (a.orden || 0) - (b.orden || 0))
-      .map((item) => item.ponentes?.nombre)
+      .map((item) =>
+        item.ponentes
+          ? {
+              id: item.ponentes.id,
+              nombre: item.ponentes.nombre,
+              especialidad: item.ponentes.especialidad,
+              centro: item.ponentes.centro,
+              bio: item.ponentes.bio,
+              foto_url: item.ponentes.foto_url,
+              rol_persona: item.ponentes.rol_persona || "ponente",
+              rol_sesion: item.rol || "Ponente"
+            }
+          : null
+      )
       .filter(Boolean);
 
     const sessionResources = recursos.filter((resource) => resource.sesion_id === session.id);
@@ -427,11 +489,20 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
       hora_inicio: formatTime(session.hora_inicio),
       hora_fin: formatTime(session.hora_fin),
       sede: session.sedes?.nombre || "Pendiente de confirmar",
-      ponentes: sessionSpeakers.length ? sessionSpeakers : ["Pendiente de confirmar"],
+      ponentes: sessionSpeakers.length ? sessionSpeakers.map((speaker) => speaker.nombre) : ["Pendiente de confirmar"],
+      ponentes_detalle: sessionSpeakers,
       imagen: session.imagen_url || "",
       recursos: sessionResources.map((resource) => resource.titulo),
       estado: session.estado || "publicada"
     };
+  });
+  const sessionSpeakerIds = new Set();
+  mappedSessions.forEach((session) => {
+    (session.ponentes_detalle || []).forEach((speaker) => {
+      if (String(speaker.rol_sesion || "").toLowerCase().includes("ponente")) {
+        sessionSpeakerIds.add(speaker.id);
+      }
+    });
   });
 
   return {
@@ -456,8 +527,13 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
     ponentes: ponentes.map((speaker) => ({
       id: speaker.id,
       nombre: speaker.nombre,
-      rol: [speaker.especialidad, speaker.centro].filter(Boolean).join(" · ") || "Pendiente de confirmar",
+      rol: PERSON_ROLE_LABELS[speaker.rol_persona] || "Ponente",
+      rol_persona: speaker.rol_persona || "ponente",
+      es_ponente_sesion: sessionSpeakerIds.has(speaker.id),
+      especialidad: speaker.especialidad || "Pendiente de confirmar",
+      centro: speaker.centro || "",
       bio: speaker.bio || "Pendiente de confirmar",
+      foto_url: speaker.foto_url || "",
       sesiones: []
     })),
     recursos: recursos.filter(isPublicResource).map((resource) => ({
@@ -505,7 +581,7 @@ async function loadSupabaseData(fallbackSiteContent) {
     supabase.from("jornadas").select("*").limit(1),
     supabase
       .from("sesiones")
-      .select("*, sedes(nombre), sesion_ponentes(rol, orden, ponentes(nombre))")
+      .select("*, sedes(nombre), sesion_ponentes(rol, orden, ponentes(*))")
       .eq("estado", "publicada")
       .eq("is_active", true)
       .order("orden", { ascending: true }),
@@ -517,6 +593,9 @@ async function loadSupabaseData(fallbackSiteContent) {
   const error = jornadaError || sesionesError || ponentesError || recursosError || sedesError;
   if (error) throw error;
   if (!jornadas?.[0]) return null;
+  if (ponentes?.length && !Object.prototype.hasOwnProperty.call(ponentes[0], "rol_persona")) {
+    throw new Error("Ejecuta supabase/migration-session-speakers.sql para activar roles de personas.");
+  }
 
   return mapSupabaseData({
     jornada: jornadas[0],

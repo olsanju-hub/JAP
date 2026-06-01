@@ -288,22 +288,51 @@
     {
       "id": "julio-fernando-ospino-arias",
       "nombre": "Julio Fernando Ospino Arias",
-      "rol": "Residente de 4.º año de Medicina Familiar y Comunitaria",
-      "bio": "Pendiente de confirmar",
+      "rol": "Organizador / coordinación R4",
+      "rol_persona": "organizador",
+      "especialidad": "Residente de 4.º año de Medicina Familiar y Comunitaria",
+      "centro": "",
+      "bio": "Organizador / coordinación R4",
       "sesiones": []
     },
     {
       "id": "guillermo-jose-olivero-sanjuanelo",
       "nombre": "Guillermo José Olivero Sanjuanelo",
-      "rol": "Residente de 4.º año de Medicina Familiar y Comunitaria",
-      "bio": "Pendiente de confirmar",
+      "rol": "Organizador / coordinación R4",
+      "rol_persona": "organizador",
+      "especialidad": "Residente de 4.º año de Medicina Familiar y Comunitaria",
+      "centro": "",
+      "bio": "Organizador / coordinación R4",
       "sesiones": []
     },
     {
       "id": "kelly-esther-escorcia-reyes",
       "nombre": "Kelly Esther Escorcia Reyes",
-      "rol": "Residente de 4.º año de Medicina Familiar y Comunitaria",
-      "bio": "Pendiente de confirmar",
+      "rol": "Organizadora / coordinación R4",
+      "rol_persona": "organizador",
+      "especialidad": "Residente de 4.º año de Medicina Familiar y Comunitaria",
+      "centro": "",
+      "bio": "Organizadora / coordinación R4",
+      "sesiones": []
+    },
+    {
+      "id": "valenska-vania-arellano-flores",
+      "nombre": "Valenska Vania Arellano Flores",
+      "rol": "Organizadora / coordinación R4",
+      "rol_persona": "organizador",
+      "especialidad": "Residente de 4.º año de Medicina Familiar y Comunitaria",
+      "centro": "",
+      "bio": "Organizadora / coordinación R4",
+      "sesiones": []
+    },
+    {
+      "id": "jorvi-jose-aguilar-valero",
+      "nombre": "Jorvi José Aguilar Valero",
+      "rol": "Organizador / coordinación R4",
+      "rol_persona": "organizador",
+      "especialidad": "Residente de 4.º año de Medicina Familiar y Comunitaria",
+      "centro": "",
+      "bio": "Organizador / coordinación R4",
       "sesiones": []
     }
   ],
@@ -422,7 +451,7 @@
     }
   ],
   "contacto": {
-    "coordinacion": "Julio Fernando Ospino Arias, Guillermo José Olivero Sanjuanelo y Kelly Esther Escorcia Reyes",
+    "coordinacion": "Guillermo José Olivero Sanjuanelo, Julio Fernando Ospino Arias, Kelly Esther Escorcia Reyes, Valenska Vania Arellano Flores y Jorvi José Aguilar Valero",
     "email": "Pendiente de confirmar",
     "telefono": "Pendiente de confirmar"
   },
@@ -433,7 +462,7 @@
       "description": "Espacio docente anual para profesionales de Atención Primaria, centrado en sesiones clínicas breves, aplicadas y orientadas a mejorar la práctica asistencial compartida.",
       "primary_button": "Ver agenda",
       "secondary_button_sessions": "Sesiones",
-      "secondary_button_speakers": "Ponentes",
+      "secondary_button_speakers": "Equipo docente",
       "secondary_button_resources": "Recursos",
       "metrics": {
         "sessions_label": "Sesiones",
@@ -455,8 +484,8 @@
       "description": "Contenido docente organizado por temas clínicos frecuentes en Atención Primaria."
     },
     "speakers": {
-      "title": "Ponentes",
-      "description": "Equipo docente y coordinación según la información disponible en los materiales."
+      "title": "Equipo docente",
+      "description": "Organización, coordinación y ponentes asociados a las sesiones."
     },
     "resources": {
       "title": "Recursos",
@@ -466,7 +495,7 @@
       "title": "Contacto",
       "description": "Datos de coordinación del programa.",
       "coordination_label": "Coordinación",
-      "coordination_value": "Julio Fernando Ospino Arias, Guillermo José Olivero Sanjuanelo y Kelly Esther Escorcia Reyes",
+      "coordination_value": "Guillermo José Olivero Sanjuanelo, Julio Fernando Ospino Arias, Kelly Esther Escorcia Reyes, Valenska Vania Arellano Flores y Jorvi José Aguilar Valero",
       "email_label": "Email",
       "email_value": "Pendiente de confirmar",
       "phone_label": "Teléfono",

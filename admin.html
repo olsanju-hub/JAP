@@ -16,7 +16,7 @@
           <img src="assets/icons/icon-192.png" alt="" width="48" height="48">
           <span>
             <strong>JAP Admin</strong>
-            <small>Gestión mínima</small>
+          <small>Gestión de contenidos</small>
           </span>
         </a>
         <div class="admin-header-actions">
@@ -50,14 +50,14 @@
         <div class="admin-toolbar">
           <div>
             <h1>Panel administrativo</h1>
-            <p>Edición mínima de sesiones, ponentes y recursos.</p>
+            <p>Edición de sesiones, equipo docente, recursos y textos.</p>
           </div>
           <button id="logout-button" class="button" type="button">Salir</button>
         </div>
 
         <nav class="admin-tabs" aria-label="Secciones admin">
           <button class="button primary" type="button" data-admin-tab="sesiones">Sesiones</button>
-          <button class="button" type="button" data-admin-tab="ponentes">Ponentes</button>
+          <button class="button" type="button" data-admin-tab="ponentes">Equipo docente</button>
           <button class="button" type="button" data-admin-tab="recursos">Recursos</button>
           <button class="button" type="button" data-admin-tab="textos">Textos de la app</button>
           <button class="button" type="button" data-admin-tab="backup">Copia de seguridad</button>
@@ -88,6 +88,11 @@
               <label>Modalidad <input name="modalidad"></label>
               <label>Teams URL <input name="teams_url"></label>
               <label>Sede <select name="sede_id"></select></label>
+              <fieldset class="admin-fieldset">
+                <legend>Ponentes de la sesión</legend>
+                <p class="form-message">Selecciona personas activas y define su rol en esta sesión.</p>
+                <div id="session-speaker-list" class="session-speaker-list"></div>
+              </fieldset>
               <label>Imagen/cartel URL <input name="imagen_url"></label>
               <label>Estado
                 <select name="estado">
@@ -114,8 +119,8 @@
           <div class="admin-grid">
             <form id="speaker-form" class="admin-form admin-card">
               <div class="admin-form-head">
-                <h2 id="speaker-form-title">Crear nuevo ponente</h2>
-                <button class="button" type="button" data-new-speaker>Nuevo ponente</button>
+                <h2 id="speaker-form-title">Crear nueva persona</h2>
+                <button class="button" type="button" data-new-speaker>Nueva persona</button>
               </div>
               <input name="id" type="hidden">
               <label>Nombre <input name="nombre" required></label>
@@ -124,13 +129,20 @@
               <label>Bio <textarea name="bio" rows="4"></textarea></label>
               <label>Foto URL <input name="foto_url"></label>
               <label>Email público <input name="email_publico" type="email"></label>
+              <label>Tipo de participación
+                <select name="rol_persona">
+                  <option value="organizador">organizador/coordinador</option>
+                  <option value="ponente">ponente</option>
+                  <option value="apoyo">apoyo docente</option>
+                </select>
+              </label>
               <label class="check-row"><input name="is_active" type="checkbox" checked> Activo</label>
               <button id="speaker-submit" class="button primary" type="submit">Crear ponente</button>
               <button class="button" type="reset">Limpiar</button>
             </form>
             <div class="admin-card">
               <div class="admin-list-head">
-                <h2>Ponentes</h2>
+                <h2>Equipo docente</h2>
                 <label class="check-row"><input id="show-inactive-speakers" type="checkbox"> Ver inactivos</label>
               </div>
               <div id="speakers-list" class="admin-list"></div>

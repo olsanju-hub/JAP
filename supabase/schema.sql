@@ -62,6 +62,7 @@ create table if not exists public.ponentes (
   bio text,
   foto_url text,
   email_publico text,
+  rol_persona text not null default 'ponente' check (rol_persona in ('organizador', 'ponente', 'apoyo')),
   is_active boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -348,7 +349,8 @@ with check (public.is_admin_or_editor());
 grant usage on schema public to anon, authenticated;
 grant select on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.sesion_ponentes, public.recursos, public.site_settings to anon, authenticated;
 grant select on public.profiles to authenticated;
-grant insert, update on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.sesion_ponentes, public.recursos, public.site_settings to authenticated;
+grant insert, update on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.recursos, public.site_settings to authenticated;
+grant insert, update, delete on public.sesion_ponentes to authenticated;
 grant insert, update, delete on public.profiles to authenticated;
 grant execute on function public.is_admin() to authenticated;
 grant execute on function public.is_admin_or_editor() to authenticated;

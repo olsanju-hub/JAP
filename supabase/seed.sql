@@ -33,15 +33,18 @@ on conflict (id) do update set
   direccion = excluded.direccion,
   notas = excluded.notas;
 
-insert into public.ponentes (id, nombre, especialidad, centro, bio, is_active) values
-  ('30000000-0000-4000-8000-000000000001', 'Julio Fernando Ospino Arias', 'Residente de 4.º año de Medicina Familiar y Comunitaria', null, 'Pendiente de confirmar', true),
-  ('30000000-0000-4000-8000-000000000002', 'Guillermo José Olivero Sanjuanelo', 'Residente de 4.º año de Medicina Familiar y Comunitaria', null, 'Pendiente de confirmar', true),
-  ('30000000-0000-4000-8000-000000000003', 'Kelly Esther Escorcia Reyes', 'Residente de 4.º año de Medicina Familiar y Comunitaria', null, 'Pendiente de confirmar', true)
+insert into public.ponentes (id, nombre, especialidad, centro, bio, rol_persona, is_active) values
+  ('30000000-0000-4000-8000-000000000001', 'Julio Fernando Ospino Arias', 'Residente de 4.º año de Medicina Familiar y Comunitaria', null, 'Organizador / coordinación R4', 'organizador', true),
+  ('30000000-0000-4000-8000-000000000002', 'Guillermo José Olivero Sanjuanelo', 'Residente de 4.º año de Medicina Familiar y Comunitaria', null, 'Organizador / coordinación R4', 'organizador', true),
+  ('30000000-0000-4000-8000-000000000003', 'Kelly Esther Escorcia Reyes', 'Residente de 4.º año de Medicina Familiar y Comunitaria', null, 'Organizadora / coordinación R4', 'organizador', true),
+  ('30000000-0000-4000-8000-000000000004', 'Valenska Vania Arellano Flores', 'Residente de 4.º año de Medicina Familiar y Comunitaria', null, 'Organizadora / coordinación R4', 'organizador', true),
+  ('30000000-0000-4000-8000-000000000005', 'Jorvi José Aguilar Valero', 'Residente de 4.º año de Medicina Familiar y Comunitaria', null, 'Organizador / coordinación R4', 'organizador', true)
 on conflict (id) do update set
   nombre = excluded.nombre,
   especialidad = excluded.especialidad,
   centro = excluded.centro,
   bio = excluded.bio,
+  rol_persona = excluded.rol_persona,
   is_active = excluded.is_active;
 
 insert into public.sesiones (
