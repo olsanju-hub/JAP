@@ -48,7 +48,7 @@ create table if not exists public.sesiones (
   modalidad text,
   teams_url text,
   imagen_url text,
-  estado text not null default 'borrador' check (estado in ('borrador', 'publicada', 'realizada')),
+  estado text not null default 'borrador' check (estado in ('borrador', 'publicada', 'realizada', 'archivada')),
   is_active boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -256,15 +256,30 @@ create policy "sesiones_public_select"
 on public.sesiones
 for select
 to anon, authenticated
-using (estado = 'publicada' and is_active = true);
+using (estado in ('publicada', 'realizada') and is_active = true);
 
 drop policy if exists "sesiones_admin_editor_manage" on public.sesiones;
-create policy "sesiones_admin_editor_manage"
+drop policy if exists "sesiones_admin_editor_insert" on public.sesiones;
+create policy "sesiones_admin_editor_insert"
 on public.sesiones
-for all
+for insert
+to authenticated
+with check (public.is_admin_or_editor());
+
+drop policy if exists "sesiones_admin_editor_update" on public.sesiones;
+create policy "sesiones_admin_editor_update"
+on public.sesiones
+for update
 to authenticated
 using (public.is_admin_or_editor())
 with check (public.is_admin_or_editor());
+
+drop policy if exists "sesiones_admin_delete" on public.sesiones;
+create policy "sesiones_admin_delete"
+on public.sesiones
+for delete
+to authenticated
+using (public.is_admin());
 
 drop policy if exists "ponentes_public_select" on public.ponentes;
 create policy "ponentes_public_select"
@@ -291,7 +306,7 @@ using (
     select 1
     from public.sesiones
     where sesiones.id = sesion_ponentes.sesion_id
-      and sesiones.estado = 'publicada'
+      and sesiones.estado in ('publicada', 'realizada')
       and sesiones.is_active = true
   )
 );
@@ -317,7 +332,7 @@ using (
       select 1
       from public.sesiones
       where sesiones.id = recursos.sesion_id
-        and sesiones.estado = 'publicada'
+        and sesiones.estado in ('publicada', 'realizada')
         and sesiones.is_active = true
     )
   )
@@ -350,6 +365,7 @@ grant usage on schema public to anon, authenticated;
 grant select on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.sesion_ponentes, public.recursos, public.site_settings to anon, authenticated;
 grant select on public.profiles to authenticated;
 grant insert, update on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.recursos, public.site_settings to authenticated;
+grant delete on public.sesiones to authenticated;
 grant insert, update, delete on public.sesion_ponentes to authenticated;
 grant insert, update, delete on public.profiles to authenticated;
 grant execute on function public.is_admin() to authenticated;

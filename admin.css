@@ -211,6 +211,11 @@
   background: #fff5f5;
 }
 
+.button.secondary-danger {
+  color: #7a1e1e;
+  background: transparent;
+}
+
 @media (min-width: 960px) {
   .admin-grid {
     grid-template-columns: minmax(360px, 0.9fr) minmax(0, 1.1fr);

@@ -462,11 +462,22 @@ h1 {
   background: var(--mustard-soft);
 }
 
+.tag.done {
+  color: #24513b;
+  background: #dff3e8;
+}
+
 .session-grid,
+.session-group,
+.session-group-grid,
 .speaker-group-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
+}
+
+.session-grid {
+  gap: 1.5rem;
 }
 
 .speaker-grid {
@@ -474,11 +485,13 @@ h1 {
   gap: 1.5rem;
 }
 
+.session-group,
 .speaker-group {
   display: grid;
   gap: 0.8rem;
 }
 
+.session-group > h3,
 .speaker-group > h3 {
   margin: 0;
   color: var(--primary-dark);
@@ -848,7 +861,7 @@ h1 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .session-grid,
+  .session-group-grid,
   .speaker-group-grid,
   .session-speaker-detail {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -928,7 +941,7 @@ h1 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .session-grid {
+  .session-group-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 

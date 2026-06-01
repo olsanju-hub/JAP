@@ -33,6 +33,29 @@ const shortText = (value, max = 130) => {
 };
 
 const pending = (value) => value || "Pendiente de confirmar";
+const PUBLIC_SESSION_STATES = ["publicada", "realizada"];
+
+function sessionStateLabel(stateValue) {
+  const labels = {
+    borrador: "Borrador",
+    publicada: "Publicada",
+    realizada: "Realizada",
+    archivada: "Archivada"
+  };
+  return labels[stateValue] || "Pendiente de confirmar";
+}
+
+function isVisibleSession(session) {
+  return session.is_active !== false && PUBLIC_SESSION_STATES.includes(session.estado);
+}
+
+function compareSessions(a, b) {
+  const aHasDate = a.fecha && !isPending(a.fecha);
+  const bHasDate = b.fecha && !isPending(b.fecha);
+  if (aHasDate && bHasDate && a.fecha !== b.fecha) return a.fecha.localeCompare(b.fecha);
+  if (aHasDate !== bHasDate) return aHasDate ? -1 : 1;
+  return (Number(a.orden || a.id) || 0) - (Number(b.orden || b.id) || 0);
+}
 
 function formatDate(value) {
   return value || "Pendiente de confirmar";
@@ -144,7 +167,9 @@ function renderProgram(programa) {
 }
 
 function renderAgenda(sesiones) {
-  $("#agenda-list").innerHTML = sesiones
+  const agendaSessions = sesiones.filter((session) => session.estado === "publicada").sort(compareSessions);
+  $("#agenda-list").innerHTML = agendaSessions.length
+    ? agendaSessions
     .map(
       (session) => `
         <article class="timeline-item">
@@ -158,7 +183,8 @@ function renderAgenda(sesiones) {
         </article>
       `
     )
-    .join("");
+    .join("")
+    : '<p class="empty-note">No hay sesiones publicadas en agenda.</p>';
 }
 
 function getAgendaMeta(session) {
@@ -175,26 +201,48 @@ function getAgendaMeta(session) {
 }
 
 function renderSessions(sesiones) {
-  $("#session-grid").innerHTML = sesiones
+  const groups = [
+    { title: "Próximas / publicadas", items: sesiones.filter((session) => session.estado === "publicada").sort(compareSessions) },
+    { title: "Realizadas", items: sesiones.filter((session) => session.estado === "realizada").sort(compareSessions) }
+  ];
+
+  $("#session-grid").innerHTML = groups
+    .filter((group) => group.items.length)
     .map(
-      (session) => `
-        <article class="session-card">
-          <div class="session-body">
-            <p class="eyebrow">${escapeHtml(session.bloque)}</p>
-            <h3>${escapeHtml(session.titulo)}</h3>
-            <p>${escapeHtml(shortText(session.objetivo, 115))}</p>
-            <ul class="key-list">
-              ${session.contenidos_clave.slice(0, 3).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-            </ul>
-            <div class="card-actions">
-              <button class="button primary" type="button" data-session="${escapeHtml(session.slug)}">Ver detalle</button>
-              ${session.imagen ? `<button class="button" type="button" data-session-poster="${escapeHtml(session.slug)}">Ver cartel</button>` : ""}
-            </div>
+      (group) => `
+        <section class="session-group">
+          <h3>${escapeHtml(group.title)}</h3>
+          <div class="session-group-grid">
+            ${group.items.map(renderSessionCard).join("")}
           </div>
-        </article>
+        </section>
       `
     )
     .join("");
+
+  if (!$("#session-grid").innerHTML) {
+    $("#session-grid").innerHTML = '<p class="empty-note">No hay sesiones publicadas o realizadas.</p>';
+  }
+}
+
+function renderSessionCard(session) {
+  return `
+    <article class="session-card">
+      <div class="session-body">
+        <p class="eyebrow">${escapeHtml(session.bloque)}</p>
+        <h3>${escapeHtml(session.titulo)}</h3>
+        <span class="tag ${session.estado === "realizada" ? "done" : ""}">${escapeHtml(sessionStateLabel(session.estado))}</span>
+        <p>${escapeHtml(shortText(session.objetivo, 115))}</p>
+        <ul class="key-list">
+          ${session.contenidos_clave.slice(0, 3).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+        </ul>
+        <div class="card-actions">
+          <button class="button primary" type="button" data-session="${escapeHtml(session.slug)}">Ver detalle</button>
+          ${session.imagen ? `<button class="button" type="button" data-session-poster="${escapeHtml(session.slug)}">Ver cartel</button>` : ""}
+        </div>
+      </div>
+    </article>
+  `;
 }
 
 function renderSpeakers(ponentes) {
@@ -352,7 +400,7 @@ function showSession(slug) {
         <div class="detail-box"><strong>Fecha</strong>${escapeHtml(session.fecha)}</div>
         <div class="detail-box"><strong>Horario</strong>${escapeHtml(session.hora_inicio)} - ${escapeHtml(session.hora_fin)}</div>
         <div class="detail-box"><strong>Sede</strong>${escapeHtml(session.sede)}</div>
-        <div class="detail-box"><strong>Estado</strong>${escapeHtml(session.estado)}</div>
+        <div class="detail-box"><strong>Estado</strong><span class="tag ${session.estado === "realizada" ? "done" : ""}">${escapeHtml(sessionStateLabel(session.estado))}</span></div>
       </div>
       ${renderSessionSpeakers(session.ponentes_detalle)}
       <h3>Recursos asociados</h3>
@@ -478,6 +526,7 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
 
     return {
       id: session.orden || index + 1,
+      orden: session.orden || index + 1,
       uuid: session.id,
       slug: session.slug,
       titulo: session.titulo,
@@ -493,7 +542,8 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
       ponentes_detalle: sessionSpeakers,
       imagen: session.imagen_url || "",
       recursos: sessionResources.map((resource) => resource.titulo),
-      estado: session.estado || "publicada"
+      estado: session.estado || "publicada",
+      is_active: session.is_active
     };
   });
   const sessionSpeakerIds = new Set();
@@ -522,7 +572,7 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
     },
     metodologia: [],
     objetivos: [],
-    sesiones: mappedSessions,
+    sesiones: mappedSessions.filter(isVisibleSession).sort(compareSessions),
     siteContent,
     ponentes: ponentes.map((speaker) => ({
       id: speaker.id,
@@ -582,8 +632,9 @@ async function loadSupabaseData(fallbackSiteContent) {
     supabase
       .from("sesiones")
       .select("*, sedes(nombre), sesion_ponentes(rol, orden, ponentes(*))")
-      .eq("estado", "publicada")
+      .in("estado", PUBLIC_SESSION_STATES)
       .eq("is_active", true)
+      .order("fecha", { ascending: true, nullsFirst: false })
       .order("orden", { ascending: true }),
     supabase.from("ponentes").select("*").eq("is_active", true).order("nombre", { ascending: true }),
     supabase.from("recursos").select("*").eq("visible", true).order("orden", { ascending: true }),
@@ -628,7 +679,7 @@ async function loadData() {
   }
 
   state.dataSource = "json";
-  const jsonData = { ...fallbackData, siteContent: fallbackSiteContent };
+  const jsonData = { ...fallbackData, siteContent: fallbackSiteContent, sesiones: (fallbackData.sesiones || []).filter(isVisibleSession).sort(compareSessions) };
   console.info("Datos cargados desde JSON local por fallback");
   console.info("Textos cargados desde fallback local");
   return jsonData;

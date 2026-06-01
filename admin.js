@@ -6,6 +6,7 @@ const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 const DEFAULT_MODALITY = "Preferentemente presencial, con opción online por Teams";
 const DEFAULT_TEAMS = "Enlace Teams pendiente de confirmar";
 const DELETE_MESSAGE = "¿Seguro que quieres borrar este elemento? No se eliminará definitivamente, pero dejará de mostrarse públicamente.";
+const PERMANENT_DELETE_WORD = "ELIMINAR";
 const PERSON_ROLE_LABELS = {
   organizador: "organizador/coordinador",
   ponente: "ponente",
@@ -79,6 +80,10 @@ function message(text) {
 
 function canEdit() {
   return ["admin", "editor"].includes(state.profile?.role);
+}
+
+function canAdmin() {
+  return state.profile?.role === "admin";
 }
 
 function formData(form) {
@@ -347,11 +352,13 @@ function renderLists() {
             <p>${escapeHtml(session.bloque || "")} · ${escapeHtml(session.estado)} · ${session.is_active ? "activa" : "inactiva"} · ${escapeHtml(session.sedes?.nombre || "sede pendiente")}</p>
             <div class="admin-actions">
               <button class="button" type="button" data-edit-session="${escapeHtml(session.id)}">Editar</button>
+              ${session.estado !== "archivada" ? `<button class="button" type="button" data-archive-session="${escapeHtml(session.id)}">Archivar</button>` : ""}
               ${
                 session.is_active
-                  ? `<button class="button danger" type="button" data-delete-session="${escapeHtml(session.id)}">Borrar</button>`
+                  ? `<button class="button danger" type="button" data-delete-session="${escapeHtml(session.id)}">Desactivar</button>`
                   : `<button class="button" type="button" data-restore-session="${escapeHtml(session.id)}">Restaurar</button>`
               }
+              ${canAdmin() ? `<button class="button danger secondary-danger" type="button" data-permanent-delete-session="${escapeHtml(session.id)}">Eliminar definitivamente</button>` : ""}
             </div>
           </article>
         `)
@@ -615,6 +622,13 @@ async function exportBackup() {
   message("Copia de seguridad exportada.");
 }
 
+async function archiveSession(id) {
+  const { error } = await state.supabase.from("sesiones").update({ estado: "archivada" }).eq("id", id);
+  if (error) throw error;
+  await loadAdminData();
+  message("Sesión archivada. Ya no aparecerá públicamente.");
+}
+
 async function softDelete(table, id, payload, label) {
   if (!confirm(DELETE_MESSAGE)) return;
   const { error } = await state.supabase.from(table).update(payload).eq("id", id);
@@ -628,6 +642,35 @@ async function restore(table, id, payload, label) {
   if (error) throw error;
   await loadAdminData();
   message(`${label} restaurado.`);
+}
+
+async function permanentlyDeleteSession(id) {
+  if (!canAdmin()) {
+    message("Solo un usuario admin puede eliminar definitivamente una sesión.");
+    return;
+  }
+
+  const session = state.sesiones.find((item) => item.id === id);
+  if (!session) return;
+
+  const speakerRelations = state.sesionPonentes.filter((relation) => relation.sesion_id === id).length;
+  const linkedResources = state.recursos.filter((resource) => resource.sesion_id === id).length;
+  if (speakerRelations || linkedResources) {
+    message(`No se puede eliminar definitivamente: tiene ${speakerRelations} relación(es) con ponentes y ${linkedResources} recurso(s) asociado(s). Quita esas asociaciones primero.`);
+    return;
+  }
+
+  const warning = `Vas a eliminar definitivamente "${session.titulo}". Esta acción no se puede deshacer salvo restaurando una copia de seguridad. Exporta un backup antes de continuar. Escribe ${PERMANENT_DELETE_WORD} para confirmar.`;
+  const confirmation = prompt(warning);
+  if (confirmation !== PERMANENT_DELETE_WORD) {
+    message("Eliminación definitiva cancelada.");
+    return;
+  }
+
+  const { error } = await state.supabase.from("sesiones").delete().eq("id", id);
+  if (error) throw error;
+  await loadAdminData();
+  message("Sesión eliminada definitivamente.");
 }
 
 async function refreshSession() {
@@ -704,6 +747,8 @@ function bindEvents() {
     const speakerId = event.target.closest("[data-edit-speaker]")?.dataset.editSpeaker;
     const resourceId = event.target.closest("[data-edit-resource]")?.dataset.editResource;
     const deleteSessionId = event.target.closest("[data-delete-session]")?.dataset.deleteSession;
+    const archiveSessionId = event.target.closest("[data-archive-session]")?.dataset.archiveSession;
+    const permanentDeleteSessionId = event.target.closest("[data-permanent-delete-session]")?.dataset.permanentDeleteSession;
     const deleteSpeakerId = event.target.closest("[data-delete-speaker]")?.dataset.deleteSpeaker;
     const deleteResourceId = event.target.closest("[data-delete-resource]")?.dataset.deleteResource;
     const restoreSessionId = event.target.closest("[data-restore-session]")?.dataset.restoreSession;
@@ -713,10 +758,12 @@ function bindEvents() {
     if (sessionId) editSession(sessionId);
     if (speakerId) editSpeaker(speakerId);
     if (resourceId) editResource(resourceId);
-    if (deleteSessionId) softDelete("sesiones", deleteSessionId, { is_active: false, estado: "borrador" }, "Sesión").catch((error) => message(error.message));
+    if (archiveSessionId) archiveSession(archiveSessionId).catch((error) => message(error.message));
+    if (deleteSessionId) softDelete("sesiones", deleteSessionId, { is_active: false }, "Sesión").catch((error) => message(error.message));
+    if (permanentDeleteSessionId) permanentlyDeleteSession(permanentDeleteSessionId).catch((error) => message(error.message));
     if (deleteSpeakerId) softDelete("ponentes", deleteSpeakerId, { is_active: false }, "Persona").catch((error) => message(error.message));
     if (deleteResourceId) softDelete("recursos", deleteResourceId, { visible: false }, "Recurso").catch((error) => message(error.message));
-    if (restoreSessionId) restore("sesiones", restoreSessionId, { is_active: true, estado: "publicada" }, "Sesión").catch((error) => message(error.message));
+    if (restoreSessionId) restore("sesiones", restoreSessionId, { is_active: true }, "Sesión").catch((error) => message(error.message));
     if (restoreSpeakerId) restore("ponentes", restoreSpeakerId, { is_active: true }, "Persona").catch((error) => message(error.message));
     if (restoreResourceId) restore("recursos", restoreResourceId, { visible: true }, "Recurso").catch((error) => message(error.message));
   });

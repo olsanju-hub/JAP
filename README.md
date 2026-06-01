@@ -148,6 +148,7 @@ supabase/migrations/
 20260601090000_site_content.sql
 20260601100000_security_backup.sql
 20260601110000_session_speakers.sql
+20260601120000_session_editorial_states.sql
 ```
 
 Para una instalación manual desde SQL Editor:
@@ -244,6 +245,8 @@ Si la CLI exige nombres completos por existir varias migraciones con la misma fe
 - `20260601100000_security_backup.sql`
 - `20260601110000_session_speakers.sql`
 
+No marques como aplicada una migración nueva que todavía no se ha ejecutado, por ejemplo `20260601120000_session_editorial_states.sql`.
+
 Después vuelve a comprobar:
 
 ```bash
@@ -317,7 +320,7 @@ Funciones disponibles:
 - Asociación de uno o varios ponentes a cada sesión desde el bloque `Ponentes de la sesión`.
 - Slug autogenerado desde el título si se deja vacío.
 - Nueva sesión con `estado = 'publicada'`, `is_active = true`, jornada principal, modalidad Teams y siguiente orden disponible.
-- Cambio de estado: `borrador`, `publicada`, `realizada`.
+- Cambio de estado: `borrador`, `publicada`, `realizada`, `archivada`.
 - Activar/desactivar sesiones y personas.
 - Listado, creación y edición de personas con botón `Nuevo ponente`.
 - Tipo de participación de cada persona: `organizador`, `ponente` o `apoyo`.
@@ -325,17 +328,34 @@ Funciones disponibles:
 - Asociación de recursos a sesiones.
 - Ocultar recursos con `visible = false`.
 - Borrado lógico y restauración de sesiones, ponentes y recursos.
+- Archivado de sesiones con `estado = 'archivada'`.
+- Eliminación definitiva de sesiones solo para `admin`, con confirmación escribiendo `ELIMINAR` y bloqueo si la sesión tiene ponentes o recursos asociados.
 - Exportación de copia de seguridad JSON para usuarios `admin` y `editor`.
 
-No hay borrado físico de sesiones, personas ni recursos desde el panel. Para retirar contenido, el panel usa `is_active = false`, `estado = 'borrador'` o `visible = false`.
+La acción principal para retirar contenido es ocultar/desactivar, no eliminar definitivamente. Para retirar contenido, el panel usa `is_active = false`, `estado = 'archivada'` o `visible = false`.
 
 En `sesion_ponentes` sí se usa `DELETE` físico para quitar una relación entre una sesión y una persona. No elimina la sesión ni la persona; solo elimina la asociación.
 
 Para que un elemento aparezca en la app pública desde Supabase:
 
-- Sesión: `estado = 'publicada'` e `is_active = true`.
+- Sesión activa: `estado = 'publicada'` e `is_active = true`.
+- Sesión realizada/histórico: `estado = 'realizada'` e `is_active = true`.
+- Sesión oculta: `estado = 'borrador'`, `estado = 'archivada'` o `is_active = false`.
 - Persona/equipo: `is_active = true`.
 - Recurso: `visible = true`, con URL válida y sin apuntar a `propuesta-jornadas-docentes-ap.pdf`.
+
+### Estados editoriales de sesiones
+
+Estados permitidos:
+
+- `borrador`: no aparece públicamente.
+- `publicada`: aparece en Agenda y Sesiones.
+- `realizada`: aparece en Sesiones como histórico con etiqueta `Realizada`.
+- `archivada`: no aparece públicamente.
+
+`is_active` se mantiene como borrado lógico general. Si `is_active = false`, la sesión no aparece aunque esté `publicada` o `realizada`.
+
+Antes de ejecutar una eliminación definitiva de una sesión real, exporta una copia de seguridad. La eliminación definitiva no se puede deshacer salvo restaurando backup.
 
 ### Equipo docente y ponentes por sesión
 
@@ -380,7 +400,7 @@ Incluye:
 - `sedes`
 - `site_settings`
 
-No incluye usuarios de Auth, contraseñas, tokens, claves, `service_role` ni datos secretos. Haz una copia antes de cambios grandes en el programa, textos o recursos.
+No incluye usuarios de Auth, contraseñas, tokens, claves, `service_role` ni datos secretos. Sí incluye `estado` e `is_active` dentro de `sesiones`. Haz una copia antes de cambios grandes en el programa, textos o recursos.
 
 Validar el JSON descargado:
 
@@ -426,7 +446,7 @@ GitHub Pages redepliega automáticamente desde `main`.
 - `admin` y `editor` pueden exportar copia de seguridad desde el panel.
 - `config.js` no se precachea en el service worker.
 
-Para reforzar un proyecto Supabase ya creado, ejecuta `supabase/migration-security-backup.sql` despues de `supabase/migration-site-content.sql`. Para activar roles de personas y ponentes por sesión, ejecuta después `supabase/migration-session-speakers.sql`.
+Para reforzar un proyecto Supabase ya creado, ejecuta `supabase/migration-security-backup.sql` despues de `supabase/migration-site-content.sql`. Para activar roles de personas y ponentes por sesión, ejecuta después `supabase/migration-session-speakers.sql`. Para estados editoriales versionados, usa la migración CLI `supabase/migrations/20260601120000_session_editorial_states.sql`.
 
 Comprobación rápida de roles:
 
@@ -444,4 +464,4 @@ Si no ves cambios tras editar archivos cacheados:
 3. Limpia Storage si es necesario.
 4. Recarga con hard reload.
 
-El cache actual se identifica como `jap-static-v15`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.
+El cache actual se identifica como `jap-static-v16`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.

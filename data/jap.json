@@ -56,7 +56,7 @@
       ],
       "imagen": "assets/img/sesion-hta.png",
       "recursos": [],
-      "estado": "Pendiente de confirmar"
+      "estado": "publicada"
     },
     {
       "id": 2,
@@ -81,7 +81,7 @@
       ],
       "imagen": "assets/img/sesion-diabetes.png",
       "recursos": [],
-      "estado": "Pendiente de confirmar"
+      "estado": "publicada"
     },
     {
       "id": 3,
@@ -106,7 +106,7 @@
       ],
       "imagen": "assets/img/sesion-dislipemia.png",
       "recursos": [],
-      "estado": "Pendiente de confirmar"
+      "estado": "publicada"
     },
     {
       "id": 4,
@@ -131,7 +131,7 @@
       ],
       "imagen": "assets/img/sesion-obesidad.png",
       "recursos": [],
-      "estado": "Pendiente de confirmar"
+      "estado": "publicada"
     },
     {
       "id": 5,
@@ -156,7 +156,7 @@
       ],
       "imagen": "assets/img/sesion-epoc-asma.png",
       "recursos": [],
-      "estado": "Pendiente de confirmar"
+      "estado": "publicada"
     },
     {
       "id": 6,
@@ -181,7 +181,7 @@
       ],
       "imagen": "assets/img/sesion-salud-mental.png",
       "recursos": [],
-      "estado": "Pendiente de confirmar"
+      "estado": "publicada"
     },
     {
       "id": 7,
@@ -206,7 +206,7 @@
       ],
       "imagen": "assets/img/sesion-dolor-osteomuscular.png",
       "recursos": [],
-      "estado": "Pendiente de confirmar"
+      "estado": "publicada"
     },
     {
       "id": 8,
@@ -231,7 +231,7 @@
       ],
       "imagen": "assets/img/sesion-dermatologia.png",
       "recursos": [],
-      "estado": "Pendiente de confirmar"
+      "estado": "publicada"
     },
     {
       "id": 9,
@@ -256,7 +256,7 @@
       ],
       "imagen": "assets/img/sesion-patologia-digestiva.png",
       "recursos": [],
-      "estado": "Pendiente de confirmar"
+      "estado": "publicada"
     },
     {
       "id": 10,
@@ -281,7 +281,7 @@
       ],
       "imagen": "assets/img/sesion-fragilidad.png",
       "recursos": [],
-      "estado": "Pendiente de confirmar"
+      "estado": "publicada"
     }
   ],
   "ponentes": [
