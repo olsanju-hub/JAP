@@ -90,6 +90,18 @@ function emptyToNull(value) {
   return value === "" ? null : value;
 }
 
+function downloadJson(filename, data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 function timeValue(value) {
   return value ? String(value).slice(0, 5) : "";
 }
@@ -475,6 +487,53 @@ async function saveSiteSettings(event) {
   message("Textos de la app guardados.");
 }
 
+async function exportBackup() {
+  if (!canEdit()) {
+    message("No tienes permisos para exportar la copia de seguridad.");
+    return;
+  }
+
+  const [
+    { data: jornadas, error: journeyError },
+    { data: sesiones, error: sessionError },
+    { data: ponentes, error: speakerError },
+    { data: sesionPonentes, error: sessionSpeakerError },
+    { data: recursos, error: resourceError },
+    { data: sedes, error: venueError },
+    { data: siteSettings, error: siteSettingsError }
+  ] = await Promise.all([
+    state.supabase.from("jornadas").select("*").order("created_at", { ascending: true }),
+    state.supabase.from("sesiones").select("*").order("orden", { ascending: true }),
+    state.supabase.from("ponentes").select("*").order("nombre", { ascending: true }),
+    state.supabase.from("sesion_ponentes").select("*").order("orden", { ascending: true }),
+    state.supabase.from("recursos").select("*").order("orden", { ascending: true }),
+    state.supabase.from("sedes").select("*").order("nombre", { ascending: true }),
+    state.supabase.from("site_settings").select("*").order("group_name", { ascending: true }).order("key", { ascending: true })
+  ]);
+
+  const error = journeyError || sessionError || speakerError || sessionSpeakerError || resourceError || venueError || siteSettingsError;
+  if (error) throw error;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const backup = {
+    generated_at: new Date().toISOString(),
+    app: "JAP",
+    version: "2.7",
+    tables: {
+      jornadas: jornadas || [],
+      sesiones: sesiones || [],
+      ponentes: ponentes || [],
+      sesion_ponentes: sesionPonentes || [],
+      recursos: recursos || [],
+      sedes: sedes || [],
+      site_settings: siteSettings || []
+    }
+  };
+
+  downloadJson(`jap-backup-${today}.json`, backup);
+  message("Copia de seguridad exportada.");
+}
+
 async function softDelete(table, id, payload, label) {
   if (!confirm(DELETE_MESSAGE)) return;
   const { error } = await state.supabase.from(table).update(payload).eq("id", id);
@@ -557,6 +616,7 @@ function bindEvents() {
   $("#speaker-form").addEventListener("submit", (event) => saveSpeaker(event).catch((error) => message(error.message)));
   $("#resource-form").addEventListener("submit", (event) => saveResource(event).catch((error) => message(error.message)));
   $("#site-content-form").addEventListener("submit", (event) => saveSiteSettings(event).catch((error) => message(error.message)));
+  $("#backup-export-button").addEventListener("click", () => exportBackup().catch((error) => message(error.message)));
 
   document.addEventListener("click", (event) => {
     const sessionId = event.target.closest("[data-edit-session]")?.dataset.editSession;

@@ -32,6 +32,8 @@ sw.js
 data/jap.json
 supabase/schema.sql
 supabase/seed.sql
+supabase/migration-site-content.sql
+supabase/migration-security-backup.sql
 assets/img/
 assets/docs/
 assets/icons/
@@ -84,6 +86,7 @@ La app intenta cargar Supabase si existe `config.js` con credenciales válidas. 
 - `recursos`
 - `sedes`
 - `contacto`
+- `siteContent`
 
 Los campos no confirmados deben mantenerse como `Pendiente de confirmar`. No añadas fechas, sedes, ponentes, biografías ni datos clínicos que no estén confirmados.
 
@@ -136,8 +139,10 @@ El modal se cierra con el botón Cerrar, tecla Escape o clic exterior.
 1. Crea un proyecto en Supabase.
 2. Ejecuta `supabase/schema.sql` en el SQL Editor.
 3. Ejecuta `supabase/seed.sql` para cargar el contenido inicial.
-4. Crea un usuario en Authentication.
-5. Asigna permisos al usuario desde SQL:
+4. Ejecuta `supabase/migration-site-content.sql` si el proyecto ya existía antes de la edición de textos globales.
+5. Ejecuta `supabase/migration-security-backup.sql` para reforzar permisos de lectura/escritura y retirar borrado físico en tablas de contenido.
+6. Crea un usuario en Authentication.
+7. Asigna permisos al usuario desde SQL:
 
 ```sql
 update public.profiles
@@ -147,13 +152,14 @@ where email = 'tu-email@dominio.com';
 
 Roles disponibles:
 
-- `admin`: puede gestionar datos y roles.
-- `editor`: puede crear y editar sesiones, ponentes y recursos.
-- `lector`: acceso sin permisos de edición.
+- `admin`: puede gestionar contenido, textos globales, copias de seguridad y roles.
+- `editor`: puede crear, editar, borrar lógico, restaurar y exportar copias de seguridad de contenido.
+- `lector`: usuario autenticado sin permisos de creación, edición, borrado, restauración ni backup.
+- Anónimo: lectura pública solo de datos publicados/visibles; sin permisos de escritura.
 
 ## Configuración local de Supabase
 
-`config.js` existe con valores vacíos para que la app no genere errores cuando Supabase no está configurado. Para activar Supabase, rellénalo a partir de `config.example.js`:
+Para activar Supabase, crea o rellena `config.js` a partir de `config.example.js`:
 
 ```js
 window.JAP_SUPABASE_CONFIG = {
@@ -185,6 +191,7 @@ Funciones disponibles:
 - Asociación de recursos a sesiones.
 - Ocultar recursos con `visible = false`.
 - Borrado lógico y restauración de sesiones, ponentes y recursos.
+- Exportación de copia de seguridad JSON para usuarios `admin` y `editor`.
 
 No hay borrado físico desde el panel. Para retirar contenido, el panel usa `is_active = false`, `estado = 'borrador'` o `visible = false`.
 
@@ -204,6 +211,37 @@ La pestaña `Textos de la app` permite editar textos globales visibles:
 - Footer: texto del pie y etiqueta del enlace Admin.
 
 Para activar esta sección en un proyecto Supabase ya creado, ejecuta `supabase/migration-site-content.sql` en el SQL Editor de Supabase. La app pública leerá `site_settings` cuando exista; si falta una key o Supabase falla, usará `data/jap.json` como fallback.
+
+### Copia de seguridad
+
+La pestaña `Copia de seguridad` permite descargar un archivo `jap-backup-YYYY-MM-DD.json`.
+
+Incluye:
+
+- `jornadas`
+- `sesiones`
+- `ponentes`
+- `sesion_ponentes`
+- `recursos`
+- `sedes`
+- `site_settings`
+
+No incluye usuarios de Auth, contraseñas, tokens, claves, `service_role` ni datos secretos. Haz una copia antes de cambios grandes en el programa, textos o recursos.
+
+Validar el JSON descargado:
+
+```bash
+python3 -m json.tool jap-backup-YYYY-MM-DD.json >/dev/null
+```
+
+Restauración manual:
+
+1. Abre Supabase > Table Editor o SQL Editor.
+2. Revisa el JSON y restaura solo las tablas necesarias.
+3. Mantén este orden si restauras varias tablas: `jornadas`, `sedes`, `ponentes`, `sesiones`, `sesion_ponentes`, `recursos`, `site_settings`.
+4. Comprueba después la app pública y el panel admin.
+
+La importación automática queda pendiente para una fase posterior.
 
 ## Publicación
 
@@ -231,6 +269,17 @@ GitHub Pages redepliega automáticamente desde `main`.
 - No uses `service_role`, secret key ni `sb_secret` en frontend.
 - Anónimo y usuarios `lector` no deben tener permisos de escritura.
 - `admin` y `editor` pueden crear, editar, borrar lógico y restaurar según las políticas RLS.
+- `admin` y `editor` pueden exportar copia de seguridad desde el panel.
+- `config.js` no se precachea en el service worker.
+
+Para reforzar un proyecto Supabase ya creado, ejecuta `supabase/migration-security-backup.sql` despues de `supabase/migration-site-content.sql`.
+
+Comprobación rápida de roles:
+
+- Anónimo: abrir la app pública sin login; debe leer solo sesiones publicadas, ponentes activos, recursos visibles y textos globales.
+- Lector: iniciar sesión con un usuario `profiles.role = 'lector'`; el panel debe mostrar `Sin permisos de edición`.
+- Editor: iniciar sesión con `profiles.role = 'editor'`; debe poder editar contenido y exportar backup, pero no gestionar roles.
+- Admin: iniciar sesión con `profiles.role = 'admin'`; debe poder gestionar todo lo previsto por el panel.
 
 ## Caché PWA
 
@@ -241,4 +290,4 @@ Si no ves cambios tras editar archivos cacheados:
 3. Limpia Storage si es necesario.
 4. Recarga con hard reload.
 
-El cache actual se identifica como `jap-static-v13`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.
+El cache actual se identifica como `jap-static-v14`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.

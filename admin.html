@@ -60,6 +60,7 @@
           <button class="button" type="button" data-admin-tab="ponentes">Ponentes</button>
           <button class="button" type="button" data-admin-tab="recursos">Recursos</button>
           <button class="button" type="button" data-admin-tab="textos">Textos de la app</button>
+          <button class="button" type="button" data-admin-tab="backup">Copia de seguridad</button>
         </nav>
         <p id="admin-message" class="form-message" role="status"></p>
 
@@ -193,6 +194,16 @@
             <p class="form-message">Edita los textos visibles generales de la app pública. Las sesiones, ponentes y recursos se gestionan en sus pestañas.</p>
             <div id="site-content-fields" class="settings-grid"></div>
           </form>
+        </section>
+
+        <section class="admin-panel" data-admin-panel="backup" hidden>
+          <section class="admin-card">
+            <div class="admin-form-head">
+              <h2>Copia de seguridad</h2>
+              <button id="backup-export-button" class="button primary" type="button">Exportar copia de seguridad</button>
+            </div>
+            <p class="form-message">Descarga un JSON con jornadas, sesiones, ponentes, recursos, sedes y textos globales. No incluye usuarios, claves ni tokens.</p>
+          </section>
         </section>
       </section>
     </main>
