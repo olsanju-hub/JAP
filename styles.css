@@ -752,6 +752,22 @@ h1 {
   color: var(--primary-dark);
 }
 
+.detail-section {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.text-block {
+  color: var(--muted);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.text-block a {
+  color: var(--primary-dark);
+  font-weight: 800;
+}
+
 .resource-preview {
   margin: 0;
   background: var(--surface-strong);

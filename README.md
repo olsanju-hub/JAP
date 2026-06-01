@@ -149,6 +149,7 @@ supabase/migrations/
 20260601100000_security_backup.sql
 20260601110000_session_speakers.sql
 20260601120000_session_editorial_states.sql
+20260601130000_session_teaching_fields.sql
 ```
 
 Para una instalación manual desde SQL Editor:
@@ -245,7 +246,7 @@ Si la CLI exige nombres completos por existir varias migraciones con la misma fe
 - `20260601100000_security_backup.sql`
 - `20260601110000_session_speakers.sql`
 
-No marques como aplicada una migración nueva que todavía no se ha ejecutado, por ejemplo `20260601120000_session_editorial_states.sql`.
+No marques como aplicada una migración nueva que todavía no se ha ejecutado, por ejemplo `20260601130000_session_teaching_fields.sql`.
 
 Después vuelve a comprobar:
 
@@ -318,6 +319,7 @@ Funciones disponibles:
 - Login/logout con Supabase Auth.
 - Listado, creación y edición de sesiones con botón `Nueva sesión`.
 - Asociación de uno o varios ponentes a cada sesión desde el bloque `Ponentes de la sesión`.
+- Edición de información docente por sesión: objetivos docentes, metodología, materiales, revisión y bibliografía.
 - Slug autogenerado desde el título si se deja vacío.
 - Nueva sesión con `estado = 'publicada'`, `is_active = true`, jornada principal, modalidad Teams y siguiente orden disponible.
 - Cambio de estado: `borrador`, `publicada`, `realizada`, `archivada`.
@@ -356,6 +358,21 @@ Estados permitidos:
 `is_active` se mantiene como borrado lógico general. Si `is_active = false`, la sesión no aparece aunque esté `publicada` o `realizada`.
 
 Antes de ejecutar una eliminación definitiva de una sesión real, exporta una copia de seguridad. La eliminación definitiva no se puede deshacer salvo restaurando backup.
+
+### Información docente y bibliografía
+
+Cada sesión puede guardar campos docentes estructurados:
+
+- `objetivos_docentes`
+- `metodologia`
+- `bibliografia`
+- `responsable_revision`
+- `fecha_revision`
+- `material_previo`
+- `material_posterior`
+- `observaciones_internas`
+
+La bibliografía se introduce como texto libre en el admin. Puede incluir referencias Vancouver, texto institucional y URLs. En la app pública se muestra solo si tiene contenido, conserva saltos de línea y enlaza URLs. `observaciones_internas` no se muestra públicamente.
 
 ### Equipo docente y ponentes por sesión
 
@@ -400,7 +417,7 @@ Incluye:
 - `sedes`
 - `site_settings`
 
-No incluye usuarios de Auth, contraseñas, tokens, claves, `service_role` ni datos secretos. Sí incluye `estado` e `is_active` dentro de `sesiones`. Haz una copia antes de cambios grandes en el programa, textos o recursos.
+No incluye usuarios de Auth, contraseñas, tokens, claves, `service_role` ni datos secretos. Sí incluye `estado`, `is_active`, bibliografía y campos docentes dentro de `sesiones`. Haz una copia antes de cambios grandes en el programa, textos o recursos.
 
 Validar el JSON descargado:
 
@@ -446,7 +463,7 @@ GitHub Pages redepliega automáticamente desde `main`.
 - `admin` y `editor` pueden exportar copia de seguridad desde el panel.
 - `config.js` no se precachea en el service worker.
 
-Para reforzar un proyecto Supabase ya creado, ejecuta `supabase/migration-security-backup.sql` despues de `supabase/migration-site-content.sql`. Para activar roles de personas y ponentes por sesión, ejecuta después `supabase/migration-session-speakers.sql`. Para estados editoriales versionados, usa la migración CLI `supabase/migrations/20260601120000_session_editorial_states.sql`.
+Para reforzar un proyecto Supabase ya creado, ejecuta `supabase/migration-security-backup.sql` despues de `supabase/migration-site-content.sql`. Para activar roles de personas y ponentes por sesión, ejecuta después `supabase/migration-session-speakers.sql`. Para estados editoriales y campos docentes, usa las migraciones CLI en `supabase/migrations/`.
 
 Comprobación rápida de roles:
 
@@ -464,4 +481,4 @@ Si no ves cambios tras editar archivos cacheados:
 3. Limpia Storage si es necesario.
 4. Recarga con hard reload.
 
-El cache actual se identifica como `jap-static-v16`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.
+El cache actual se identifica como `jap-static-v17`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.

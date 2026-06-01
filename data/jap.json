@@ -56,7 +56,15 @@
       ],
       "imagen": "assets/img/sesion-hta.png",
       "recursos": [],
-      "estado": "publicada"
+      "estado": "publicada",
+      "objetivos_docentes": "",
+      "metodologia": "",
+      "bibliografia": "",
+      "responsable_revision": "",
+      "fecha_revision": "",
+      "material_previo": "",
+      "material_posterior": "",
+      "observaciones_internas": ""
     },
     {
       "id": 2,
@@ -81,7 +89,15 @@
       ],
       "imagen": "assets/img/sesion-diabetes.png",
       "recursos": [],
-      "estado": "publicada"
+      "estado": "publicada",
+      "objetivos_docentes": "",
+      "metodologia": "",
+      "bibliografia": "",
+      "responsable_revision": "",
+      "fecha_revision": "",
+      "material_previo": "",
+      "material_posterior": "",
+      "observaciones_internas": ""
     },
     {
       "id": 3,
@@ -106,7 +122,15 @@
       ],
       "imagen": "assets/img/sesion-dislipemia.png",
       "recursos": [],
-      "estado": "publicada"
+      "estado": "publicada",
+      "objetivos_docentes": "",
+      "metodologia": "",
+      "bibliografia": "",
+      "responsable_revision": "",
+      "fecha_revision": "",
+      "material_previo": "",
+      "material_posterior": "",
+      "observaciones_internas": ""
     },
     {
       "id": 4,
@@ -131,7 +155,15 @@
       ],
       "imagen": "assets/img/sesion-obesidad.png",
       "recursos": [],
-      "estado": "publicada"
+      "estado": "publicada",
+      "objetivos_docentes": "",
+      "metodologia": "",
+      "bibliografia": "",
+      "responsable_revision": "",
+      "fecha_revision": "",
+      "material_previo": "",
+      "material_posterior": "",
+      "observaciones_internas": ""
     },
     {
       "id": 5,
@@ -156,7 +188,15 @@
       ],
       "imagen": "assets/img/sesion-epoc-asma.png",
       "recursos": [],
-      "estado": "publicada"
+      "estado": "publicada",
+      "objetivos_docentes": "",
+      "metodologia": "",
+      "bibliografia": "",
+      "responsable_revision": "",
+      "fecha_revision": "",
+      "material_previo": "",
+      "material_posterior": "",
+      "observaciones_internas": ""
     },
     {
       "id": 6,
@@ -181,7 +221,15 @@
       ],
       "imagen": "assets/img/sesion-salud-mental.png",
       "recursos": [],
-      "estado": "publicada"
+      "estado": "publicada",
+      "objetivos_docentes": "",
+      "metodologia": "",
+      "bibliografia": "",
+      "responsable_revision": "",
+      "fecha_revision": "",
+      "material_previo": "",
+      "material_posterior": "",
+      "observaciones_internas": ""
     },
     {
       "id": 7,
@@ -206,7 +254,15 @@
       ],
       "imagen": "assets/img/sesion-dolor-osteomuscular.png",
       "recursos": [],
-      "estado": "publicada"
+      "estado": "publicada",
+      "objetivos_docentes": "",
+      "metodologia": "",
+      "bibliografia": "",
+      "responsable_revision": "",
+      "fecha_revision": "",
+      "material_previo": "",
+      "material_posterior": "",
+      "observaciones_internas": ""
     },
     {
       "id": 8,
@@ -231,7 +287,15 @@
       ],
       "imagen": "assets/img/sesion-dermatologia.png",
       "recursos": [],
-      "estado": "publicada"
+      "estado": "publicada",
+      "objetivos_docentes": "",
+      "metodologia": "",
+      "bibliografia": "",
+      "responsable_revision": "",
+      "fecha_revision": "",
+      "material_previo": "",
+      "material_posterior": "",
+      "observaciones_internas": ""
     },
     {
       "id": 9,
@@ -256,7 +320,15 @@
       ],
       "imagen": "assets/img/sesion-patologia-digestiva.png",
       "recursos": [],
-      "estado": "publicada"
+      "estado": "publicada",
+      "objetivos_docentes": "",
+      "metodologia": "",
+      "bibliografia": "",
+      "responsable_revision": "",
+      "fecha_revision": "",
+      "material_previo": "",
+      "material_posterior": "",
+      "observaciones_internas": ""
     },
     {
       "id": 10,
@@ -281,7 +353,15 @@
       ],
       "imagen": "assets/img/sesion-fragilidad.png",
       "recursos": [],
-      "estado": "publicada"
+      "estado": "publicada",
+      "objetivos_docentes": "",
+      "metodologia": "",
+      "bibliografia": "",
+      "responsable_revision": "",
+      "fecha_revision": "",
+      "material_previo": "",
+      "material_posterior": "",
+      "observaciones_internas": ""
     }
   ],
   "ponentes": [

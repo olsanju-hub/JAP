@@ -79,6 +79,23 @@
               <label>Orden <input name="orden" type="number" min="1"></label>
               <label>Objetivo <textarea name="objetivo" rows="3"></textarea></label>
               <label>Descripción <textarea name="descripcion" rows="4"></textarea></label>
+              <fieldset class="admin-fieldset">
+                <legend>Información docente</legend>
+                <label>Objetivos docentes <textarea name="objetivos_docentes" rows="4"></textarea></label>
+                <label>Metodología <textarea name="metodologia" rows="4"></textarea></label>
+                <label>Material previo <textarea name="material_previo" rows="3"></textarea></label>
+                <label>Material posterior <textarea name="material_posterior" rows="3"></textarea></label>
+                <div class="form-row">
+                  <label>Responsable de revisión <input name="responsable_revision"></label>
+                  <label>Fecha de revisión <input name="fecha_revision" type="date"></label>
+                </div>
+                <label>Observaciones internas <textarea name="observaciones_internas" rows="3"></textarea></label>
+              </fieldset>
+              <fieldset class="admin-fieldset">
+                <legend>Bibliografía de la sesión</legend>
+                <p class="form-message">Acepta referencias Vancouver, texto libre institucional y URLs. Se puede dejar vacío.</p>
+                <label>Bibliografía <textarea name="bibliografia" rows="7"></textarea></label>
+              </fieldset>
               <label>Contenidos clave, uno por línea <textarea name="contenidos_clave" rows="5"></textarea></label>
               <label>Fecha <input name="fecha" type="date"></label>
               <div class="form-row">

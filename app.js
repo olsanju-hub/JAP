@@ -57,6 +57,42 @@ function compareSessions(a, b) {
   return (Number(a.orden || a.id) || 0) - (Number(b.orden || b.id) || 0);
 }
 
+function hasPublicText(value) {
+  return Boolean(String(value || "").trim()) && !isPending(value);
+}
+
+function linkifyText(value) {
+  const text = String(value || "");
+  const urlPattern = /(https?:\/\/[^\s<>"']+)/g;
+  return text
+    .split(urlPattern)
+    .map((part) => {
+      if (/^https?:\/\//i.test(part)) {
+        const safeUrl = escapeHtml(part);
+        return `<a href="${safeUrl}" rel="noopener noreferrer">${safeUrl}</a>`;
+      }
+      return escapeHtml(part);
+    })
+    .join("");
+}
+
+function renderTextSection(title, value) {
+  if (!hasPublicText(value)) return "";
+  return `
+    <section class="detail-section">
+      <h3>${escapeHtml(title)}</h3>
+      <div class="text-block">${linkifyText(value)}</div>
+    </section>
+  `;
+}
+
+function renderRevisionInfo(session) {
+  const parts = [];
+  if (hasPublicText(session.responsable_revision)) parts.push(`Responsable: ${session.responsable_revision}`);
+  if (hasPublicText(session.fecha_revision)) parts.push(`Fecha: ${session.fecha_revision}`);
+  return parts.length ? renderTextSection("Revisión docente", parts.join("\n")) : "";
+}
+
 function formatDate(value) {
   return value || "Pendiente de confirmar";
 }
@@ -388,6 +424,8 @@ function showSession(slug) {
       <p>${escapeHtml(session.objetivo)}</p>
       <h3>Descripción</h3>
       <p>${escapeHtml(session.descripcion)}</p>
+      ${renderTextSection("Objetivos docentes", session.objetivos_docentes)}
+      ${renderTextSection("Metodología", session.metodologia)}
       <h3>Contenidos clave</h3>
       <ul class="key-list">
         ${session.contenidos_clave.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
@@ -403,6 +441,10 @@ function showSession(slug) {
         <div class="detail-box"><strong>Estado</strong><span class="tag ${session.estado === "realizada" ? "done" : ""}">${escapeHtml(sessionStateLabel(session.estado))}</span></div>
       </div>
       ${renderSessionSpeakers(session.ponentes_detalle)}
+      ${renderTextSection("Material previo", session.material_previo)}
+      ${renderTextSection("Material posterior", session.material_posterior)}
+      ${renderTextSection("Bibliografía", session.bibliografia)}
+      ${renderRevisionInfo(session)}
       <h3>Recursos asociados</h3>
       <p>${session.recursos.length ? session.recursos.map(escapeHtml).join(", ") : "Pendiente de confirmar"}</p>
       <div class="dialog-actions inline-actions">
@@ -533,7 +575,14 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
       bloque: session.bloque || `Sesión ${session.orden || index + 1}`,
       descripcion: session.descripcion || "Pendiente de confirmar",
       objetivo: session.objetivo || "Pendiente de confirmar",
+      objetivos_docentes: session.objetivos_docentes || "",
+      metodologia: session.metodologia || "",
       contenidos_clave: session.contenidos_clave?.length ? session.contenidos_clave : ["Pendiente de confirmar"],
+      bibliografia: session.bibliografia || "",
+      responsable_revision: session.responsable_revision || "",
+      fecha_revision: formatDate(session.fecha_revision),
+      material_previo: session.material_previo || "",
+      material_posterior: session.material_posterior || "",
       fecha: formatDate(session.fecha),
       hora_inicio: formatTime(session.hora_inicio),
       hora_fin: formatTime(session.hora_fin),
