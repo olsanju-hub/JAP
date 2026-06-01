@@ -6,6 +6,41 @@ const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 const DEFAULT_MODALITY = "Preferentemente presencial, con opción online por Teams";
 const DEFAULT_TEAMS = "Enlace Teams pendiente de confirmar";
 const DELETE_MESSAGE = "¿Seguro que quieres borrar este elemento? No se eliminará definitivamente, pero dejará de mostrarse públicamente.";
+const SITE_SETTING_DEFINITIONS = [
+  { key: "home.title", group: "Inicio", label: "Título principal", type: "textarea", description: "Título visible en la portada." },
+  { key: "home.subtitle", group: "Inicio", label: "Subtítulo", type: "textarea", description: "Texto destacado bajo el título principal." },
+  { key: "home.description", group: "Inicio", label: "Descripción", type: "textarea", description: "Descripción breve de las jornadas." },
+  { key: "home.primary_button", group: "Inicio", label: "Botón principal", type: "text", description: "Texto del botón principal de la portada." },
+  { key: "home.secondary_button_sessions", group: "Inicio", label: "Botón sesiones", type: "text", description: "Texto del acceso rápido a sesiones." },
+  { key: "home.secondary_button_speakers", group: "Inicio", label: "Botón ponentes", type: "text", description: "Texto del acceso rápido a ponentes." },
+  { key: "home.secondary_button_resources", group: "Inicio", label: "Botón recursos", type: "text", description: "Texto del acceso rápido a recursos." },
+  { key: "home.metric_sessions_label", group: "Datos clave", label: "Etiqueta sesiones", type: "text", description: "Etiqueta del dato clave de sesiones." },
+  { key: "home.metric_sessions_value", group: "Datos clave", label: "Valor sesiones", type: "text", description: "Valor del dato clave de sesiones." },
+  { key: "home.metric_course_label", group: "Datos clave", label: "Etiqueta curso", type: "text", description: "Etiqueta del dato clave de curso." },
+  { key: "home.metric_course_value", group: "Datos clave", label: "Valor curso", type: "text", description: "Valor del curso." },
+  { key: "home.metric_format_label", group: "Datos clave", label: "Etiqueta formato", type: "text", description: "Etiqueta del formato." },
+  { key: "home.metric_format_value", group: "Datos clave", label: "Valor formato", type: "text", description: "Resumen visible de la modalidad." },
+  { key: "home.metric_duration_label", group: "Datos clave", label: "Etiqueta duración", type: "text", description: "Etiqueta de duración." },
+  { key: "home.metric_duration_value", group: "Datos clave", label: "Valor duración", type: "text", description: "Duración visible en portada." },
+  { key: "agenda.title", group: "Agenda", label: "Título", type: "text", description: "Título de la vista Agenda." },
+  { key: "agenda.description", group: "Agenda", label: "Descripción", type: "textarea", description: "Descripción breve de la agenda." },
+  { key: "sessions.title", group: "Sesiones", label: "Título", type: "text", description: "Título de la vista Sesiones." },
+  { key: "sessions.description", group: "Sesiones", label: "Descripción", type: "textarea", description: "Descripción breve de sesiones." },
+  { key: "speakers.title", group: "Ponentes", label: "Título", type: "text", description: "Título de la vista Ponentes." },
+  { key: "speakers.description", group: "Ponentes", label: "Descripción", type: "textarea", description: "Descripción breve de ponentes." },
+  { key: "resources.title", group: "Recursos", label: "Título", type: "text", description: "Título de la vista Recursos." },
+  { key: "resources.description", group: "Recursos", label: "Descripción", type: "textarea", description: "Descripción breve de recursos." },
+  { key: "contact.title", group: "Contacto", label: "Título", type: "text", description: "Título de la vista Contacto." },
+  { key: "contact.description", group: "Contacto", label: "Descripción", type: "textarea", description: "Descripción breve de contacto." },
+  { key: "contact.coordination_label", group: "Contacto", label: "Etiqueta coordinación", type: "text", description: "Etiqueta del campo coordinación." },
+  { key: "contact.coordination_value", group: "Contacto", label: "Coordinación", type: "textarea", description: "Texto de coordinación." },
+  { key: "contact.email_label", group: "Contacto", label: "Etiqueta email", type: "text", description: "Etiqueta del campo email." },
+  { key: "contact.email_value", group: "Contacto", label: "Email", type: "text", description: "Email de contacto." },
+  { key: "contact.phone_label", group: "Contacto", label: "Etiqueta teléfono", type: "text", description: "Etiqueta del campo teléfono." },
+  { key: "contact.phone_value", group: "Contacto", label: "Teléfono", type: "text", description: "Teléfono de contacto." },
+  { key: "footer.text", group: "Footer", label: "Texto del footer", type: "textarea", description: "Texto visible en el pie de página." },
+  { key: "footer.admin_label", group: "Footer", label: "Etiqueta Admin", type: "text", description: "Texto del enlace al panel administrativo." }
+];
 
 const escapeHtml = (value) =>
   String(value ?? "")
@@ -24,6 +59,7 @@ const state = {
   sesiones: [],
   ponentes: [],
   recursos: [],
+  siteSettings: [],
   modes: {
     session: "create",
     speaker: "create",
@@ -150,6 +186,39 @@ function setSessionOptions() {
     state.sesiones.map((session) => `<option value="${escapeHtml(session.id)}">${escapeHtml(session.orden || "")} ${escapeHtml(session.titulo)}</option>`).join("");
 }
 
+function renderSiteSettings() {
+  const values = new Map(state.siteSettings.map((setting) => [setting.key, setting.value || ""]));
+  const groups = SITE_SETTING_DEFINITIONS.reduce((acc, definition) => {
+    if (!acc.has(definition.group)) acc.set(definition.group, []);
+    acc.get(definition.group).push(definition);
+    return acc;
+  }, new Map());
+
+  $("#site-content-fields").innerHTML = [...groups.entries()]
+    .map(([group, definitions]) => `
+      <section class="settings-group">
+        <h3>${escapeHtml(group)}</h3>
+        ${definitions
+          .map((definition) => {
+            const value = escapeHtml(values.get(definition.key) || "");
+            const control =
+              definition.type === "textarea"
+                ? `<textarea name="${escapeHtml(definition.key)}" rows="3">${value}</textarea>`
+                : `<input name="${escapeHtml(definition.key)}" value="${value}">`;
+            return `
+              <label>
+                ${escapeHtml(definition.label)}
+                ${control}
+                <span class="setting-description">${escapeHtml(definition.description || "")}</span>
+              </label>
+            `;
+          })
+          .join("")}
+      </section>
+    `)
+    .join("");
+}
+
 async function loadProfile() {
   const { data, error } = await state.supabase.from("profiles").select("*").eq("id", state.user.id).maybeSingle();
   if (error) throw error;
@@ -162,27 +231,34 @@ async function loadAdminData() {
     { data: sedes, error: venueError },
     { data: sesiones, error: sessionError },
     { data: ponentes, error: speakerError },
-    { data: recursos, error: resourceError }
+    { data: recursos, error: resourceError },
+    { data: siteSettings, error: siteSettingsError }
   ] = await Promise.all([
     state.supabase.from("jornadas").select("*").order("created_at", { ascending: true }),
     state.supabase.from("sedes").select("*").order("nombre", { ascending: true }),
     state.supabase.from("sesiones").select("*, sedes(nombre)").order("orden", { ascending: true }),
     state.supabase.from("ponentes").select("*").order("nombre", { ascending: true }),
-    state.supabase.from("recursos").select("*, sesiones(titulo)").order("orden", { ascending: true })
+    state.supabase.from("recursos").select("*, sesiones(titulo)").order("orden", { ascending: true }),
+    state.supabase.from("site_settings").select("*").order("group_name", { ascending: true }).order("key", { ascending: true })
   ]);
 
   const error = journeyError || venueError || sessionError || speakerError || resourceError;
   if (error) throw error;
+  if (siteSettingsError) {
+    message("La tabla site_settings no está disponible. Ejecuta supabase/migration-site-content.sql para editar textos globales.");
+  }
 
   state.jornadas = jornadas || [];
   state.sedes = sedes || [];
   state.sesiones = sesiones || [];
   state.ponentes = ponentes || [];
   state.recursos = recursos || [];
+  state.siteSettings = siteSettingsError ? [] : siteSettings || [];
   setJourneyOptions();
   setVenueOptions();
   setSessionOptions();
   renderLists();
+  renderSiteSettings();
   if (state.modes.session === "create") resetSessionForm();
   if (state.modes.speaker === "create") resetSpeakerForm();
   if (state.modes.resource === "create") resetResourceForm();
@@ -380,6 +456,25 @@ async function saveResource(event) {
   resetResourceForm();
 }
 
+async function saveSiteSettings(event) {
+  event.preventDefault();
+  if (!canEdit()) return;
+  const values = formData(event.currentTarget);
+  const payload = SITE_SETTING_DEFINITIONS.map((definition) => ({
+    key: definition.key,
+    value: values[definition.key] ?? "",
+    type: definition.type,
+    group_name: definition.group,
+    label: definition.label,
+    description: definition.description
+  }));
+
+  const { error } = await state.supabase.from("site_settings").upsert(payload, { onConflict: "key" });
+  if (error) throw error;
+  await loadAdminData();
+  message("Textos de la app guardados.");
+}
+
 async function softDelete(table, id, payload, label) {
   if (!confirm(DELETE_MESSAGE)) return;
   const { error } = await state.supabase.from(table).update(payload).eq("id", id);
@@ -461,6 +556,7 @@ function bindEvents() {
   $("#session-form").addEventListener("submit", (event) => saveSession(event).catch((error) => message(error.message)));
   $("#speaker-form").addEventListener("submit", (event) => saveSpeaker(event).catch((error) => message(error.message)));
   $("#resource-form").addEventListener("submit", (event) => saveResource(event).catch((error) => message(error.message)));
+  $("#site-content-form").addEventListener("submit", (event) => saveSiteSettings(event).catch((error) => message(error.message)));
 
   document.addEventListener("click", (event) => {
     const sessionId = event.target.closest("[data-edit-session]")?.dataset.editSession;

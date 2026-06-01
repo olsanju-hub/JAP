@@ -64,10 +64,78 @@ function resourceCategory(resource) {
   return String(resource.categoria || "").toLowerCase();
 }
 
+function flattenSiteContent(content = {}) {
+  const flat = {};
+  function visit(prefix, value) {
+    Object.entries(value || {}).forEach(([key, item]) => {
+      const nextKey = prefix ? `${prefix}.${key}` : key;
+      if (item && typeof item === "object" && !Array.isArray(item)) {
+        visit(nextKey, item);
+      } else {
+        flat[nextKey] = item;
+      }
+    });
+  }
+  visit("", content);
+  return flat;
+}
+
+function settingRowsToContent(rows = [], fallback = {}) {
+  return rows.reduce(
+    (content, row) => {
+      if (row.key && row.value !== null && row.value !== undefined) content[row.key] = row.value;
+      return content;
+    },
+    { ...fallback }
+  );
+}
+
+function siteText(key, fallback = "Pendiente de confirmar") {
+  const value = state.data?.siteContent?.[key];
+  return value === null || value === undefined || value === "" ? fallback : value;
+}
+
+function renderSiteContent() {
+  const setText = (selector, key, fallback) => {
+    const element = $(selector);
+    if (element) element.textContent = siteText(key, fallback);
+  };
+
+  setText("#home-title", "home.title", "Jornadas Docentes de Atención Primaria");
+  setText("#home-subtitle", "home.subtitle", "Programa anual de sesiones clínicas para profesionales de Atención Primaria");
+  setText("#program-description", "home.description", state.data?.programa?.descripcion || "Pendiente de confirmar");
+  setText("#home-primary-button", "home.primary_button", "Ver agenda");
+  setText("#home-sessions-button", "home.secondary_button_sessions", "Sesiones");
+  setText("#home-speakers-button", "home.secondary_button_speakers", "Ponentes");
+  setText("#home-resources-button", "home.secondary_button_resources", "Recursos");
+  setText("#metric-sessions-label", "home.metric_sessions_label", "Sesiones");
+  setText("#metric-sessions-value", "home.metric_sessions_value", "10");
+  setText("#metric-course-label", "home.metric_course_label", "Curso");
+  setText("#metric-course-value", "home.metric_course_value", "2026-2027");
+  setText("#metric-format-label", "home.metric_format_label", "Formato");
+  setText("#program-modality-short", "home.metric_format_value", "Presencial preferente + Teams");
+  setText("#metric-duration-label", "home.metric_duration_label", "Duración");
+  setText("#program-duration-short", "home.metric_duration_value", "45-60 min");
+  setText("#agenda-title", "agenda.title", "Agenda");
+  setText("#agenda-description", "agenda.description", "Vista rápida del programa. Cada sesión abre su detalle completo en una ventana emergente.");
+  setText("#sessions-title", "sessions.title", "Sesiones");
+  setText("#sessions-description", "sessions.description", "Contenido docente organizado por temas clínicos frecuentes en Atención Primaria.");
+  setText("#speakers-title", "speakers.title", "Ponentes");
+  setText("#speakers-description", "speakers.description", "Equipo docente y coordinación según la información disponible en los materiales.");
+  setText("#resources-title", "resources.title", "Recursos");
+  setText("#resources-description", "resources.description", "Material organizado por categorías compactas. Cada recurso se abre dentro de la app.");
+  setText("#contact-title", "contact.title", "Contacto");
+  setText("#contact-description", "contact.description", "Datos de coordinación del programa.");
+  setText("#footer-text", "footer.text", "Jornadas Docentes de Atención Primaria · Programa anual 2026-2027.");
+  setText("#footer-admin-link", "footer.admin_label", "Admin");
+}
+
 function renderProgram(programa) {
-  $("#program-description").textContent = programa.descripcion;
-  $("#program-modality-short").textContent = programa.modalidad_resumen || programa.modalidad;
-  $("#program-duration-short").textContent = programa.duracion.replace("utos por sesión", "");
+  if (!state.data?.siteContent) {
+    $("#program-description").textContent = programa.descripcion;
+    $("#program-modality-short").textContent = programa.modalidad_resumen || programa.modalidad;
+    $("#program-duration-short").textContent = programa.duracion.replace("utos por sesión", "");
+  }
 }
 
 function renderAgenda(sesiones) {
@@ -199,10 +267,13 @@ function renderResourceItem(resource) {
 }
 
 function renderContact(contacto) {
+  const coordination = siteText("contact.coordination_value", contacto.coordinacion);
+  const email = siteText("contact.email_value", contacto.email);
+  const phone = siteText("contact.phone_value", contacto.telefono);
   $("#contact-card").innerHTML = `
-    <p><strong>Coordinación</strong><br>${escapeHtml(contacto.coordinacion)}</p>
-    <p><strong>Email</strong><br>${escapeHtml(contacto.email)}</p>
-    <p><strong>Teléfono</strong><br>${escapeHtml(contacto.telefono)}</p>
+    <p><strong>${escapeHtml(siteText("contact.coordination_label", "Coordinación"))}</strong><br>${escapeHtml(coordination)}</p>
+    <p><strong>${escapeHtml(siteText("contact.email_label", "Email"))}</strong><br>${escapeHtml(email)}</p>
+    <p><strong>${escapeHtml(siteText("contact.phone_label", "Teléfono"))}</strong><br>${escapeHtml(phone)}</p>
   `;
 }
 
@@ -332,7 +403,7 @@ function openResource(resource) {
   }
 }
 
-function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [], sedes = [] }) {
+function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [], sedes = [], siteContent = {} }) {
   const modalidad = jornada?.modalidad || "Preferentemente presencial, con opción online por Teams";
   const teamsUrl = jornada?.teams_url || "Enlace Teams pendiente de confirmar";
   const mappedSessions = sesiones.map((session, index) => {
@@ -381,6 +452,7 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
     metodologia: [],
     objetivos: [],
     sesiones: mappedSessions,
+    siteContent,
     ponentes: ponentes.map((speaker) => ({
       id: speaker.id,
       nombre: speaker.nombre,
@@ -411,9 +483,23 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
   };
 }
 
-async function loadSupabaseData() {
+async function loadSupabaseSiteContent(supabase, fallbackSiteContent) {
+  try {
+    const { data, error } = await supabase.from("site_settings").select("key,value").order("key", { ascending: true });
+    if (error) throw error;
+    console.info("Textos cargados desde Supabase");
+    return settingRowsToContent(data || [], fallbackSiteContent);
+  } catch (error) {
+    console.warn("Textos de Supabase no disponibles, usando fallback local", error);
+    console.info("Textos cargados desde fallback local");
+    return fallbackSiteContent;
+  }
+}
+
+async function loadSupabaseData(fallbackSiteContent) {
   const supabase = await getSupabaseClient();
   if (!supabase) return null;
+  const siteContent = await loadSupabaseSiteContent(supabase, fallbackSiteContent);
 
   const [{ data: jornadas, error: jornadaError }, { data: sesiones, error: sesionesError }, { data: ponentes, error: ponentesError }, { data: recursos, error: recursosError }, { data: sedes, error: sedesError }] = await Promise.all([
     supabase.from("jornadas").select("*").limit(1),
@@ -437,7 +523,8 @@ async function loadSupabaseData() {
     sesiones: sesiones || [],
     ponentes: ponentes || [],
     recursos: recursos || [],
-    sedes: sedes || []
+    sedes: sedes || [],
+    siteContent
   });
 }
 
@@ -448,8 +535,10 @@ async function loadJsonData() {
 }
 
 async function loadData() {
+  const fallbackData = await loadJsonData();
+  const fallbackSiteContent = flattenSiteContent(fallbackData.siteContent);
   try {
-    const supabaseData = await loadSupabaseData();
+    const supabaseData = await loadSupabaseData(fallbackSiteContent);
     if (supabaseData) {
       state.dataSource = "supabase";
       console.info("Datos cargados desde Supabase");
@@ -460,8 +549,9 @@ async function loadData() {
   }
 
   state.dataSource = "json";
-  const jsonData = await loadJsonData();
+  const jsonData = { ...fallbackData, siteContent: fallbackSiteContent };
   console.info("Datos cargados desde JSON local por fallback");
+  console.info("Textos cargados desde fallback local");
   return jsonData;
 }
 
@@ -585,6 +675,7 @@ async function init() {
   try {
     state.data = await loadData();
 
+    renderSiteContent();
     renderProgram(state.data.programa);
     renderAgenda(state.data.sesiones);
     renderSessions(state.data.sesiones);

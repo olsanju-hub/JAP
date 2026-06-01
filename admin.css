@@ -125,6 +125,32 @@
   color: var(--muted);
 }
 
+.settings-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.settings-group {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.settings-group h3 {
+  margin: 0;
+  color: var(--primary-dark);
+}
+
+.setting-description {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
 .admin-actions {
   display: flex;
   flex-wrap: wrap;

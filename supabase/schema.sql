@@ -90,6 +90,18 @@ create table if not exists public.recursos (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.site_settings (
+  id uuid primary key default gen_random_uuid(),
+  key text unique not null,
+  value text,
+  type text not null default 'text',
+  group_name text,
+  label text,
+  description text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
@@ -179,6 +191,11 @@ create trigger recursos_set_updated_at
 before update on public.recursos
 for each row execute function public.set_updated_at();
 
+drop trigger if exists site_settings_set_updated_at on public.site_settings;
+create trigger site_settings_set_updated_at
+before update on public.site_settings
+for each row execute function public.set_updated_at();
+
 alter table public.profiles enable row level security;
 alter table public.jornadas enable row level security;
 alter table public.sedes enable row level security;
@@ -186,6 +203,7 @@ alter table public.sesiones enable row level security;
 alter table public.ponentes enable row level security;
 alter table public.sesion_ponentes enable row level security;
 alter table public.recursos enable row level security;
+alter table public.site_settings enable row level security;
 
 drop policy if exists "profiles_select_own_or_admin" on public.profiles;
 create policy "profiles_select_own_or_admin"
@@ -312,10 +330,25 @@ to authenticated
 using (public.is_admin_or_editor())
 with check (public.is_admin_or_editor());
 
+drop policy if exists "site_settings_public_select" on public.site_settings;
+create policy "site_settings_public_select"
+on public.site_settings
+for select
+to anon, authenticated
+using (true);
+
+drop policy if exists "site_settings_admin_editor_manage" on public.site_settings;
+create policy "site_settings_admin_editor_manage"
+on public.site_settings
+for all
+to authenticated
+using (public.is_admin_or_editor())
+with check (public.is_admin_or_editor());
+
 grant usage on schema public to anon, authenticated;
-grant select on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.sesion_ponentes, public.recursos to anon, authenticated;
+grant select on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.sesion_ponentes, public.recursos, public.site_settings to anon, authenticated;
 grant select on public.profiles to authenticated;
-grant insert, update, delete on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.sesion_ponentes, public.recursos to authenticated;
+grant insert, update, delete on public.jornadas, public.sedes, public.sesiones, public.ponentes, public.sesion_ponentes, public.recursos, public.site_settings to authenticated;
 grant insert, update, delete on public.profiles to authenticated;
 grant execute on function public.is_admin() to authenticated;
 grant execute on function public.is_admin_or_editor() to authenticated;

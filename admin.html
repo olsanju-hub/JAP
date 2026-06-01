@@ -59,6 +59,7 @@
           <button class="button primary" type="button" data-admin-tab="sesiones">Sesiones</button>
           <button class="button" type="button" data-admin-tab="ponentes">Ponentes</button>
           <button class="button" type="button" data-admin-tab="recursos">Recursos</button>
+          <button class="button" type="button" data-admin-tab="textos">Textos de la app</button>
         </nav>
         <p id="admin-message" class="form-message" role="status"></p>
 
@@ -181,6 +182,17 @@
               <div id="resources-list" class="admin-list"></div>
             </div>
           </div>
+        </section>
+
+        <section class="admin-panel" data-admin-panel="textos" hidden>
+          <form id="site-content-form" class="admin-form admin-card">
+            <div class="admin-form-head">
+              <h2>Textos de la app</h2>
+              <button id="site-content-submit" class="button primary" type="submit">Guardar cambios</button>
+            </div>
+            <p class="form-message">Edita los textos visibles generales de la app pública. Las sesiones, ponentes y recursos se gestionan en sus pestañas.</p>
+            <div id="site-content-fields" class="settings-grid"></div>
+          </form>
         </section>
       </section>
     </main>

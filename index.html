@@ -50,33 +50,33 @@
       <section id="inicio" class="hero section" data-view="inicio">
         <div class="hero-copy">
           <img class="hero-mark" src="assets/icons/icon-512.png" alt="Icono JAP">
-          <h1>Jornadas Docentes<br>de Atención<br>Primaria</h1>
-          <p class="hero-subtitle">Programa anual de sesiones clínicas para profesionales de Atención Primaria</p>
+          <h1 id="home-title">Jornadas Docentes de Atención Primaria</h1>
+          <p id="home-subtitle" class="hero-subtitle">Programa anual de sesiones clínicas para profesionales de Atención Primaria</p>
           <p id="program-description">Cargando programa...</p>
           <div class="quick-links" aria-label="Accesos rápidos">
-            <a class="button primary" href="#agenda">Ver agenda</a>
-            <a class="button" href="#sesiones">Sesiones</a>
-            <a class="button" href="#ponentes">Ponentes</a>
-            <a class="button" href="#recursos">Recursos</a>
+            <a id="home-primary-button" class="button primary" href="#agenda">Ver agenda</a>
+            <a id="home-sessions-button" class="button" href="#sesiones">Sesiones</a>
+            <a id="home-speakers-button" class="button" href="#ponentes">Ponentes</a>
+            <a id="home-resources-button" class="button" href="#recursos">Recursos</a>
           </div>
         </div>
         <figure class="hero-media">
           <div class="hero-panel hero-stats" aria-label="Datos clave del programa">
             <dl>
               <div>
-                <dt>Sesiones</dt>
-                <dd>10</dd>
+                <dt id="metric-sessions-label">Sesiones</dt>
+                <dd id="metric-sessions-value">10</dd>
               </div>
               <div>
-                <dt>Curso</dt>
-                <dd>2026-2027</dd>
+                <dt id="metric-course-label">Curso</dt>
+                <dd id="metric-course-value">2026-2027</dd>
               </div>
               <div>
-                <dt>Formato</dt>
+                <dt id="metric-format-label">Formato</dt>
                 <dd id="program-modality-short">Pendiente</dd>
               </div>
               <div>
-                <dt>Duración</dt>
+                <dt id="metric-duration-label">Duración</dt>
                 <dd id="program-duration-short">Pendiente</dd>
               </div>
             </dl>
@@ -86,40 +86,40 @@
 
       <section id="agenda" class="section" data-view="agenda" hidden>
         <div class="section-heading">
-          <h2>Agenda</h2>
-          <p>Vista rápida del programa. Cada sesión abre su detalle completo en una ventana emergente.</p>
+          <h2 id="agenda-title">Agenda</h2>
+          <p id="agenda-description">Vista rápida del programa. Cada sesión abre su detalle completo en una ventana emergente.</p>
         </div>
         <div id="agenda-list" class="timeline" aria-live="polite"></div>
       </section>
 
       <section id="sesiones" class="section section-muted" data-view="sesiones" hidden>
         <div class="section-heading">
-          <h2>Sesiones</h2>
-          <p>Contenido docente organizado por temas clínicos frecuentes en Atención Primaria.</p>
+          <h2 id="sessions-title">Sesiones</h2>
+          <p id="sessions-description">Contenido docente organizado por temas clínicos frecuentes en Atención Primaria.</p>
         </div>
         <div id="session-grid" class="session-grid" aria-live="polite"></div>
       </section>
 
       <section id="ponentes" class="section" data-view="ponentes" hidden>
         <div class="section-heading">
-          <h2>Ponentes</h2>
-          <p>Equipo docente y coordinación según la información disponible en los materiales.</p>
+          <h2 id="speakers-title">Ponentes</h2>
+          <p id="speakers-description">Equipo docente y coordinación según la información disponible en los materiales.</p>
         </div>
         <div id="speaker-grid" class="speaker-grid" aria-live="polite"></div>
       </section>
 
       <section id="recursos" class="section section-muted" data-view="recursos" hidden>
         <div class="section-heading">
-          <h2>Recursos</h2>
-          <p>Material organizado por categorías compactas. Cada recurso se abre dentro de la app.</p>
+          <h2 id="resources-title">Recursos</h2>
+          <p id="resources-description">Material organizado por categorías compactas. Cada recurso se abre dentro de la app.</p>
         </div>
         <div id="resource-list" class="resource-list" aria-live="polite"></div>
       </section>
 
       <section id="contacto" class="section contact-section" data-view="contacto" hidden>
         <div class="section-heading">
-          <h2>Contacto</h2>
-          <p>Datos de coordinación del programa.</p>
+          <h2 id="contact-title">Contacto</h2>
+          <p id="contact-description">Datos de coordinación del programa.</p>
         </div>
         <div id="contact-card" class="contact-card"></div>
       </section>
@@ -150,8 +150,8 @@
 
     <footer class="site-footer">
       <img src="assets/icons/icon-192.png" alt="" width="42" height="42">
-      <p>Jornadas Docentes de Atención Primaria · Programa anual 2026-2027.</p>
-      <a class="footer-admin-link" href="admin.html">Admin</a>
+      <p id="footer-text">Jornadas Docentes de Atención Primaria · Programa anual 2026-2027.</p>
+      <a id="footer-admin-link" class="footer-admin-link" href="admin.html">Admin</a>
     </footer>
 
     <script type="module" src="app.js"></script>

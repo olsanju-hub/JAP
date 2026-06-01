@@ -194,6 +194,17 @@ Para que un elemento aparezca en la app pública desde Supabase:
 - Ponente: `is_active = true`.
 - Recurso: `visible = true`, con URL válida y sin apuntar a `propuesta-jornadas-docentes-ap.pdf`.
 
+### Textos de la app
+
+La pestaña `Textos de la app` permite editar textos globales visibles:
+
+- Inicio: título, subtítulo, descripción, botones rápidos y datos clave.
+- Agenda, Sesiones, Ponentes, Recursos y Contacto: títulos y descripciones.
+- Contacto: coordinación, email y teléfono.
+- Footer: texto del pie y etiqueta del enlace Admin.
+
+Para activar esta sección en un proyecto Supabase ya creado, ejecuta `supabase/migration-site-content.sql` en el SQL Editor de Supabase. La app pública leerá `site_settings` cuando exista; si falta una key o Supabase falla, usará `data/jap.json` como fallback.
+
 ## Publicación
 
 ### GitHub Pages
@@ -230,4 +241,4 @@ Si no ves cambios tras editar archivos cacheados:
 3. Limpia Storage si es necesario.
 4. Recarga con hard reload.
 
-El cache actual se identifica como `jap-static-v12`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.
+El cache actual se identifica como `jap-static-v13`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.

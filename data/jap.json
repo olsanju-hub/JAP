@@ -40,12 +40,20 @@
       "bloque": "Sesión 1",
       "descripcion": "Diagnóstico y confirmación; estratificación del riesgo; objetivos de control; elección y ajuste de tratamiento; seguimiento, adherencia y abordaje de la HTA resistente.",
       "objetivo": "Actualizar el abordaje diagnóstico, terapéutico y de seguimiento de la hipertensión arterial en Atención Primaria.",
-      "contenidos_clave": ["Diagnóstico y confirmación", "Estratificación del riesgo", "Objetivos de control", "Elección y ajuste de tratamiento", "Seguimiento, adherencia y HTA resistente"],
+      "contenidos_clave": [
+        "Diagnóstico y confirmación",
+        "Estratificación del riesgo",
+        "Objetivos de control",
+        "Elección y ajuste de tratamiento",
+        "Seguimiento, adherencia y HTA resistente"
+      ],
       "fecha": "Pendiente de confirmar",
       "hora_inicio": "Pendiente de confirmar",
       "hora_fin": "Pendiente de confirmar",
       "sede": "Pendiente de confirmar",
-      "ponentes": ["Pendiente de confirmar"],
+      "ponentes": [
+        "Pendiente de confirmar"
+      ],
       "imagen": "assets/img/sesion-hta.png",
       "recursos": [],
       "estado": "Pendiente de confirmar"
@@ -57,12 +65,20 @@
       "bloque": "Sesión 2",
       "descripcion": "Cribado y diagnóstico; objetivos individualizados; manejo escalonado; papel de iSGLT2 y arGLP-1; control de comorbilidades; seguimiento y educación terapéutica.",
       "objetivo": "Revisar el manejo de la diabetes mellitus tipo 2 y la protección cardiorrenal desde Atención Primaria.",
-      "contenidos_clave": ["Cribado y diagnóstico", "Objetivos individualizados", "Manejo escalonado", "iSGLT2 y arGLP-1", "Comorbilidades, seguimiento y educación terapéutica"],
+      "contenidos_clave": [
+        "Cribado y diagnóstico",
+        "Objetivos individualizados",
+        "Manejo escalonado",
+        "iSGLT2 y arGLP-1",
+        "Comorbilidades, seguimiento y educación terapéutica"
+      ],
       "fecha": "Pendiente de confirmar",
       "hora_inicio": "Pendiente de confirmar",
       "hora_fin": "Pendiente de confirmar",
       "sede": "Pendiente de confirmar",
-      "ponentes": ["Pendiente de confirmar"],
+      "ponentes": [
+        "Pendiente de confirmar"
+      ],
       "imagen": "assets/img/sesion-diabetes.png",
       "recursos": [],
       "estado": "Pendiente de confirmar"
@@ -74,12 +90,20 @@
       "bloque": "Sesión 3",
       "descripcion": "Estimación del riesgo; indicación de estatinas y otros hipolipemiantes; objetivos de LDL; seguridad y monitorización; prevención primaria y secundaria en AP.",
       "objetivo": "Homogeneizar criterios de prevención cardiovascular y tratamiento hipolipemiante en Atención Primaria.",
-      "contenidos_clave": ["Estimación del riesgo", "Estatinas y otros hipolipemiantes", "Objetivos de LDL", "Seguridad y monitorización", "Prevención primaria y secundaria"],
+      "contenidos_clave": [
+        "Estimación del riesgo",
+        "Estatinas y otros hipolipemiantes",
+        "Objetivos de LDL",
+        "Seguridad y monitorización",
+        "Prevención primaria y secundaria"
+      ],
       "fecha": "Pendiente de confirmar",
       "hora_inicio": "Pendiente de confirmar",
       "hora_fin": "Pendiente de confirmar",
       "sede": "Pendiente de confirmar",
-      "ponentes": ["Pendiente de confirmar"],
+      "ponentes": [
+        "Pendiente de confirmar"
+      ],
       "imagen": "assets/img/sesion-dislipemia.png",
       "recursos": [],
       "estado": "Pendiente de confirmar"
@@ -91,12 +115,20 @@
       "bloque": "Sesión 4",
       "descripcion": "Evaluación integral; objetivos realistas; intervención dietética y actividad física; entrevista motivacional; criterios de derivación; opciones farmacológicas y seguimiento.",
       "objetivo": "Revisar el abordaje integral de la obesidad y los cambios de estilo de vida desde la consulta.",
-      "contenidos_clave": ["Evaluación integral", "Objetivos realistas", "Intervención dietética y actividad física", "Entrevista motivacional", "Derivación, opciones farmacológicas y seguimiento"],
+      "contenidos_clave": [
+        "Evaluación integral",
+        "Objetivos realistas",
+        "Intervención dietética y actividad física",
+        "Entrevista motivacional",
+        "Derivación, opciones farmacológicas y seguimiento"
+      ],
       "fecha": "Pendiente de confirmar",
       "hora_inicio": "Pendiente de confirmar",
       "hora_fin": "Pendiente de confirmar",
       "sede": "Pendiente de confirmar",
-      "ponentes": ["Pendiente de confirmar"],
+      "ponentes": [
+        "Pendiente de confirmar"
+      ],
       "imagen": "assets/img/sesion-obesidad.png",
       "recursos": [],
       "estado": "Pendiente de confirmar"
@@ -108,12 +140,20 @@
       "bloque": "Sesión 5",
       "descripcion": "Diagnóstico y espirometría; clasificación y control; tratamiento inhalado; técnica inhalatoria; exacerbaciones; criterios de derivación y plan de acción.",
       "objetivo": "Actualizar el diagnóstico, control y seguimiento de EPOC y asma en Atención Primaria.",
-      "contenidos_clave": ["Diagnóstico y espirometría", "Clasificación y control", "Tratamiento inhalado", "Técnica inhalatoria", "Exacerbaciones, derivación y plan de acción"],
+      "contenidos_clave": [
+        "Diagnóstico y espirometría",
+        "Clasificación y control",
+        "Tratamiento inhalado",
+        "Técnica inhalatoria",
+        "Exacerbaciones, derivación y plan de acción"
+      ],
       "fecha": "Pendiente de confirmar",
       "hora_inicio": "Pendiente de confirmar",
       "hora_fin": "Pendiente de confirmar",
       "sede": "Pendiente de confirmar",
-      "ponentes": ["Pendiente de confirmar"],
+      "ponentes": [
+        "Pendiente de confirmar"
+      ],
       "imagen": "assets/img/sesion-epoc-asma.png",
       "recursos": [],
       "estado": "Pendiente de confirmar"
@@ -125,12 +165,20 @@
       "bloque": "Sesión 6",
       "descripcion": "Abordaje de ansiedad, depresión e insomnio; evaluación del riesgo suicida; intervenciones no farmacológicas; uso prudente de psicofármacos; criterios de derivación y seguimiento.",
       "objetivo": "Revisar el abordaje inicial, seguimiento y derivación de los trastornos de salud mental frecuentes.",
-      "contenidos_clave": ["Ansiedad, depresión e insomnio", "Evaluación del riesgo suicida", "Intervenciones no farmacológicas", "Uso prudente de psicofármacos", "Derivación y seguimiento"],
+      "contenidos_clave": [
+        "Ansiedad, depresión e insomnio",
+        "Evaluación del riesgo suicida",
+        "Intervenciones no farmacológicas",
+        "Uso prudente de psicofármacos",
+        "Derivación y seguimiento"
+      ],
       "fecha": "Pendiente de confirmar",
       "hora_inicio": "Pendiente de confirmar",
       "hora_fin": "Pendiente de confirmar",
       "sede": "Pendiente de confirmar",
-      "ponentes": ["Pendiente de confirmar"],
+      "ponentes": [
+        "Pendiente de confirmar"
+      ],
       "imagen": "assets/img/sesion-salud-mental.png",
       "recursos": [],
       "estado": "Pendiente de confirmar"
@@ -142,12 +190,20 @@
       "bloque": "Sesión 7",
       "descripcion": "Lumbalgia, cervicalgia y artrosis; banderas rojas; indicación de imagen y analítica; manejo escalonado del dolor; ejercicio terapéutico; derivación y seguridad farmacológica.",
       "objetivo": "Actualizar el manejo del dolor osteomuscular frecuente y el uso prudente de pruebas complementarias.",
-      "contenidos_clave": ["Lumbalgia, cervicalgia y artrosis", "Banderas rojas", "Imagen y analítica", "Manejo escalonado del dolor", "Ejercicio terapéutico, derivación y seguridad farmacológica"],
+      "contenidos_clave": [
+        "Lumbalgia, cervicalgia y artrosis",
+        "Banderas rojas",
+        "Imagen y analítica",
+        "Manejo escalonado del dolor",
+        "Ejercicio terapéutico, derivación y seguridad farmacológica"
+      ],
       "fecha": "Pendiente de confirmar",
       "hora_inicio": "Pendiente de confirmar",
       "hora_fin": "Pendiente de confirmar",
       "sede": "Pendiente de confirmar",
-      "ponentes": ["Pendiente de confirmar"],
+      "ponentes": [
+        "Pendiente de confirmar"
+      ],
       "imagen": "assets/img/sesion-dolor-osteomuscular.png",
       "recursos": [],
       "estado": "Pendiente de confirmar"
@@ -159,12 +215,20 @@
       "bloque": "Sesión 8",
       "descripcion": "Lesiones frecuentes; criterios de alarma; dermatoscopia básica si disponible; tratamiento inicial; indicación de biopsia o derivación; educación y fotoprotección.",
       "objetivo": "Reforzar el reconocimiento y manejo inicial de lesiones dermatológicas frecuentes en Atención Primaria.",
-      "contenidos_clave": ["Lesiones frecuentes", "Criterios de alarma", "Dermatoscopia básica si disponible", "Tratamiento inicial", "Biopsia, derivación, educación y fotoprotección"],
+      "contenidos_clave": [
+        "Lesiones frecuentes",
+        "Criterios de alarma",
+        "Dermatoscopia básica si disponible",
+        "Tratamiento inicial",
+        "Biopsia, derivación, educación y fotoprotección"
+      ],
       "fecha": "Pendiente de confirmar",
       "hora_inicio": "Pendiente de confirmar",
       "hora_fin": "Pendiente de confirmar",
       "sede": "Pendiente de confirmar",
-      "ponentes": ["Pendiente de confirmar"],
+      "ponentes": [
+        "Pendiente de confirmar"
+      ],
       "imagen": "assets/img/sesion-dermatologia.png",
       "recursos": [],
       "estado": "Pendiente de confirmar"
@@ -176,12 +240,20 @@
       "bloque": "Sesión 9",
       "descripcion": "Dispepsia, ERGE y SII; manejo inicial; pruebas indicadas; anemia y sangrado digestivo; pérdida de peso y otros signos de alarma; criterios de derivación preferente.",
       "objetivo": "Homogeneizar el manejo inicial de patología digestiva frecuente y la identificación de señales de alarma.",
-      "contenidos_clave": ["Dispepsia, ERGE y SII", "Manejo inicial", "Pruebas indicadas", "Anemia, sangrado digestivo y pérdida de peso", "Signos de alarma y derivación preferente"],
+      "contenidos_clave": [
+        "Dispepsia, ERGE y SII",
+        "Manejo inicial",
+        "Pruebas indicadas",
+        "Anemia, sangrado digestivo y pérdida de peso",
+        "Signos de alarma y derivación preferente"
+      ],
       "fecha": "Pendiente de confirmar",
       "hora_inicio": "Pendiente de confirmar",
       "hora_fin": "Pendiente de confirmar",
       "sede": "Pendiente de confirmar",
-      "ponentes": ["Pendiente de confirmar"],
+      "ponentes": [
+        "Pendiente de confirmar"
+      ],
       "imagen": "assets/img/sesion-patologia-digestiva.png",
       "recursos": [],
       "estado": "Pendiente de confirmar"
@@ -193,12 +265,20 @@
       "bloque": "Sesión 10",
       "descripcion": "Identificación de fragilidad; revisión de medicación y deprescripción; conciliación; prevención de caídas; objetivos centrados en la persona; coordinación con enfermería y trabajo social.",
       "objetivo": "Revisar el abordaje de fragilidad, pluripatología y seguridad farmacológica con objetivos centrados en la persona.",
-      "contenidos_clave": ["Identificación de fragilidad", "Revisión de medicación y deprescripción", "Conciliación", "Prevención de caídas", "Coordinación con enfermería y trabajo social"],
+      "contenidos_clave": [
+        "Identificación de fragilidad",
+        "Revisión de medicación y deprescripción",
+        "Conciliación",
+        "Prevención de caídas",
+        "Coordinación con enfermería y trabajo social"
+      ],
       "fecha": "Pendiente de confirmar",
       "hora_inicio": "Pendiente de confirmar",
       "hora_fin": "Pendiente de confirmar",
       "sede": "Pendiente de confirmar",
-      "ponentes": ["Pendiente de confirmar"],
+      "ponentes": [
+        "Pendiente de confirmar"
+      ],
       "imagen": "assets/img/sesion-fragilidad.png",
       "recursos": [],
       "estado": "Pendiente de confirmar"
@@ -345,5 +425,56 @@
     "coordinacion": "Julio Fernando Ospino Arias, Guillermo José Olivero Sanjuanelo y Kelly Esther Escorcia Reyes",
     "email": "Pendiente de confirmar",
     "telefono": "Pendiente de confirmar"
+  },
+  "siteContent": {
+    "home": {
+      "title": "Jornadas Docentes de Atención Primaria",
+      "subtitle": "Programa anual de sesiones clínicas para profesionales de Atención Primaria",
+      "description": "Espacio docente anual para profesionales de Atención Primaria, centrado en sesiones clínicas breves, aplicadas y orientadas a mejorar la práctica asistencial compartida.",
+      "primary_button": "Ver agenda",
+      "secondary_button_sessions": "Sesiones",
+      "secondary_button_speakers": "Ponentes",
+      "secondary_button_resources": "Recursos",
+      "metrics": {
+        "sessions_label": "Sesiones",
+        "sessions_value": "10",
+        "course_label": "Curso",
+        "course_value": "2026-2027",
+        "format_label": "Formato",
+        "format_value": "Presencial preferente + Teams",
+        "duration_label": "Duración",
+        "duration_value": "45-60 min"
+      }
+    },
+    "agenda": {
+      "title": "Agenda",
+      "description": "Vista rápida del programa. Cada sesión abre su detalle completo en una ventana emergente."
+    },
+    "sessions": {
+      "title": "Sesiones",
+      "description": "Contenido docente organizado por temas clínicos frecuentes en Atención Primaria."
+    },
+    "speakers": {
+      "title": "Ponentes",
+      "description": "Equipo docente y coordinación según la información disponible en los materiales."
+    },
+    "resources": {
+      "title": "Recursos",
+      "description": "Material organizado por categorías compactas. Cada recurso se abre dentro de la app."
+    },
+    "contact": {
+      "title": "Contacto",
+      "description": "Datos de coordinación del programa.",
+      "coordination_label": "Coordinación",
+      "coordination_value": "Julio Fernando Ospino Arias, Guillermo José Olivero Sanjuanelo y Kelly Esther Escorcia Reyes",
+      "email_label": "Email",
+      "email_value": "Pendiente de confirmar",
+      "phone_label": "Teléfono",
+      "phone_value": "Pendiente de confirmar"
+    },
+    "footer": {
+      "text": "Jornadas Docentes de Atención Primaria · Programa anual 2026-2027.",
+      "admin_label": "Admin"
+    }
   }
 }
