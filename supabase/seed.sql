@@ -25,13 +25,25 @@ insert into public.jornadas (
   teams_url = excluded.teams_url,
   published = excluded.published;
 
-insert into public.sedes (id, nombre, direccion, notas) values
-  ('20000000-0000-4000-8000-000000000001', 'Sede pendiente de confirmar', null, 'La sede de cada sesión se publicará cuando esté confirmada.'),
-  ('20000000-0000-4000-8000-000000000002', 'Hospital Can Misses', null, 'Sede incluida entre las opciones organizativas del programa.')
+insert into public.sedes (id, nombre, direccion, telefono, tipo_sede, orden, notas, is_active) values
+  ('20000000-0000-4000-8000-000000000001', 'Sede pendiente de confirmar', null, null, 'pendiente', 10, 'La sede de cada sesión se publicará cuando esté confirmada.', true),
+  ('20000000-0000-4000-8000-000000000003', 'Online / Teams', null, null, 'online', 20, 'Sesión online mediante Teams.', true),
+  ('20000000-0000-4000-8000-000000000004', 'CS de Can Misses', 'C/ Corona, 20-36 (Edificio J- antiguo Hospital Can Misses), 07800 Eivissa', '971397010', 'centro_salud', 100, 'Centro de salud de Atención Primaria.', true),
+  ('20000000-0000-4000-8000-000000000005', 'CS de Es Viver', 'C/ Músic Fermí Marí 11-15, 07800 Eivissa', '971 391 632/38', 'centro_salud', 110, 'Centro de salud de Atención Primaria.', true),
+  ('20000000-0000-4000-8000-000000000006', 'CS de Sant Antoni de Portmany', 'C/ De Ses Séquies 6, 07820 Sant Antoni de Portmany', '971 397000', 'centro_salud', 120, 'Centro de salud de Atención Primaria.', true),
+  ('20000000-0000-4000-8000-000000000007', 'CS de Sant Jordi de Ses Salines', 'C/ Timbal nº 2, 07817 Sant Josep de sa Talaia', '971 308 175', 'centro_salud', 130, 'Centro de salud de Atención Primaria.', true),
+  ('20000000-0000-4000-8000-000000000008', 'CS de Sant Josep de sa Talaia', 'Carrer Can Cantó 19, 07830 Sant Josep de sa Talaia', '971 801077', 'centro_salud', 140, 'Centro de salud de Atención Primaria.', true),
+  ('20000000-0000-4000-8000-000000000009', 'CS de Santa Eulària des Riu', 'C/ l''historiador Clapés s/n, 07840 Santa Eulària des Riu', '971 332453/6985', 'centro_salud', 150, 'Centro de salud de Atención Primaria.', true),
+  ('20000000-0000-4000-8000-000000000010', 'CS de Vila', 'Avinguda Vuit d''agost 30, 07800 Eivissa', '971 195 140', 'centro_salud', 160, 'Centro de salud de Atención Primaria.', true),
+  ('20000000-0000-4000-8000-000000000002', 'Hospital Can Misses', 'Calle Corona, s/n, 07800 Eivissa', '971 397 000', 'hospital', 300, 'Sede hospitalaria posible.', true)
 on conflict (id) do update set
   nombre = excluded.nombre,
   direccion = excluded.direccion,
-  notas = excluded.notas;
+  telefono = excluded.telefono,
+  tipo_sede = excluded.tipo_sede,
+  orden = excluded.orden,
+  notas = excluded.notas,
+  is_active = excluded.is_active;
 
 insert into public.ponentes (id, nombre, especialidad, centro, bio, rol_persona, is_active) values
   ('30000000-0000-4000-8000-000000000001', 'Julio Fernando Ospino Arias', 'Residente de 4.º año de Medicina Familiar y Comunitaria', null, 'Organizador / coordinación R4', 'organizador', true),

@@ -97,6 +97,8 @@ El documento interno de propuesta no se publica para asistentes y no debe añadi
 
 Cuando Supabase responde correctamente, sustituye a `data/jap.json`. El JSON local queda como fallback si Supabase no está configurado o falla la conexión. La consola indica `Datos cargados desde Supabase` o `Datos cargados desde JSON local por fallback`.
 
+Las sedes se gestionan desde Supabase y se mantienen también en `data/jap.json` como fallback. El selector del panel muestra solo sedes activas y las ordena así: sede pendiente, online, centros de salud y Hospital Can Misses.
+
 ## Editar `data/jap.json`
 
 Validar el JSON:
@@ -150,6 +152,7 @@ supabase/migrations/
 20260601110000_session_speakers.sql
 20260601120000_session_editorial_states.sql
 20260601130000_session_teaching_fields.sql
+20260602100000_primary_care_venues.sql
 ```
 
 Para una instalación manual desde SQL Editor:
@@ -228,25 +231,9 @@ Las migraciones iniciales de JAP se ejecutaron primero desde Supabase SQL Editor
 supabase migration list
 ```
 
-Si la CLI no reconoce como aplicadas migraciones que ya ejecutaste manualmente, no hagas `db push` todavía. Marca esas versiones como reparadas/aplicadas en el historial remoto, una por una:
+Si la CLI no reconoce como aplicadas migraciones que ya ejecutaste manualmente, no hagas `db push` todavía. Documenta la discrepancia y resuélvela solo como tarea explícita de recuperación de historial.
 
-```bash
-supabase migration repair --status applied 20260531090000
-supabase migration repair --status applied 20260531091000
-supabase migration repair --status applied 20260601090000
-supabase migration repair --status applied 20260601100000
-supabase migration repair --status applied 20260601110000
-```
-
-Si la CLI exige nombres completos por existir varias migraciones con la misma fecha, usa las versiones exactas que muestre `supabase migration list` para estos archivos:
-
-- `20260531090000_initial_schema.sql`
-- `20260531091000_seed_initial_data.sql`
-- `20260601090000_site_content.sql`
-- `20260601100000_security_backup.sql`
-- `20260601110000_session_speakers.sql`
-
-No marques como aplicada una migración nueva que todavía no se ha ejecutado, por ejemplo `20260601130000_session_teaching_fields.sql`.
+No marques como aplicada una migración nueva que todavía no se ha ejecutado.
 
 Después vuelve a comprobar:
 
@@ -277,6 +264,12 @@ Aplica solo si el dry-run es el esperado:
 supabase db push
 ```
 
+Después de aplicar:
+
+```bash
+supabase migration list
+```
+
 ### Qué no hacer a ciegas
 
 No ejecutes directamente estos comandos en producción sin revisar `migration list` y `--dry-run`:
@@ -285,9 +278,29 @@ No ejecutes directamente estos comandos en producción sin revisar `migration li
 supabase db push
 supabase db reset
 supabase db remote commit
+supabase migration repair
 ```
 
 `supabase db reset` es para base local y puede destruir datos locales. No lo uses contra producción.
+
+### Sedes de Atención Primaria
+
+La migración `20260602100000_primary_care_venues.sql` añade a `sedes` los campos `tipo_sede`, `orden`, `telefono` e `is_active`, y carga las sedes reales principales de Ibiza sin duplicarlas.
+
+Sedes incluidas:
+
+- Sede pendiente de confirmar
+- Online / Teams
+- CS de Can Misses
+- CS de Es Viver
+- CS de Sant Antoni de Portmany
+- CS de Sant Jordi de Ses Salines
+- CS de Sant Josep de sa Talaia
+- CS de Santa Eulària des Riu
+- CS de Vila
+- Hospital Can Misses
+
+Las fuentes usadas para nombres, direcciones y teléfonos son páginas oficiales de IB-Salut: Atención Primaria del Área de Salud de Ibiza y Formentera, fichas oficiales de cada centro de salud y ficha oficial de Gerencia/Hospital Can Misses.
 
 ### Alternativa de emergencia
 
@@ -481,4 +494,4 @@ Si no ves cambios tras editar archivos cacheados:
 3. Limpia Storage si es necesario.
 4. Recarga con hard reload.
 
-El cache actual se identifica como `jap-static-v17`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.
+El cache actual se identifica como `jap-static-v18`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.

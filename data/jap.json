@@ -518,16 +518,104 @@
   ],
   "sedes": [
     {
-      "id": "sedes-rotatorias",
-      "nombre": "Sedes rotatorias entre centros de salud del área y Hospital Can Misses",
+      "id": "sede-pendiente",
+      "nombre": "Sede pendiente de confirmar",
       "direccion": "Pendiente de confirmar",
-      "descripcion": "Se propone una rotación mensual de la sede para facilitar la asistencia, distribuir la carga organizativa y reforzar la coordinación entre Atención Primaria y el ámbito hospitalario."
+      "telefono": "",
+      "tipo_sede": "pendiente",
+      "orden": 10,
+      "descripcion": "La sede de cada sesión se publicará cuando esté confirmada.",
+      "is_active": true
+    },
+    {
+      "id": "online-teams",
+      "nombre": "Online / Teams",
+      "direccion": "Pendiente de confirmar",
+      "telefono": "",
+      "tipo_sede": "online",
+      "orden": 20,
+      "descripcion": "Sesión online mediante Teams.",
+      "is_active": true
+    },
+    {
+      "id": "cs-can-misses",
+      "nombre": "CS de Can Misses",
+      "direccion": "C/ Corona, 20-36 (Edificio J- antiguo Hospital Can Misses), 07800 Eivissa",
+      "telefono": "971397010",
+      "tipo_sede": "centro_salud",
+      "orden": 100,
+      "descripcion": "Centro de salud de Atención Primaria.",
+      "is_active": true
+    },
+    {
+      "id": "cs-es-viver",
+      "nombre": "CS de Es Viver",
+      "direccion": "C/ Músic Fermí Marí 11-15, 07800 Eivissa",
+      "telefono": "971 391 632/38",
+      "tipo_sede": "centro_salud",
+      "orden": 110,
+      "descripcion": "Centro de salud de Atención Primaria.",
+      "is_active": true
+    },
+    {
+      "id": "cs-sant-antoni-de-portmany",
+      "nombre": "CS de Sant Antoni de Portmany",
+      "direccion": "C/ De Ses Séquies 6, 07820 Sant Antoni de Portmany",
+      "telefono": "971 397000",
+      "tipo_sede": "centro_salud",
+      "orden": 120,
+      "descripcion": "Centro de salud de Atención Primaria.",
+      "is_active": true
+    },
+    {
+      "id": "cs-sant-jordi-de-ses-salines",
+      "nombre": "CS de Sant Jordi de Ses Salines",
+      "direccion": "C/ Timbal nº 2, 07817 Sant Josep de sa Talaia",
+      "telefono": "971 308 175",
+      "tipo_sede": "centro_salud",
+      "orden": 130,
+      "descripcion": "Centro de salud de Atención Primaria.",
+      "is_active": true
+    },
+    {
+      "id": "cs-sant-josep-de-sa-talaia",
+      "nombre": "CS de Sant Josep de sa Talaia",
+      "direccion": "Carrer Can Cantó 19, 07830 Sant Josep de sa Talaia",
+      "telefono": "971 801077",
+      "tipo_sede": "centro_salud",
+      "orden": 140,
+      "descripcion": "Centro de salud de Atención Primaria.",
+      "is_active": true
+    },
+    {
+      "id": "cs-santa-eularia-des-riu",
+      "nombre": "CS de Santa Eulària des Riu",
+      "direccion": "C/ l'historiador Clapés s/n, 07840 Santa Eulària des Riu",
+      "telefono": "971 332453/6985",
+      "tipo_sede": "centro_salud",
+      "orden": 150,
+      "descripcion": "Centro de salud de Atención Primaria.",
+      "is_active": true
+    },
+    {
+      "id": "cs-vila",
+      "nombre": "CS de Vila",
+      "direccion": "Avinguda Vuit d'agost 30, 07800 Eivissa",
+      "telefono": "971 195 140",
+      "tipo_sede": "centro_salud",
+      "orden": 160,
+      "descripcion": "Centro de salud de Atención Primaria.",
+      "is_active": true
     },
     {
       "id": "hospital-can-misses",
       "nombre": "Hospital Can Misses",
-      "direccion": "Pendiente de confirmar",
-      "descripcion": "Sede incluida entre las opciones organizativas del programa."
+      "direccion": "Calle Corona, s/n, 07800 Eivissa",
+      "telefono": "971 397 000",
+      "tipo_sede": "hospital",
+      "orden": 300,
+      "descripcion": "Sede hospitalaria posible.",
+      "is_active": true
     }
   ],
   "contacto": {

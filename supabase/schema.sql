@@ -26,7 +26,11 @@ create table if not exists public.sedes (
   id uuid primary key default gen_random_uuid(),
   nombre text not null,
   direccion text,
+  telefono text,
+  tipo_sede text not null default 'centro_salud' check (tipo_sede in ('pendiente', 'centro_salud', 'hospital', 'online')),
+  orden integer,
   notas text,
+  is_active boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -249,7 +253,7 @@ create policy "sedes_public_select"
 on public.sedes
 for select
 to anon, authenticated
-using (true);
+using (is_active);
 
 drop policy if exists "sedes_admin_editor_manage" on public.sedes;
 create policy "sedes_admin_editor_manage"

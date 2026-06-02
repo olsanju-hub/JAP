@@ -199,9 +199,21 @@ function setJourneyOptions() {
 
 function setVenueOptions() {
   const select = $("#session-form select[name='sede_id']");
+  const typeOrder = { pendiente: 0, online: 1, centro_salud: 2, hospital: 3 };
+  const venues = state.sedes
+    .filter((venue) => venue.is_active !== false)
+    .sort((a, b) => {
+      const orderA = Number(a.orden) || 999;
+      const orderB = Number(b.orden) || 999;
+      if (orderA !== orderB) return orderA - orderB;
+      const typeA = typeOrder[a.tipo_sede] ?? 9;
+      const typeB = typeOrder[b.tipo_sede] ?? 9;
+      if (typeA !== typeB) return typeA - typeB;
+      return String(a.nombre || "").localeCompare(String(b.nombre || ""));
+    });
   select.innerHTML =
-    '<option value="">Sede pendiente de confirmar</option>' +
-    state.sedes.map((venue) => `<option value="${escapeHtml(venue.id)}">${escapeHtml(venue.nombre)}</option>`).join("");
+    '<option value="">Sin sede asociada</option>' +
+    venues.map((venue) => `<option value="${escapeHtml(venue.id)}">${escapeHtml(venue.nombre)}</option>`).join("");
 }
 
 function setSessionOptions() {
