@@ -173,7 +173,7 @@ function renderSiteContent() {
   setText("#home-speakers-button", "home.secondary_button_speakers", "Equipo docente");
   setText("#home-resources-button", "home.secondary_button_resources", "Recursos");
   setText("#metric-sessions-label", "home.metric_sessions_label", "Sesiones");
-  setText("#metric-sessions-value", "home.metric_sessions_value", "10");
+  setText("#metric-sessions-value", "home.metric_sessions_value", "12");
   setText("#metric-course-label", "home.metric_course_label", "Curso");
   setText("#metric-course-value", "home.metric_course_value", "2026-2027");
   setText("#metric-format-label", "home.metric_format_label", "Formato");

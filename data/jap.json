@@ -362,6 +362,72 @@
       "material_previo": "",
       "material_posterior": "",
       "observaciones_internas": ""
+    },
+    {
+      "id": 11,
+      "slug": "ginecologia-ap",
+      "titulo": "Ginecología en Atención Primaria",
+      "bloque": "Sesión 11",
+      "descripcion": "Abordaje práctico de problemas ginecológicos frecuentes en Atención Primaria, salud sexual y reproductiva, anticoncepción, cribado, menopausia, síntomas ginecológicos frecuentes, criterios de derivación y coordinación con Ginecología.",
+      "objetivo": "Revisar el abordaje práctico de la salud de la mujer y los problemas ginecológicos frecuentes en Atención Primaria.",
+      "contenidos_clave": [
+        "Alteraciones menstruales",
+        "Anticoncepción y salud sexual",
+        "Síntomas vulvovaginales",
+        "Sangrado uterino anómalo y menopausia",
+        "Cribado, criterios de alarma y derivación preferente"
+      ],
+      "fecha": "Pendiente de confirmar",
+      "hora_inicio": "Pendiente de confirmar",
+      "hora_fin": "Pendiente de confirmar",
+      "sede": "Pendiente de confirmar",
+      "ponentes": [
+        "Pendiente de confirmar"
+      ],
+      "imagen": "assets/img/sesion-ginecologia-ap.png",
+      "recursos": [],
+      "estado": "publicada",
+      "objetivos_docentes": "",
+      "metodologia": "",
+      "bibliografia": "",
+      "responsable_revision": "",
+      "fecha_revision": "",
+      "material_previo": "",
+      "material_posterior": "",
+      "observaciones_internas": ""
+    },
+    {
+      "id": 12,
+      "slug": "insuficiencia-cardiaca-cronica",
+      "titulo": "Insuficiencia cardiaca crónica en Atención Primaria",
+      "bloque": "Sesión 12",
+      "descripcion": "Seguimiento longitudinal de la insuficiencia cardiaca crónica desde Atención Primaria, identificación de descompensaciones, optimización terapéutica, educación sanitaria, autocuidados, coordinación con Cardiología/Urgencias y criterios de derivación.",
+      "objetivo": "Actualizar el seguimiento longitudinal de la insuficiencia cardiaca crónica desde Atención Primaria y la coordinación asistencial.",
+      "contenidos_clave": [
+        "Paciente con diagnóstico reciente",
+        "Revisión tras alta hospitalaria",
+        "Ajuste de tratamiento y control de síntomas",
+        "Control de peso, diuresis y signos de alarma",
+        "Comorbilidad, derivación y prevención de reingresos"
+      ],
+      "fecha": "Pendiente de confirmar",
+      "hora_inicio": "Pendiente de confirmar",
+      "hora_fin": "Pendiente de confirmar",
+      "sede": "Pendiente de confirmar",
+      "ponentes": [
+        "Pendiente de confirmar"
+      ],
+      "imagen": "assets/img/sesion-insuficiencia-cardiaca-cronica.png",
+      "recursos": [],
+      "estado": "publicada",
+      "objetivos_docentes": "",
+      "metodologia": "",
+      "bibliografia": "",
+      "responsable_revision": "",
+      "fecha_revision": "",
+      "material_previo": "",
+      "material_posterior": "",
+      "observaciones_internas": ""
     }
   ],
   "ponentes": [
@@ -514,6 +580,20 @@
       "tipo": "cartel",
       "formato": "PNG",
       "archivo": "assets/img/sesion-fragilidad.png"
+    },
+    {
+      "id": "cartel-ginecologia-ap",
+      "titulo": "Cartel sesión 11: Ginecología en Atención Primaria",
+      "tipo": "cartel",
+      "formato": "PNG",
+      "archivo": "assets/img/sesion-ginecologia-ap.png"
+    },
+    {
+      "id": "cartel-insuficiencia-cardiaca-cronica",
+      "titulo": "Cartel sesión 12: Insuficiencia cardiaca crónica",
+      "tipo": "cartel",
+      "formato": "PNG",
+      "archivo": "assets/img/sesion-insuficiencia-cardiaca-cronica.png"
     }
   ],
   "sedes": [
@@ -634,7 +714,7 @@
       "secondary_button_resources": "Recursos",
       "metrics": {
         "sessions_label": "Sesiones",
-        "sessions_value": "10",
+        "sessions_value": "12",
         "course_label": "Curso",
         "course_value": "2026-2027",
         "format_label": "Formato",

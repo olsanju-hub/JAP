@@ -44,7 +44,7 @@ insert into public.site_settings (key, value, type, group_name, label, descripti
   ('home.secondary_button_speakers', 'Equipo docente', 'text', 'Inicio', 'Botón equipo', 'Texto del acceso rápido a equipo docente.'),
   ('home.secondary_button_resources', 'Recursos', 'text', 'Inicio', 'Botón recursos', 'Texto del acceso rápido a recursos.'),
   ('home.metric_sessions_label', 'Sesiones', 'text', 'Datos clave', 'Etiqueta sesiones', 'Etiqueta del dato clave de sesiones.'),
-  ('home.metric_sessions_value', '10', 'text', 'Datos clave', 'Valor sesiones', 'Valor del dato clave de sesiones.'),
+  ('home.metric_sessions_value', '12', 'text', 'Datos clave', 'Valor sesiones', 'Valor del dato clave de sesiones.'),
   ('home.metric_course_label', 'Curso', 'text', 'Datos clave', 'Etiqueta curso', 'Etiqueta del dato clave de curso.'),
   ('home.metric_course_value', '2026-2027', 'text', 'Datos clave', 'Valor curso', 'Valor del curso.'),
   ('home.metric_format_label', 'Formato', 'text', 'Datos clave', 'Etiqueta formato', 'Etiqueta del formato.'),

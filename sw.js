@@ -1,4 +1,4 @@
-const CACHE_NAME = "jap-static-v18";
+const CACHE_NAME = "jap-static-v20";
 
 const APP_ASSETS = [
   "./",
@@ -29,6 +29,8 @@ const APP_ASSETS = [
   "./assets/img/sesion-dermatologia.png",
   "./assets/img/sesion-patologia-digestiva.png",
   "./assets/img/sesion-fragilidad.png",
+  "./assets/img/sesion-ginecologia-ap.png",
+  "./assets/img/sesion-insuficiencia-cardiaca-cronica.png",
   "./assets/docs/programa-anual.pdf",
   "./assets/docs/plantilla-jornadas-docentes-ap.pptx"
 ];

@@ -494,4 +494,4 @@ Si no ves cambios tras editar archivos cacheados:
 3. Limpia Storage si es necesario.
 4. Recarga con hard reload.
 
-El cache actual se identifica como `jap-static-v18`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.
+El cache actual se identifica como `jap-static-v20`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.
