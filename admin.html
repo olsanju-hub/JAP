@@ -59,6 +59,7 @@
           <button class="button primary" type="button" data-admin-tab="sesiones">Sesiones</button>
           <button class="button" type="button" data-admin-tab="ponentes">Equipo docente</button>
           <button class="button" type="button" data-admin-tab="recursos">Recursos</button>
+          <button class="button" type="button" data-admin-tab="bienvenida">Bienvenida / instrucciones</button>
           <button class="button" type="button" data-admin-tab="textos">Textos de la app</button>
           <button class="button" type="button" data-admin-tab="backup">Copia de seguridad</button>
         </nav>
@@ -214,6 +215,39 @@
               <div id="resources-list" class="admin-list"></div>
             </div>
           </div>
+        </section>
+
+        <section class="admin-panel" data-admin-panel="bienvenida" hidden>
+          <form id="welcome-form" class="admin-form admin-card">
+            <div class="admin-form-head">
+              <h2>Bienvenida e instrucciones</h2>
+              <button id="welcome-submit" class="button primary" type="submit">Guardar cambios</button>
+            </div>
+            <p class="form-message">Contenido visible en la home y en el modal público. Se guarda en Supabase como configuración global estructurada.</p>
+            <label class="check-row"><input name="welcome.visible" type="checkbox"> Mostrar bloque en la home</label>
+            <label>Título <input name="welcome.title"></label>
+            <label>Subtítulo <input name="welcome.subtitle"></label>
+            <label>Texto introductorio <textarea name="welcome.intro" rows="5"></textarea></label>
+            <label>Texto del botón <input name="welcome.button_label"></label>
+            <fieldset class="admin-fieldset">
+              <legend>Secciones de instrucciones</legend>
+              <p class="form-message">Cada sección admite texto libre, bullets o ambos. Los bullets se escriben uno por línea.</p>
+              <div id="welcome-sections-editor" class="welcome-editor-list"></div>
+              <button class="button" type="button" data-add-welcome-section>Añadir sección</button>
+            </fieldset>
+            <fieldset class="admin-fieldset">
+              <legend>Cronograma general</legend>
+              <label>Título <input name="welcome.schedule_title"></label>
+              <label>Texto <textarea name="welcome.schedule_text" rows="5"></textarea></label>
+            </fieldset>
+            <fieldset class="admin-fieldset">
+              <legend>Fechas inicialmente disponibles</legend>
+              <p class="form-message">Gestiona cada fecha como elemento estructurado con fecha, etiqueta visible y estado.</p>
+              <label>Título <input name="welcome.dates_title"></label>
+              <div id="welcome-dates-editor" class="welcome-editor-list"></div>
+              <button class="button" type="button" data-add-welcome-date>Añadir fecha</button>
+            </fieldset>
+          </form>
         </section>
 
         <section class="admin-panel" data-admin-panel="textos" hidden>

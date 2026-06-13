@@ -82,6 +82,14 @@
             </dl>
           </div>
         </figure>
+        <article id="welcome-card" class="welcome-card" hidden>
+          <div>
+            <p id="welcome-subtitle" class="eyebrow"></p>
+            <h2 id="welcome-title"></h2>
+            <p id="welcome-intro"></p>
+          </div>
+          <button id="welcome-button" class="button primary" type="button" data-open-welcome>Ver instrucciones y cronograma</button>
+        </article>
       </section>
 
       <section id="agenda" class="section" data-view="agenda" hidden>
@@ -146,6 +154,20 @@
       </div>
       <div id="resource-dialog-content" class="resource-dialog-content"></div>
       <div id="resource-dialog-actions" class="dialog-actions"></div>
+    </dialog>
+
+    <dialog id="welcome-dialog" class="welcome-dialog" aria-labelledby="welcome-dialog-title">
+      <div class="dialog-head">
+        <div>
+          <p id="welcome-dialog-subtitle" class="eyebrow"></p>
+          <h2 id="welcome-dialog-title"></h2>
+        </div>
+        <button class="icon-button" type="button" data-close-welcome aria-label="Cerrar instrucciones">×</button>
+      </div>
+      <div id="welcome-dialog-content" class="welcome-dialog-content"></div>
+      <div class="dialog-actions">
+        <button class="button" type="button" data-close-welcome>Cerrar</button>
+      </div>
     </dialog>
 
     <footer class="site-footer">

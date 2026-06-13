@@ -159,6 +159,27 @@ function siteText(key, fallback = "Pendiente de confirmar") {
   return value === null || value === undefined || value === "" ? fallback : value;
 }
 
+function siteBoolean(key, fallback = true) {
+  const value = state.data?.siteContent?.[key];
+  if (value === null || value === undefined || value === "") return fallback;
+  if (typeof value === "boolean") return value;
+  return !["false", "0", "no", "oculto"].includes(String(value).trim().toLowerCase());
+}
+
+function siteJson(key, fallback = []) {
+  const value = state.data?.siteContent?.[key];
+  if (Array.isArray(value)) return value;
+  if (value && typeof value === "object") return value;
+  if (typeof value !== "string" || !value.trim()) return fallback;
+  try {
+    const parsed = JSON.parse(value);
+    return parsed || fallback;
+  } catch (error) {
+    console.warn(`No se pudo interpretar ${key} como JSON`, error);
+    return fallback;
+  }
+}
+
 function renderSiteContent() {
   const setText = (selector, key, fallback) => {
     const element = $(selector);
@@ -192,6 +213,106 @@ function renderSiteContent() {
   setText("#contact-description", "contact.description", "Datos de coordinación del programa.");
   setText("#footer-text", "footer.text", "Jornadas Docentes de Atención Primaria · Programa anual 2026-2027.");
   setText("#footer-admin-link", "footer.admin_label", "Admin");
+}
+
+function welcomeData() {
+  return {
+    visible: siteBoolean("welcome.visible", true),
+    title: siteText("welcome.title", "Bienvenida a las JAP"),
+    subtitle: siteText("welcome.subtitle", "Jornadas Docentes de Atención Primaria 2026-2027"),
+    intro: siteText("welcome.intro", ""),
+    buttonLabel: siteText("welcome.button_label", "Ver instrucciones y cronograma"),
+    sections: siteJson("welcome.sections", []),
+    scheduleTitle: siteText("welcome.schedule_title", "Cronograma general"),
+    scheduleText: siteText("welcome.schedule_text", ""),
+    datesTitle: siteText("welcome.dates_title", "Fechas inicialmente disponibles"),
+    dates: siteJson("welcome.dates", [])
+  };
+}
+
+function renderWelcome() {
+  const card = $("#welcome-card");
+  if (!card) return;
+  const data = welcomeData();
+  card.hidden = !data.visible;
+  if (!data.visible) return;
+
+  $("#welcome-title").textContent = data.title;
+  $("#welcome-subtitle").textContent = data.subtitle;
+  $("#welcome-subtitle").hidden = !data.subtitle;
+  $("#welcome-intro").textContent = data.intro;
+  $("#welcome-button").textContent = data.buttonLabel;
+}
+
+function renderWelcomeSection(section) {
+  const bullets = Array.isArray(section.bullets) ? section.bullets.filter(Boolean) : [];
+  const text = String(section.text || "").trim();
+  return `
+    <article class="instruction-card">
+      <h3>${escapeHtml(section.title || "")}</h3>
+      ${text ? `<p>${escapeHtml(text)}</p>` : ""}
+      ${
+        bullets.length
+          ? `<ul class="key-list">${bullets.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+          : ""
+      }
+    </article>
+  `;
+}
+
+function formatWelcomeDate(item) {
+  const label = item.label || item.date || "";
+  const status = item.status || "disponible";
+  const statusLabels = {
+    disponible: "Disponible",
+    asignada: "Asignada",
+    reserva: "Reserva"
+  };
+  return `
+    <li class="date-item">
+      <span>${escapeHtml(label)}</span>
+      <strong class="date-status ${escapeHtml(status)}">${escapeHtml(statusLabels[status] || status)}</strong>
+    </li>
+  `;
+}
+
+function showWelcome() {
+  const data = welcomeData();
+  $("#welcome-dialog-title").textContent = data.title;
+  $("#welcome-dialog-subtitle").textContent = data.subtitle;
+  $("#welcome-dialog-subtitle").hidden = !data.subtitle;
+  $("#welcome-dialog-content").innerHTML = `
+    ${data.intro ? `<section class="welcome-intro-panel"><p>${escapeHtml(data.intro)}</p></section>` : ""}
+    <section class="instruction-grid">
+      ${data.sections.map(renderWelcomeSection).join("")}
+    </section>
+    <section class="schedule-card">
+      <h3>${escapeHtml(data.scheduleTitle)}</h3>
+      <p>${escapeHtml(data.scheduleText)}</p>
+    </section>
+    <section class="dates-card">
+      <h3>${escapeHtml(data.datesTitle)}</h3>
+      <ul class="date-grid">
+        ${data.dates.map(formatWelcomeDate).join("")}
+      </ul>
+    </section>
+  `;
+
+  const dialog = $("#welcome-dialog");
+  if (typeof dialog.showModal === "function") {
+    dialog.showModal();
+  } else {
+    dialog.setAttribute("open", "");
+  }
+}
+
+function closeWelcomeDialog() {
+  const dialog = $("#welcome-dialog");
+  if (typeof dialog.close === "function") {
+    dialog.close();
+  } else {
+    dialog.removeAttribute("open");
+  }
 }
 
 function renderProgram(programa) {
@@ -802,6 +923,10 @@ function bindInteractions() {
       return;
     }
 
+    if (event.target.closest("[data-open-welcome]")) {
+      showWelcome();
+    }
+
     const trigger = event.target.closest("[data-session]");
     if (trigger) {
       showSession(trigger.dataset.session);
@@ -824,6 +949,10 @@ function bindInteractions() {
     if (event.target.closest("[data-close-resource]")) {
       closeResourceDialog();
     }
+
+    if (event.target.closest("[data-close-welcome]")) {
+      closeWelcomeDialog();
+    }
   });
 
   $("#session-dialog").addEventListener("click", (event) => {
@@ -835,6 +964,12 @@ function bindInteractions() {
   $("#resource-dialog").addEventListener("click", (event) => {
     if (event.target.id === "resource-dialog") {
       closeResourceDialog();
+    }
+  });
+
+  $("#welcome-dialog").addEventListener("click", (event) => {
+    if (event.target.id === "welcome-dialog") {
+      closeWelcomeDialog();
     }
   });
 
@@ -855,6 +990,7 @@ async function init() {
     state.data = await loadData();
 
     renderSiteContent();
+    renderWelcome();
     renderProgram(state.data.programa);
     renderAgenda(state.data.sesiones);
     renderSessions(state.data.sesiones);

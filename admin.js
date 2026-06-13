@@ -48,6 +48,77 @@ const SITE_SETTING_DEFINITIONS = [
   { key: "footer.admin_label", group: "Footer", label: "Etiqueta Admin", type: "text", description: "Texto del enlace al panel administrativo." }
 ];
 
+const WELCOME_DEFAULTS = {
+  visible: true,
+  title: "Bienvenida a las JAP",
+  subtitle: "Jornadas Docentes de Atención Primaria 2026-2027",
+  intro: "Las Jornadas Docentes de Atención Primaria (JAP) son un programa anual de sesiones clínicas rotatorias, aprobado por la Comisión de Docencia, orientado a reforzar la formación práctica, la actualización basada en la evidencia y la integración entre residentes, tutores y profesionales del área.",
+  button_label: "Ver instrucciones y cronograma",
+  sections: [
+    {
+      title: "Objetivo de las JAP",
+      text: "Las JAP buscan crear un espacio docente estable, práctico y compartido, centrado en problemas frecuentes de Atención Primaria. El objetivo es revisar la evidencia útil, compartir criterios de manejo y generar materiales aplicables en consulta.",
+      bullets: []
+    },
+    {
+      title: "Enfoque de cada sesión",
+      text: "Cada sesión debe partir de un caso clínico real o verosímil y responder preguntas clínicas concretas: qué hacer en consulta, cuándo tratar, cuándo revisar, cuándo derivar y qué errores conviene evitar.",
+      bullets: []
+    },
+    {
+      title: "Estructura recomendada",
+      text: "",
+      bullets: [
+        "Caso clínico inicial.",
+        "Planteamiento del problema en Atención Primaria.",
+        "Revisión práctica de una guía clínica o evidencia relevante.",
+        "Aplicación al manejo en consulta.",
+        "Criterios de seguimiento, derivación o coordinación con otros niveles.",
+        "Conclusiones prácticas.",
+        "Material breve final."
+      ]
+    },
+    {
+      title: "Papel del residente ponente",
+      text: "El residente preparará y presentará la sesión con un enfoque práctico, claro y aplicable. Se recomienda evitar revisiones teóricas extensas y priorizar decisiones clínicas, casos y mensajes útiles para la consulta.",
+      bullets: []
+    },
+    {
+      title: "Papel del tutor",
+      text: "El tutor acompañará la preparación de la sesión, revisará el enfoque clínico, ayudará a seleccionar la evidencia principal y asegurará que el contenido sea adecuado para la práctica real en Atención Primaria.",
+      bullets: []
+    },
+    {
+      title: "Apoyo de R3/R4",
+      text: "Los residentes de tercer y cuarto año podrán apoyar en la estructura docente, revisión de bibliografía, preparación del caso clínico, diseño de la presentación y elaboración del material final.",
+      bullets: []
+    },
+    {
+      title: "Material final esperado",
+      text: "Cada sesión debería terminar con un recurso breve y reutilizable: algoritmo, tabla resumen, checklist, hoja de manejo o puntos clave para consulta.",
+      bullets: []
+    }
+  ],
+  schedule_title: "Cronograma general",
+  schedule_text: "Las JAP se desarrollarán entre septiembre de 2026 y mayo de 2027. La propuesta inicial contempla sesiones preferentemente los viernes, con una cadencia aproximada de cada tres semanas. Aunque se proponen 12 temas, se dejan 13 fechas inicialmente disponibles para facilitar la organización, permitir ajustes por incidencias o reservar alguna fecha si fuera necesario.",
+  dates_title: "Fechas inicialmente disponibles",
+  dates: [
+    { date: "2026-09-04", label: "Viernes 4 de septiembre de 2026.", status: "disponible" },
+    { date: "2026-09-25", label: "Viernes 25 de septiembre de 2026.", status: "disponible" },
+    { date: "2026-10-16", label: "Viernes 16 de octubre de 2026.", status: "disponible" },
+    { date: "2026-11-06", label: "Viernes 6 de noviembre de 2026.", status: "disponible" },
+    { date: "2026-11-27", label: "Viernes 27 de noviembre de 2026.", status: "disponible" },
+    { date: "2026-12-18", label: "Viernes 18 de diciembre de 2026.", status: "disponible" },
+    { date: "2027-01-08", label: "Viernes 8 de enero de 2027.", status: "disponible" },
+    { date: "2027-01-29", label: "Viernes 29 de enero de 2027.", status: "disponible" },
+    { date: "2027-02-19", label: "Viernes 19 de febrero de 2027.", status: "disponible" },
+    { date: "2027-03-12", label: "Viernes 12 de marzo de 2027.", status: "disponible" },
+    { date: "2027-04-02", label: "Viernes 2 de abril de 2027.", status: "disponible" },
+    { date: "2027-04-23", label: "Viernes 23 de abril de 2027.", status: "disponible" },
+    { date: "2027-05-14", label: "Viernes 14 de mayo de 2027.", status: "disponible" }
+  ]
+};
+
 const escapeHtml = (value) =>
   String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -298,6 +369,116 @@ function renderSiteSettings() {
     .join("");
 }
 
+function siteSettingValue(key, fallback = "") {
+  const setting = state.siteSettings.find((item) => item.key === key);
+  return setting?.value ?? fallback;
+}
+
+function parseSettingJson(key, fallback) {
+  const value = siteSettingValue(key, "");
+  if (!value) return structuredClone(fallback);
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : structuredClone(fallback);
+  } catch (error) {
+    console.warn(`No se pudo leer ${key} como JSON`, error);
+    return structuredClone(fallback);
+  }
+}
+
+function renderWelcomeEditor() {
+  const form = $("#welcome-form");
+  if (!form) return;
+  form.elements["welcome.visible"].checked = siteSettingValue("welcome.visible", String(WELCOME_DEFAULTS.visible)) !== "false";
+  form.elements["welcome.title"].value = siteSettingValue("welcome.title", WELCOME_DEFAULTS.title);
+  form.elements["welcome.subtitle"].value = siteSettingValue("welcome.subtitle", WELCOME_DEFAULTS.subtitle);
+  form.elements["welcome.intro"].value = siteSettingValue("welcome.intro", WELCOME_DEFAULTS.intro);
+  form.elements["welcome.button_label"].value = siteSettingValue("welcome.button_label", WELCOME_DEFAULTS.button_label);
+  form.elements["welcome.schedule_title"].value = siteSettingValue("welcome.schedule_title", WELCOME_DEFAULTS.schedule_title);
+  form.elements["welcome.schedule_text"].value = siteSettingValue("welcome.schedule_text", WELCOME_DEFAULTS.schedule_text);
+  form.elements["welcome.dates_title"].value = siteSettingValue("welcome.dates_title", WELCOME_DEFAULTS.dates_title);
+  renderWelcomeSectionsEditor(parseSettingJson("welcome.sections", WELCOME_DEFAULTS.sections));
+  renderWelcomeDatesEditor(parseSettingJson("welcome.dates", WELCOME_DEFAULTS.dates));
+}
+
+function renderWelcomeSectionsEditor(sections) {
+  const container = $("#welcome-sections-editor");
+  container.innerHTML = sections
+    .map(
+      (section, index) => `
+        <article class="welcome-editor-item" data-welcome-section-row>
+          <div class="admin-form-head">
+            <h3>Sección ${index + 1}</h3>
+            <button class="button danger" type="button" data-remove-welcome-row>Quitar</button>
+          </div>
+          <label>Título <input data-welcome-section-title value="${escapeHtml(section.title || "")}"></label>
+          <label>Texto <textarea data-welcome-section-text rows="4">${escapeHtml(section.text || "")}</textarea></label>
+          <label>Bullets, uno por línea <textarea data-welcome-section-bullets rows="5">${escapeHtml((section.bullets || []).join("\n"))}</textarea></label>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function renderWelcomeDatesEditor(dates) {
+  const container = $("#welcome-dates-editor");
+  container.innerHTML = dates
+    .map(
+      (item, index) => `
+        <article class="welcome-editor-item" data-welcome-date-row>
+          <div class="admin-form-head">
+            <h3>Fecha ${index + 1}</h3>
+            <button class="button danger" type="button" data-remove-welcome-row>Quitar</button>
+          </div>
+          <div class="form-row">
+            <label>Fecha <input data-welcome-date value="${escapeHtml(item.date || "")}" type="date"></label>
+            <label>Estado
+              <select data-welcome-date-status>
+                <option value="disponible" ${item.status === "disponible" ? "selected" : ""}>disponible</option>
+                <option value="asignada" ${item.status === "asignada" ? "selected" : ""}>asignada</option>
+                <option value="reserva" ${item.status === "reserva" ? "selected" : ""}>reserva</option>
+              </select>
+            </label>
+          </div>
+          <label>Etiqueta visible <input data-welcome-date-label value="${escapeHtml(item.label || "")}"></label>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function collectWelcomeSections() {
+  return $$("[data-welcome-section-row]")
+    .map((row) => ({
+      title: row.querySelector("[data-welcome-section-title]").value.trim(),
+      text: row.querySelector("[data-welcome-section-text]").value.trim(),
+      bullets: linesToArray(row.querySelector("[data-welcome-section-bullets]").value)
+    }))
+    .filter((section) => section.title || section.text || section.bullets.length);
+}
+
+function collectWelcomeDates() {
+  return $$("[data-welcome-date-row]")
+    .map((row) => ({
+      date: row.querySelector("[data-welcome-date]").value,
+      label: row.querySelector("[data-welcome-date-label]").value.trim(),
+      status: row.querySelector("[data-welcome-date-status]").value
+    }))
+    .filter((item) => item.date || item.label);
+}
+
+function addWelcomeSection() {
+  const sections = collectWelcomeSections();
+  sections.push({ title: "", text: "", bullets: [] });
+  renderWelcomeSectionsEditor(sections);
+}
+
+function addWelcomeDate() {
+  const dates = collectWelcomeDates();
+  dates.push({ date: "", label: "", status: "disponible" });
+  renderWelcomeDatesEditor(dates);
+}
+
 async function loadProfile() {
   const { data, error } = await state.supabase.from("profiles").select("*").eq("id", state.user.id).maybeSingle();
   if (error) throw error;
@@ -341,6 +522,7 @@ async function loadAdminData() {
   setSessionOptions();
   renderLists();
   renderSiteSettings();
+  renderWelcomeEditor();
   if (state.modes.session === "create") {
     resetSessionForm();
   } else {
@@ -595,6 +777,100 @@ async function saveSiteSettings(event) {
   message("Textos de la app guardados.");
 }
 
+async function saveWelcomeSettings(event) {
+  event.preventDefault();
+  if (!canEdit()) return;
+  const form = event.currentTarget;
+  const values = formData(form);
+  const payload = [
+    {
+      key: "welcome.visible",
+      value: String(form.elements["welcome.visible"].checked),
+      type: "boolean",
+      group_name: "Bienvenida / instrucciones",
+      label: "Visible",
+      description: "Muestra u oculta el bloque de bienvenida en la home."
+    },
+    {
+      key: "welcome.title",
+      value: values["welcome.title"] || "",
+      type: "text",
+      group_name: "Bienvenida / instrucciones",
+      label: "Título",
+      description: "Título de la tarjeta y del modal."
+    },
+    {
+      key: "welcome.subtitle",
+      value: values["welcome.subtitle"] || "",
+      type: "text",
+      group_name: "Bienvenida / instrucciones",
+      label: "Subtítulo",
+      description: "Subtítulo opcional visible en tarjeta y modal."
+    },
+    {
+      key: "welcome.intro",
+      value: values["welcome.intro"] || "",
+      type: "textarea",
+      group_name: "Bienvenida / instrucciones",
+      label: "Texto introductorio",
+      description: "Resumen visible en la home y apertura del modal."
+    },
+    {
+      key: "welcome.button_label",
+      value: values["welcome.button_label"] || "",
+      type: "text",
+      group_name: "Bienvenida / instrucciones",
+      label: "Texto del botón",
+      description: "Etiqueta del botón que abre el modal."
+    },
+    {
+      key: "welcome.sections",
+      value: JSON.stringify(collectWelcomeSections()),
+      type: "json",
+      group_name: "Bienvenida / instrucciones",
+      label: "Secciones de instrucciones",
+      description: "Lista estructurada de secciones con título, texto y bullets."
+    },
+    {
+      key: "welcome.schedule_title",
+      value: values["welcome.schedule_title"] || "",
+      type: "text",
+      group_name: "Bienvenida / instrucciones",
+      label: "Título cronograma",
+      description: "Título del bloque de cronograma general."
+    },
+    {
+      key: "welcome.schedule_text",
+      value: values["welcome.schedule_text"] || "",
+      type: "textarea",
+      group_name: "Bienvenida / instrucciones",
+      label: "Texto cronograma",
+      description: "Descripción del cronograma general."
+    },
+    {
+      key: "welcome.dates_title",
+      value: values["welcome.dates_title"] || "",
+      type: "text",
+      group_name: "Bienvenida / instrucciones",
+      label: "Título fechas",
+      description: "Título del listado de fechas."
+    },
+    {
+      key: "welcome.dates",
+      value: JSON.stringify(collectWelcomeDates()),
+      type: "json",
+      group_name: "Bienvenida / instrucciones",
+      label: "Fechas inicialmente disponibles",
+      description: "Lista estructurada de fechas, etiqueta visible y estado."
+    }
+  ];
+
+  const { error } = await state.supabase.from("site_settings").upsert(payload, { onConflict: "key" });
+  if (error) throw error;
+  await loadAdminData();
+  message("Bienvenida e instrucciones guardadas.");
+}
+
 async function exportBackup() {
   if (!canEdit()) {
     message("No tienes permisos para exportar la copia de seguridad.");
@@ -760,6 +1036,9 @@ function bindEvents() {
   $("#speaker-form").addEventListener("submit", (event) => saveSpeaker(event).catch((error) => message(error.message)));
   $("#resource-form").addEventListener("submit", (event) => saveResource(event).catch((error) => message(error.message)));
   $("#site-content-form").addEventListener("submit", (event) => saveSiteSettings(event).catch((error) => message(error.message)));
+  $("#welcome-form").addEventListener("submit", (event) => saveWelcomeSettings(event).catch((error) => message(error.message)));
+  $("[data-add-welcome-section]").addEventListener("click", addWelcomeSection);
+  $("[data-add-welcome-date]").addEventListener("click", addWelcomeDate);
   $("#backup-export-button").addEventListener("click", () => exportBackup().catch((error) => message(error.message)));
 
   document.addEventListener("click", (event) => {
@@ -774,6 +1053,7 @@ function bindEvents() {
     const restoreSessionId = event.target.closest("[data-restore-session]")?.dataset.restoreSession;
     const restoreSpeakerId = event.target.closest("[data-restore-speaker]")?.dataset.restoreSpeaker;
     const restoreResourceId = event.target.closest("[data-restore-resource]")?.dataset.restoreResource;
+    const removableWelcomeRow = event.target.closest("[data-remove-welcome-row]")?.closest(".welcome-editor-item");
 
     if (sessionId) editSession(sessionId);
     if (speakerId) editSpeaker(speakerId);
@@ -786,6 +1066,7 @@ function bindEvents() {
     if (restoreSessionId) restore("sesiones", restoreSessionId, { is_active: true }, "Sesión").catch((error) => message(error.message));
     if (restoreSpeakerId) restore("ponentes", restoreSpeakerId, { is_active: true }, "Persona").catch((error) => message(error.message));
     if (restoreResourceId) restore("recursos", restoreResourceId, { visible: true }, "Recurso").catch((error) => message(error.message));
+    if (removableWelcomeRow) removableWelcomeRow.remove();
   });
 }
 

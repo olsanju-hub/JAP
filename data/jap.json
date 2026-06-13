@@ -723,6 +723,128 @@
         "duration_value": "45-60 min"
       }
     },
+    "welcome": {
+      "visible": true,
+      "title": "Bienvenida a las JAP",
+      "subtitle": "Jornadas Docentes de Atención Primaria 2026-2027",
+      "intro": "Las Jornadas Docentes de Atención Primaria (JAP) son un programa anual de sesiones clínicas rotatorias, aprobado por la Comisión de Docencia, orientado a reforzar la formación práctica, la actualización basada en la evidencia y la integración entre residentes, tutores y profesionales del área.",
+      "button_label": "Ver instrucciones y cronograma",
+      "sections": [
+        {
+          "title": "Objetivo de las JAP",
+          "text": "Las JAP buscan crear un espacio docente estable, práctico y compartido, centrado en problemas frecuentes de Atención Primaria. El objetivo es revisar la evidencia útil, compartir criterios de manejo y generar materiales aplicables en consulta.",
+          "bullets": []
+        },
+        {
+          "title": "Enfoque de cada sesión",
+          "text": "Cada sesión debe partir de un caso clínico real o verosímil y responder preguntas clínicas concretas: qué hacer en consulta, cuándo tratar, cuándo revisar, cuándo derivar y qué errores conviene evitar.",
+          "bullets": []
+        },
+        {
+          "title": "Estructura recomendada",
+          "text": "",
+          "bullets": [
+            "Caso clínico inicial.",
+            "Planteamiento del problema en Atención Primaria.",
+            "Revisión práctica de una guía clínica o evidencia relevante.",
+            "Aplicación al manejo en consulta.",
+            "Criterios de seguimiento, derivación o coordinación con otros niveles.",
+            "Conclusiones prácticas.",
+            "Material breve final."
+          ]
+        },
+        {
+          "title": "Papel del residente ponente",
+          "text": "El residente preparará y presentará la sesión con un enfoque práctico, claro y aplicable. Se recomienda evitar revisiones teóricas extensas y priorizar decisiones clínicas, casos y mensajes útiles para la consulta.",
+          "bullets": []
+        },
+        {
+          "title": "Papel del tutor",
+          "text": "El tutor acompañará la preparación de la sesión, revisará el enfoque clínico, ayudará a seleccionar la evidencia principal y asegurará que el contenido sea adecuado para la práctica real en Atención Primaria.",
+          "bullets": []
+        },
+        {
+          "title": "Apoyo de R3/R4",
+          "text": "Los residentes de tercer y cuarto año podrán apoyar en la estructura docente, revisión de bibliografía, preparación del caso clínico, diseño de la presentación y elaboración del material final.",
+          "bullets": []
+        },
+        {
+          "title": "Material final esperado",
+          "text": "Cada sesión debería terminar con un recurso breve y reutilizable: algoritmo, tabla resumen, checklist, hoja de manejo o puntos clave para consulta.",
+          "bullets": []
+        }
+      ],
+      "schedule_title": "Cronograma general",
+      "schedule_text": "Las JAP se desarrollarán entre septiembre de 2026 y mayo de 2027. La propuesta inicial contempla sesiones preferentemente los viernes, con una cadencia aproximada de cada tres semanas. Aunque se proponen 12 temas, se dejan 13 fechas inicialmente disponibles para facilitar la organización, permitir ajustes por incidencias o reservar alguna fecha si fuera necesario.",
+      "dates_title": "Fechas inicialmente disponibles",
+      "dates": [
+        {
+          "date": "2026-09-04",
+          "label": "Viernes 4 de septiembre de 2026.",
+          "status": "disponible"
+        },
+        {
+          "date": "2026-09-25",
+          "label": "Viernes 25 de septiembre de 2026.",
+          "status": "disponible"
+        },
+        {
+          "date": "2026-10-16",
+          "label": "Viernes 16 de octubre de 2026.",
+          "status": "disponible"
+        },
+        {
+          "date": "2026-11-06",
+          "label": "Viernes 6 de noviembre de 2026.",
+          "status": "disponible"
+        },
+        {
+          "date": "2026-11-27",
+          "label": "Viernes 27 de noviembre de 2026.",
+          "status": "disponible"
+        },
+        {
+          "date": "2026-12-18",
+          "label": "Viernes 18 de diciembre de 2026.",
+          "status": "disponible"
+        },
+        {
+          "date": "2027-01-08",
+          "label": "Viernes 8 de enero de 2027.",
+          "status": "disponible"
+        },
+        {
+          "date": "2027-01-29",
+          "label": "Viernes 29 de enero de 2027.",
+          "status": "disponible"
+        },
+        {
+          "date": "2027-02-19",
+          "label": "Viernes 19 de febrero de 2027.",
+          "status": "disponible"
+        },
+        {
+          "date": "2027-03-12",
+          "label": "Viernes 12 de marzo de 2027.",
+          "status": "disponible"
+        },
+        {
+          "date": "2027-04-02",
+          "label": "Viernes 2 de abril de 2027.",
+          "status": "disponible"
+        },
+        {
+          "date": "2027-04-23",
+          "label": "Viernes 23 de abril de 2027.",
+          "status": "disponible"
+        },
+        {
+          "date": "2027-05-14",
+          "label": "Viernes 14 de mayo de 2027.",
+          "status": "disponible"
+        }
+      ]
+    },
     "agenda": {
       "title": "Agenda",
       "description": "Vista rápida del programa. Cada sesión abre su detalle completo en una ventana emergente."
