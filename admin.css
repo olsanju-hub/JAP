@@ -173,6 +173,60 @@
   color: var(--muted);
 }
 
+.assignment-tasks-fieldset {
+  background: linear-gradient(135deg, var(--primary-soft), #ffffff);
+}
+
+.task-progress {
+  display: inline-grid;
+  gap: 0.15rem;
+  width: fit-content;
+  min-width: 96px;
+  padding: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.task-progress span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.task-progress strong {
+  color: var(--primary-dark);
+  font-size: 1.25rem;
+}
+
+.assignment-tasks-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.assignment-task-item {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.assignment-task-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.assignment-task-head h4 {
+  margin: 0;
+  color: var(--primary-dark);
+}
+
 .settings-grid {
   display: grid;
   gap: 1rem;
@@ -246,5 +300,16 @@
 @media (max-width: 560px) {
   .session-speaker-meta {
     grid-template-columns: 1fr;
+  }
+
+  .assignment-task-item .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .assignment-task-item input,
+  .assignment-task-item select,
+  .assignment-task-item textarea {
+    min-width: 0;
+    width: 100%;
   }
 }

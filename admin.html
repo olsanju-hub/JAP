@@ -270,6 +270,12 @@
                 <p class="form-message">No se publica nombre, correo, teléfono, tutor/a ni comentarios.</p>
               </fieldset>
               <label>Notas internas <textarea name="internal_notes" rows="3"></textarea></label>
+              <fieldset class="admin-fieldset assignment-tasks-fieldset">
+                <legend>Seguimiento docente</legend>
+                <p id="assignment-tasks-status" class="form-message">Selecciona una asignación para cargar su checklist interno.</p>
+                <div id="assignment-task-progress" class="task-progress" hidden></div>
+                <div id="assignment-tasks-list" class="assignment-tasks-list"></div>
+              </fieldset>
               <button id="assignment-submit" class="button primary" type="submit">Guardar asignación</button>
               <button class="button danger" type="button" data-cancel-assignment>Anular/liberar</button>
             </form>

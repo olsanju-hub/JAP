@@ -139,6 +139,8 @@ const state = {
   recursos: [],
   siteSettings: [],
   assignments: [],
+  assignmentTasks: new Map(),
+  assignmentTasksAvailable: false,
   signupDates: [],
   assignmentsAvailable: false,
   modes: {
@@ -386,6 +388,7 @@ function resetAssignmentForm() {
   form.reset();
   form.elements.id.value = "";
   $("#assignment-form-title").textContent = "Editar asignación";
+  renderAssignmentTasks(null);
 }
 
 function assignmentDateValue(assignment) {
@@ -411,6 +414,26 @@ function assignmentMatchesSearch(assignment, query) {
     assignment.status
   ].join(" ").toLowerCase();
   return haystack.includes(query);
+}
+
+function tasksForAssignment(assignmentId) {
+  return state.assignmentTasks.get(assignmentId) || [];
+}
+
+function taskProgress(tasks) {
+  const applicable = tasks.filter((task) => task.status !== "no_aplica");
+  const completed = applicable.filter((task) => task.status === "completada").length;
+  return {
+    completed,
+    total: applicable.length,
+    label: `${completed}/${applicable.length || tasks.length || 0}`
+  };
+}
+
+function assignmentProgressLabel(assignment) {
+  const tasks = tasksForAssignment(assignment.id);
+  if (!tasks.length) return "Checklist pendiente";
+  return `Seguimiento ${taskProgress(tasks).label}`;
 }
 
 function renderAssignmentSummary() {
@@ -464,7 +487,7 @@ function renderAssignments() {
       return `
         <article class="admin-list-item">
           <h3>${escapeHtml(sessionTitle)}</h3>
-          <p>${escapeHtml(assignmentDateValue(assignment))} · ${escapeHtml(assignmentDateKind(assignment))} · ${escapeHtml(assignment.status)} · ${escapeHtml(assignment.full_name)} · ${escapeHtml(assignment.health_center || "")}</p>
+          <p>${escapeHtml(assignmentDateValue(assignment))} · ${escapeHtml(assignmentDateKind(assignment))} · ${escapeHtml(assignment.status)} · ${escapeHtml(assignmentProgressLabel(assignment))} · ${escapeHtml(assignment.full_name)} · ${escapeHtml(assignment.health_center || "")}</p>
           <p>${escapeHtml(assignment.email)} · ${escapeHtml(assignment.phone)} · ${escapeHtml(assignment.profile)}</p>
           <div class="admin-actions">
             <button class="button" type="button" data-edit-assignment="${escapeHtml(assignment.id)}">Editar</button>
@@ -478,13 +501,141 @@ function renderAssignments() {
     .join("");
 }
 
-function editAssignment(id) {
+async function editAssignment(id) {
   const assignment = state.assignments.find((item) => item.id === id);
   if (!assignment) return;
   fillForm($("#assignment-form"), assignment);
   $("#assignment-form").elements.show_public_health_center.checked = Boolean(assignment.show_public_health_center);
   $("#assignment-form-title").textContent = `Editar: ${assignment.sesiones?.titulo || "asignación"}`;
+  await ensureAssignmentTasks(id);
   $("#assignment-form").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function taskStatusLabel(status) {
+  const labels = {
+    pendiente: "Pendiente",
+    en_progreso: "En progreso",
+    completada: "Completada",
+    no_aplica: "No aplica"
+  };
+  return labels[status] || status;
+}
+
+function renderAssignmentTasks(assignmentId) {
+  const status = $("#assignment-tasks-status");
+  const list = $("#assignment-tasks-list");
+  const progress = $("#assignment-task-progress");
+  if (!status || !list || !progress) return;
+  list.innerHTML = "";
+  progress.hidden = true;
+
+  if (!assignmentId) {
+    status.textContent = "Selecciona una asignación para cargar su checklist interno.";
+    return;
+  }
+
+  if (!state.assignmentTasksAvailable) {
+    status.textContent = "El checklist docente todavía no está disponible. Aplica la migración assignment_tasks antes de usarlo.";
+    return;
+  }
+
+  const tasks = tasksForAssignment(assignmentId).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  if (!tasks.length) {
+    status.textContent = "No hay tareas creadas para esta asignación.";
+    return;
+  }
+
+  const taskStats = taskProgress(tasks);
+  status.textContent = "Checklist interno visible solo para admin/editor.";
+  progress.hidden = false;
+  progress.innerHTML = `<span>Progreso</span><strong>${escapeHtml(taskStats.label)}</strong>`;
+  list.innerHTML = tasks
+    .map((task) => `
+      <article class="assignment-task-item" data-task-id="${escapeHtml(task.id)}">
+        <div class="assignment-task-head">
+          <h4>${escapeHtml(task.label)}</h4>
+          <span class="tag ${task.status === "completada" ? "done" : ""}">${escapeHtml(taskStatusLabel(task.status))}</span>
+        </div>
+        <div class="form-row">
+          <label>Estado
+            <select data-task-status="${escapeHtml(task.id)}">
+              <option value="pendiente" ${task.status === "pendiente" ? "selected" : ""}>pendiente</option>
+              <option value="en_progreso" ${task.status === "en_progreso" ? "selected" : ""}>en progreso</option>
+              <option value="completada" ${task.status === "completada" ? "selected" : ""}>completada</option>
+              <option value="no_aplica" ${task.status === "no_aplica" ? "selected" : ""}>no aplica</option>
+            </select>
+          </label>
+          <label>Fecha límite
+            <input type="date" value="${escapeHtml(task.due_date || "")}" data-task-due-date="${escapeHtml(task.id)}">
+          </label>
+        </div>
+        <p class="form-message">Completada en: ${escapeHtml(task.completed_at ? new Date(task.completed_at).toLocaleString("es-ES") : "Pendiente")}</p>
+        <label>Notas internas
+          <textarea rows="2" data-task-notes="${escapeHtml(task.id)}">${escapeHtml(task.notes || "")}</textarea>
+        </label>
+        <div class="admin-actions">
+          <button class="button" type="button" data-task-quick-status="pendiente" data-task-id="${escapeHtml(task.id)}">Pendiente</button>
+          <button class="button" type="button" data-task-quick-status="en_progreso" data-task-id="${escapeHtml(task.id)}">En progreso</button>
+          <button class="button" type="button" data-task-quick-status="completada" data-task-id="${escapeHtml(task.id)}">Completada</button>
+          <button class="button" type="button" data-task-quick-status="no_aplica" data-task-id="${escapeHtml(task.id)}">No aplica</button>
+          <button class="button primary" type="button" data-save-task="${escapeHtml(task.id)}">Guardar tarea</button>
+        </div>
+      </article>
+    `)
+    .join("");
+}
+
+async function ensureAssignmentTasks(assignmentId) {
+  renderAssignmentTasks(assignmentId);
+  if (!canEdit() || !state.assignmentsAvailable) return;
+  const status = $("#assignment-tasks-status");
+  if (status) status.textContent = "Cargando checklist docente...";
+  try {
+    const { data, error } = await state.supabase.rpc("ensure_assignment_tasks", { p_assignment_id: assignmentId });
+    if (error) throw error;
+    state.assignmentTasks.set(assignmentId, data || []);
+    state.assignmentTasksAvailable = true;
+    renderAssignments();
+    renderAssignmentTasks(assignmentId);
+  } catch (error) {
+    console.warn("Checklist docente no disponible", error);
+    state.assignmentTasks.set(assignmentId, []);
+    state.assignmentTasksAvailable = false;
+    renderAssignmentTasks(assignmentId);
+  }
+}
+
+function taskPayloadFromForm(taskId, statusOverride = null) {
+  const currentTask = [...state.assignmentTasks.values()].flat().find((task) => task.id === taskId);
+  const statusValue = statusOverride || $(`[data-task-status="${CSS.escape(taskId)}"]`)?.value || currentTask?.status || "pendiente";
+  const payload = {
+    status: statusValue,
+    due_date: emptyToNull($(`[data-task-due-date="${CSS.escape(taskId)}"]`)?.value),
+    notes: emptyToNull($(`[data-task-notes="${CSS.escape(taskId)}"]`)?.value)
+  };
+  if (statusValue === "completada" && currentTask?.status !== "completada") {
+    payload.completed_at = new Date().toISOString();
+  }
+  if (statusValue !== "completada") {
+    payload.completed_at = null;
+  }
+  return payload;
+}
+
+async function updateAssignmentTask(taskId, statusOverride = null) {
+  if (!canEdit()) return;
+  const assignmentId = $("#assignment-form").elements.id.value;
+  if (!assignmentId) {
+    message("Selecciona una asignación antes de editar tareas.");
+    return;
+  }
+  const { error } = await state.supabase
+    .from("assignment_tasks")
+    .update(taskPayloadFromForm(taskId, statusOverride))
+    .eq("id", taskId);
+  if (error) throw error;
+  await ensureAssignmentTasks(assignmentId);
+  message("Tarea de seguimiento guardada.");
 }
 
 function siteSettingValue(key, fallback = "") {
@@ -666,11 +817,31 @@ async function loadAssignmentsData() {
     state.assignments = assignments || [];
     state.signupDates = signupDates || [];
     state.assignmentsAvailable = true;
+    try {
+      const { data: tasks, error: tasksError } = await state.supabase
+        .from("assignment_tasks")
+        .select("*")
+        .order("sort_order", { ascending: true });
+      if (tasksError) throw tasksError;
+      state.assignmentTasks = new Map();
+      (tasks || []).forEach((task) => {
+        const current = state.assignmentTasks.get(task.assignment_id) || [];
+        current.push(task);
+        state.assignmentTasks.set(task.assignment_id, current);
+      });
+      state.assignmentTasksAvailable = true;
+    } catch (tasksError) {
+      console.warn("Checklist docente no disponible", tasksError);
+      state.assignmentTasks = new Map();
+      state.assignmentTasksAvailable = false;
+    }
   } catch (error) {
     console.warn("Asignaciones no disponibles", error);
     state.assignments = [];
     state.signupDates = [];
     state.assignmentsAvailable = false;
+    state.assignmentTasks = new Map();
+    state.assignmentTasksAvailable = false;
   }
 }
 
@@ -1276,6 +1447,8 @@ function bindEvents() {
     const reviewAssignmentId = event.target.closest("[data-review-assignment]")?.dataset.reviewAssignment;
     const confirmAssignmentId = event.target.closest("[data-confirm-assignment]")?.dataset.confirmAssignment;
     const voidAssignmentId = event.target.closest("[data-void-assignment]")?.dataset.voidAssignment;
+    const saveTaskId = event.target.closest("[data-save-task]")?.dataset.saveTask;
+    const quickTask = event.target.closest("[data-task-quick-status]");
 
     if (sessionId) editSession(sessionId);
     if (speakerId) editSpeaker(speakerId);
@@ -1289,10 +1462,12 @@ function bindEvents() {
     if (restoreSpeakerId) restore("ponentes", restoreSpeakerId, { is_active: true }, "Persona").catch((error) => message(error.message));
     if (restoreResourceId) restore("recursos", restoreResourceId, { visible: true }, "Recurso").catch((error) => message(error.message));
     if (removableWelcomeRow) removableWelcomeRow.remove();
-    if (assignmentId) editAssignment(assignmentId);
+    if (assignmentId) editAssignment(assignmentId).catch((error) => message(error.message));
     if (reviewAssignmentId) updateAssignmentStatus(reviewAssignmentId, "revisada").catch((error) => message(assignmentConflictMessage(error)));
     if (confirmAssignmentId) updateAssignmentStatus(confirmAssignmentId, "confirmada").catch((error) => message(assignmentConflictMessage(error)));
     if (voidAssignmentId) updateAssignmentStatus(voidAssignmentId, "anulada").catch((error) => message(assignmentConflictMessage(error)));
+    if (saveTaskId) updateAssignmentTask(saveTaskId).catch((error) => message(error.message));
+    if (quickTask) updateAssignmentTask(quickTask.dataset.taskId, quickTask.dataset.taskQuickStatus).catch((error) => message(error.message));
   });
 }
 
