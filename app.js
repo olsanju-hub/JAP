@@ -3,12 +3,14 @@ import { getSupabaseClient } from "./supabase-client.js";
 const state = {
   data: null,
   activeView: "inicio",
-  dataSource: "json"
+  dataSource: "json",
+  signupAvailable: false
 };
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
-const VIEW_IDS = ["inicio", "agenda", "sesiones", "ponentes", "recursos", "contacto"];
+const VIEW_IDS = ["inicio", "agenda", "inscripcion", "sesiones", "ponentes", "recursos", "contacto"];
+const ACTIVE_ASSIGNMENT_STATES = ["recibida", "revisada", "confirmada"];
 const PERSON_ROLE_LABELS = {
   organizador: "Organización y coordinación",
   ponente: "Ponentes",
@@ -97,6 +99,18 @@ function formatDate(value) {
   return value || "Pendiente de confirmar";
 }
 
+function formatHumanDate(value) {
+  if (!value || isPending(value)) return "Pendiente de confirmar";
+  const date = new Date(`${value}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("es-ES", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  }).format(date).replace(/^\w/, (letter) => letter.toUpperCase());
+}
+
 function formatTime(value) {
   return value ? value.slice(0, 5) : "Pendiente de confirmar";
 }
@@ -178,6 +192,12 @@ function siteJson(key, fallback = []) {
     console.warn(`No se pudo interpretar ${key} como JSON`, error);
     return fallback;
   }
+}
+
+function signupUnavailableMessage() {
+  return state.dataSource === "supabase"
+    ? "La inscripción estará disponible cuando se active el módulo de asignaciones en Supabase."
+    : "La inscripción requiere conexión con Supabase. Ahora estás viendo datos locales de respaldo.";
 }
 
 function renderSiteContent() {
@@ -324,6 +344,11 @@ function renderProgram(programa) {
 }
 
 function renderAgenda(sesiones) {
+  if (state.data?.publicAgenda?.length) {
+    renderAssignmentAgenda(state.data.publicAgenda);
+    return;
+  }
+
   const agendaSessions = sesiones.filter((session) => session.estado === "publicada").sort(compareSessions);
   $("#agenda-list").innerHTML = agendaSessions.length
     ? agendaSessions
@@ -342,6 +367,32 @@ function renderAgenda(sesiones) {
     )
     .join("")
     : '<p class="empty-note">No hay sesiones publicadas en agenda.</p>';
+}
+
+function renderAssignmentAgenda(items) {
+  $("#agenda-list").innerHTML = items
+    .map((item, index) => {
+      const assigned = item.status_public === "Asignada";
+      return `
+        <article class="timeline-item ${assigned ? "assigned-date" : "available-date"}">
+          <div class="timeline-number">${index + 1}</div>
+          <div>
+            <p class="eyebrow">${escapeHtml(item.label || formatHumanDate(item.date_value))}</p>
+            <h3>${assigned ? escapeHtml(item.session_title || "Sesión asignada") : "Disponible"}</h3>
+            <p class="compact-meta">
+              <span class="tag ${assigned ? "done" : ""}">${escapeHtml(item.status_public)}</span>
+              ${assigned && item.health_center_public ? ` · Centro: ${escapeHtml(item.health_center_public)}` : ""}
+            </p>
+            ${
+              assigned && item.session_slug
+                ? `<button class="button" type="button" data-session="${escapeHtml(item.session_slug)}">Ver detalle</button>`
+                : `<a class="button primary" href="#inscripcion">Elegir esta fecha</a>`
+            }
+          </div>
+        </article>
+      `;
+    })
+    .join("");
 }
 
 function getAgendaMeta(session) {
@@ -400,6 +451,86 @@ function renderSessionCard(session) {
       </div>
     </article>
   `;
+}
+
+function renderSignup() {
+  const form = $("#signup-form");
+  const status = $("#signup-status");
+  const sessionSelect = $("#signup-session");
+  const dateSelect = $("#signup-date");
+  if (!form || !status || !sessionSelect || !dateSelect) return;
+
+  const options = state.data?.signupOptions || { sessions: [], dates: [] };
+  const enabled = state.signupAvailable && options.sessions.length && options.dates.length;
+
+  sessionSelect.innerHTML = enabled
+    ? '<option value="">Selecciona una sesión</option>' +
+      options.sessions
+        .map((session) => `<option value="${escapeHtml(session.id)}">${escapeHtml([session.block, session.title].filter(Boolean).join(" · "))}</option>`)
+        .join("")
+    : '<option value="">Sin sesiones disponibles</option>';
+
+  dateSelect.innerHTML = enabled
+    ? '<option value="">Selecciona una fecha</option>' +
+      options.dates
+        .map((date) => `<option value="${escapeHtml(date.id)}">${escapeHtml(date.label || formatHumanDate(date.date))}</option>`)
+        .join("")
+    : '<option value="">Sin fechas disponibles</option>';
+
+  form.querySelectorAll("input, select, textarea, button[type='submit']").forEach((field) => {
+    field.disabled = !enabled;
+  });
+  status.textContent = enabled ? "" : signupUnavailableMessage();
+}
+
+async function submitSignup(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const status = $("#signup-status");
+  if (!state.signupAvailable) {
+    status.textContent = signupUnavailableMessage();
+    return;
+  }
+
+  const values = Object.fromEntries(new FormData(form).entries());
+  status.textContent = "Enviando inscripción...";
+  const { error } = await state.data.supabase.rpc("create_session_assignment", {
+    p_session_id: values.session_id,
+    p_signup_date_id: values.signup_date_id,
+    p_full_name: values.full_name,
+    p_email: values.email,
+    p_phone: values.phone,
+    p_profile: values.profile,
+    p_health_center: values.health_center,
+    p_tutor_name: values.tutor_name || null,
+    p_other_residents: values.other_residents || null,
+    p_comments: values.comments || null
+  });
+
+  if (error) {
+    status.textContent = error.message?.includes("reservada")
+      ? "La sesión o la fecha acaba de ser reservada. Elige otra opción."
+      : error.message || "No se pudo registrar la inscripción.";
+    await refreshSignupData();
+    return;
+  }
+
+  form.reset();
+  await refreshSignupData();
+  status.textContent = "Inscripción registrada. La sesión y la fecha quedan reservadas.";
+}
+
+async function refreshSignupData() {
+  if (!state.data?.supabase) return;
+  const [agenda, options] = await Promise.all([
+    loadPublicAgenda(state.data.supabase),
+    loadSignupOptions(state.data.supabase)
+  ]);
+  state.data.publicAgenda = agenda;
+  state.data.signupOptions = options;
+  state.signupAvailable = Boolean(options);
+  renderAgenda(state.data.sesiones);
+  renderSignup();
 }
 
 function renderSpeakers(ponentes) {
@@ -663,9 +794,14 @@ function openResource(resource) {
   }
 }
 
-function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [], sedes = [], siteContent = {} }) {
+function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [], sedes = [], siteContent = {}, publicAgenda = [], signupOptions = null, supabase = null }) {
   const modalidad = jornada?.modalidad || "Preferentemente presencial, con opción online por Teams";
   const teamsUrl = jornada?.teams_url || "Enlace Teams pendiente de confirmar";
+  const assignedDatesBySession = new Map(
+    (publicAgenda || [])
+      .filter((item) => item.session_id && item.date_value)
+      .map((item) => [item.session_id, item.date_value])
+  );
   const mappedSessions = sesiones.map((session, index) => {
     const sessionSpeakers = (session.sesion_ponentes || [])
       .sort((a, b) => (a.orden || 0) - (b.orden || 0))
@@ -704,7 +840,7 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
       fecha_revision: formatDate(session.fecha_revision),
       material_previo: session.material_previo || "",
       material_posterior: session.material_posterior || "",
-      fecha: formatDate(session.fecha),
+      fecha: formatDate(assignedDatesBySession.get(session.id) || session.fecha),
       hora_inicio: formatTime(session.hora_inicio),
       hora_fin: formatTime(session.hora_fin),
       sede: session.sedes?.nombre || "Pendiente de confirmar",
@@ -765,6 +901,9 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
       categoria: resource.categoria,
       sesion_id: resource.sesion_id
     })),
+    publicAgenda,
+    signupOptions,
+    supabase,
     sedes: sedes.map((venue) => ({
       id: venue.id,
       nombre: venue.nombre,
@@ -792,10 +931,36 @@ async function loadSupabaseSiteContent(supabase, fallbackSiteContent) {
   }
 }
 
+async function loadPublicAgenda(supabase) {
+  try {
+    const { data, error } = await supabase.rpc("get_public_agenda");
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.warn("Agenda de asignaciones no disponible, usando agenda de sesiones", error);
+    return [];
+  }
+}
+
+async function loadSignupOptions(supabase) {
+  try {
+    const { data, error } = await supabase.rpc("get_signup_options");
+    if (error) throw error;
+    return data || { sessions: [], dates: [] };
+  } catch (error) {
+    console.warn("Opciones de inscripción no disponibles", error);
+    return null;
+  }
+}
+
 async function loadSupabaseData(fallbackSiteContent) {
   const supabase = await getSupabaseClient();
   if (!supabase) return null;
   const siteContent = await loadSupabaseSiteContent(supabase, fallbackSiteContent);
+  const [publicAgenda, signupOptions] = await Promise.all([
+    loadPublicAgenda(supabase),
+    loadSignupOptions(supabase)
+  ]);
 
   const [{ data: jornadas, error: jornadaError }, { data: sesiones, error: sesionesError }, { data: ponentes, error: ponentesError }, { data: recursos, error: recursosError }, { data: sedes, error: sedesError }] = await Promise.all([
     supabase.from("jornadas").select("*").limit(1),
@@ -824,7 +989,10 @@ async function loadSupabaseData(fallbackSiteContent) {
     ponentes: ponentes || [],
     recursos: recursos || [],
     sedes: sedes || [],
-    siteContent
+    siteContent,
+    publicAgenda,
+    signupOptions,
+    supabase
   });
 }
 
@@ -849,7 +1017,7 @@ async function loadData() {
   }
 
   state.dataSource = "json";
-  const jsonData = { ...fallbackData, siteContent: fallbackSiteContent, sesiones: (fallbackData.sesiones || []).filter(isVisibleSession).sort(compareSessions) };
+  const jsonData = { ...fallbackData, siteContent: fallbackSiteContent, sesiones: (fallbackData.sesiones || []).filter(isVisibleSession).sort(compareSessions), publicAgenda: [], signupOptions: null, supabase: null };
   console.info("Datos cargados desde JSON local por fallback");
   console.info("Textos cargados desde fallback local");
   return jsonData;
@@ -980,6 +1148,12 @@ function bindInteractions() {
   window.addEventListener("popstate", () => {
     setActiveView(getViewFromHash(), { updateHash: false });
   });
+
+  $("#signup-form")?.addEventListener("submit", (event) => {
+    submitSignup(event).catch((error) => {
+      $("#signup-status").textContent = error.message || "No se pudo registrar la inscripción.";
+    });
+  });
 }
 
 async function init() {
@@ -988,11 +1162,13 @@ async function init() {
 
   try {
     state.data = await loadData();
+    state.signupAvailable = Boolean(state.data.signupOptions);
 
     renderSiteContent();
     renderWelcome();
     renderProgram(state.data.programa);
     renderAgenda(state.data.sesiones);
+    renderSignup();
     renderSessions(state.data.sesiones);
     renderSpeakers(state.data.ponentes);
     renderResources(state.data.recursos);

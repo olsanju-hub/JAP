@@ -59,6 +59,7 @@
           <button class="button primary" type="button" data-admin-tab="sesiones">Sesiones</button>
           <button class="button" type="button" data-admin-tab="ponentes">Equipo docente</button>
           <button class="button" type="button" data-admin-tab="recursos">Recursos</button>
+          <button class="button" type="button" data-admin-tab="asignaciones">Inscripciones / asignaciones</button>
           <button class="button" type="button" data-admin-tab="bienvenida">Bienvenida / instrucciones</button>
           <button class="button" type="button" data-admin-tab="textos">Textos de la app</button>
           <button class="button" type="button" data-admin-tab="backup">Copia de seguridad</button>
@@ -98,6 +99,7 @@
                 <label>Bibliografía <textarea name="bibliografia" rows="7"></textarea></label>
               </fieldset>
               <label>Contenidos clave, uno por línea <textarea name="contenidos_clave" rows="5"></textarea></label>
+              <p id="session-assignment-warning" class="form-message" hidden>Esta sesión tiene una asignación activa. La fecha de agenda debe gestionarse desde “Inscripciones / asignaciones”.</p>
               <label>Fecha <input name="fecha" type="date"></label>
               <div class="form-row">
                 <label>Inicio <input name="hora_inicio" type="time"></label>
@@ -213,6 +215,70 @@
                 <label class="check-row"><input id="show-hidden-resources" type="checkbox"> Ver ocultos</label>
               </div>
               <div id="resources-list" class="admin-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="admin-panel" data-admin-panel="asignaciones" hidden>
+          <div class="admin-grid">
+            <form id="assignment-form" class="admin-form admin-card">
+              <div class="admin-form-head">
+                <h2 id="assignment-form-title">Editar asignación</h2>
+                <button class="button" type="button" data-reset-assignment>Limpiar</button>
+              </div>
+              <p class="form-message">La fecha final puede ser cualquier fecha. No se permite duplicar fecha final en asignaciones activas.</p>
+              <input name="id" type="hidden">
+              <label>Sesión <select name="session_id" required></select></label>
+              <div class="form-row">
+                <label>Fecha pública elegida <input name="selected_public_date" type="date" readonly></label>
+                <label>Fecha final de agenda <input name="final_date" type="date" required></label>
+              </div>
+              <label>Estado
+                <select name="status">
+                  <option value="recibida">recibida</option>
+                  <option value="revisada">revisada</option>
+                  <option value="confirmada">confirmada</option>
+                  <option value="anulada">anulada</option>
+                </select>
+              </label>
+              <fieldset class="admin-fieldset">
+                <legend>Datos del equipo</legend>
+                <label>Nombre y apellidos <input name="full_name" required></label>
+                <label>Correo <input name="email" type="email" required></label>
+                <label>Teléfono <input name="phone" required></label>
+                <div class="form-row">
+                  <label>Perfil <select name="profile">
+                    <option value="R1">R1</option>
+                    <option value="R2">R2</option>
+                    <option value="R3">R3</option>
+                    <option value="R4">R4</option>
+                    <option value="EIR">EIR</option>
+                    <option value="FIR">FIR</option>
+                    <option value="tutor/a">tutor/a</option>
+                    <option value="otro">otro</option>
+                  </select></label>
+                  <label>Centro de salud <input name="health_center" required></label>
+                </div>
+                <label>Tutor/a de referencia <input name="tutor_name"></label>
+                <label>Otros residentes <textarea name="other_residents" rows="3"></textarea></label>
+                <label>Comentarios <textarea name="comments" rows="3"></textarea></label>
+              </fieldset>
+              <fieldset class="admin-fieldset">
+                <legend>Publicación en agenda</legend>
+                <label class="check-row"><input name="show_public_health_center" type="checkbox"> Mostrar centro validado públicamente</label>
+                <label>Centro validado para agenda pública <input name="public_health_center"></label>
+                <p class="form-message">No se publica nombre, correo, teléfono, tutor/a ni comentarios.</p>
+              </fieldset>
+              <label>Notas internas <textarea name="internal_notes" rows="3"></textarea></label>
+              <button id="assignment-submit" class="button primary" type="submit">Guardar asignación</button>
+              <button class="button danger" type="button" data-cancel-assignment>Anular/liberar</button>
+            </form>
+            <div class="admin-card">
+              <div class="admin-list-head">
+                <h2>Asignaciones recibidas</h2>
+                <button class="button" type="button" data-reload-assignments>Recargar</button>
+              </div>
+              <div id="assignments-list" class="admin-list"></div>
             </div>
           </div>
         </section>

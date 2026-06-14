@@ -138,6 +138,9 @@ const state = {
   sesionPonentes: [],
   recursos: [],
   siteSettings: [],
+  assignments: [],
+  signupDates: [],
+  assignmentsAvailable: false,
   modes: {
     session: "create",
     speaker: "create",
@@ -237,6 +240,7 @@ function resetSessionForm() {
   form.elements.teams_url.value = DEFAULT_TEAMS;
   form.elements.estado.value = "publicada";
   form.elements.is_active.checked = true;
+  $("#session-assignment-warning").hidden = true;
   renderSessionSpeakerOptions();
   setMode("session", "create");
 }
@@ -292,6 +296,13 @@ function setSessionOptions() {
   select.innerHTML =
     '<option value="">Sin sesión asociada</option>' +
     state.sesiones.map((session) => `<option value="${escapeHtml(session.id)}">${escapeHtml(session.orden || "")} ${escapeHtml(session.titulo)}</option>`).join("");
+
+  const assignmentSelect = $("#assignment-form select[name='session_id']");
+  if (assignmentSelect) {
+    assignmentSelect.innerHTML = state.sesiones
+      .map((session) => `<option value="${escapeHtml(session.id)}">${escapeHtml(session.orden || "")} ${escapeHtml(session.titulo)}</option>`)
+      .join("");
+  }
 }
 
 function defaultSessionRole(speaker) {
@@ -367,6 +378,55 @@ function renderSiteSettings() {
       </section>
     `)
     .join("");
+}
+
+function resetAssignmentForm() {
+  const form = $("#assignment-form");
+  if (!form) return;
+  form.reset();
+  form.elements.id.value = "";
+  $("#assignment-form-title").textContent = "Editar asignación";
+}
+
+function renderAssignments() {
+  const list = $("#assignments-list");
+  if (!list) return;
+  if (!state.assignmentsAvailable) {
+    list.innerHTML = '<p class="empty-note">La tabla de asignaciones todavía no está disponible. Aplica la migración antes de gestionar inscripciones.</p>';
+    return;
+  }
+  if (!state.assignments.length) {
+    list.innerHTML = '<p class="empty-note">No hay inscripciones recibidas.</p>';
+    return;
+  }
+
+  list.innerHTML = state.assignments
+    .map((assignment) => {
+      const sessionTitle = assignment.sesiones?.titulo || "Sesión pendiente";
+      return `
+        <article class="admin-list-item">
+          <h3>${escapeHtml(sessionTitle)}</h3>
+          <p>${escapeHtml(assignment.final_date || "")} · ${escapeHtml(assignment.status)} · ${escapeHtml(assignment.full_name)} · ${escapeHtml(assignment.health_center || "")}</p>
+          <p>${escapeHtml(assignment.email)} · ${escapeHtml(assignment.phone)} · ${escapeHtml(assignment.profile)}</p>
+          <div class="admin-actions">
+            <button class="button" type="button" data-edit-assignment="${escapeHtml(assignment.id)}">Editar</button>
+            ${assignment.status !== "revisada" ? `<button class="button" type="button" data-review-assignment="${escapeHtml(assignment.id)}">Marcar revisada</button>` : ""}
+            ${assignment.status !== "confirmada" ? `<button class="button" type="button" data-confirm-assignment="${escapeHtml(assignment.id)}">Confirmar</button>` : ""}
+            ${assignment.status !== "anulada" ? `<button class="button danger" type="button" data-void-assignment="${escapeHtml(assignment.id)}">Anular/liberar</button>` : ""}
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function editAssignment(id) {
+  const assignment = state.assignments.find((item) => item.id === id);
+  if (!assignment) return;
+  fillForm($("#assignment-form"), assignment);
+  $("#assignment-form").elements.show_public_health_center.checked = Boolean(assignment.show_public_health_center);
+  $("#assignment-form-title").textContent = `Editar: ${assignment.sesiones?.titulo || "asignación"}`;
+  $("#assignment-form").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function siteSettingValue(key, fallback = "") {
@@ -517,12 +577,14 @@ async function loadAdminData() {
   state.sesionPonentes = sesionPonentes || [];
   state.recursos = recursos || [];
   state.siteSettings = siteSettingsError ? [] : siteSettings || [];
+  await loadAssignmentsData();
   setJourneyOptions();
   setVenueOptions();
   setSessionOptions();
   renderLists();
   renderSiteSettings();
   renderWelcomeEditor();
+  renderAssignments();
   if (state.modes.session === "create") {
     resetSessionForm();
   } else {
@@ -530,6 +592,28 @@ async function loadAdminData() {
   }
   if (state.modes.speaker === "create") resetSpeakerForm();
   if (state.modes.resource === "create") resetResourceForm();
+}
+
+async function loadAssignmentsData() {
+  try {
+    const [{ data: assignments, error: assignmentsError }, { data: signupDates, error: signupDatesError }] = await Promise.all([
+      state.supabase
+        .from("session_assignments")
+        .select("*, sesiones(id,titulo,slug,bloque,orden)")
+        .order("created_at", { ascending: false }),
+      state.supabase.from("signup_dates").select("*").order("sort_order", { ascending: true })
+    ]);
+    const error = assignmentsError || signupDatesError;
+    if (error) throw error;
+    state.assignments = assignments || [];
+    state.signupDates = signupDates || [];
+    state.assignmentsAvailable = true;
+  } catch (error) {
+    console.warn("Asignaciones no disponibles", error);
+    state.assignments = [];
+    state.signupDates = [];
+    state.assignmentsAvailable = false;
+  }
 }
 
 function renderLists() {
@@ -620,6 +704,10 @@ function editSession(id) {
   const session = state.sesiones.find((item) => item.id === id);
   if (!session) return;
   fillForm($("#session-form"), session);
+  const activeAssignment = state.assignments.find((assignment) =>
+    assignment.session_id === id && ["recibida", "revisada", "confirmada"].includes(assignment.status)
+  );
+  $("#session-assignment-warning").hidden = !activeAssignment;
   renderSessionSpeakerOptions(session.id);
   setMode("session", "edit");
   message(`Editando sesión: ${session.titulo}`);
@@ -871,6 +959,72 @@ async function saveWelcomeSettings(event) {
   message("Bienvenida e instrucciones guardadas.");
 }
 
+function assignmentConflictMessage(error) {
+  if (error?.code === "23505") {
+    return "No se puede guardar: la sesión o la fecha final ya están ocupadas por otra asignación activa.";
+  }
+  return error?.message || "No se pudo guardar la asignación.";
+}
+
+async function saveAssignment(event) {
+  event.preventDefault();
+  if (!canEdit() || !state.assignmentsAvailable) return;
+  const form = event.currentTarget;
+  const values = formData(form);
+  if (!values.id) {
+    message("Selecciona una asignación existente para editarla.");
+    return;
+  }
+
+  const status = values.status || "recibida";
+  const payload = {
+    session_id: values.session_id,
+    final_date: values.final_date,
+    status,
+    full_name: values.full_name.trim(),
+    email: values.email.trim().toLowerCase(),
+    phone: values.phone.trim(),
+    profile: values.profile,
+    health_center: values.health_center.trim(),
+    tutor_name: emptyToNull(values.tutor_name),
+    other_residents: emptyToNull(values.other_residents),
+    comments: emptyToNull(values.comments),
+    internal_notes: emptyToNull(values.internal_notes),
+    public_health_center: emptyToNull(values.public_health_center),
+    show_public_health_center: form.elements.show_public_health_center.checked
+  };
+  if (status === "revisada") payload.reviewed_at = new Date().toISOString();
+  if (status === "confirmada") payload.confirmed_at = new Date().toISOString();
+  if (status === "anulada") payload.cancelled_at = new Date().toISOString();
+
+  const { error } = await state.supabase.from("session_assignments").update(payload).eq("id", values.id);
+  if (error) throw error;
+  await loadAdminData();
+  message("Asignación guardada.");
+}
+
+async function updateAssignmentStatus(id, status) {
+  if (!canEdit() || !state.assignmentsAvailable) return;
+  const payload = { status };
+  if (status === "revisada") payload.reviewed_at = new Date().toISOString();
+  if (status === "confirmada") payload.confirmed_at = new Date().toISOString();
+  if (status === "anulada") payload.cancelled_at = new Date().toISOString();
+  const { error } = await state.supabase.from("session_assignments").update(payload).eq("id", id);
+  if (error) throw error;
+  await loadAdminData();
+  message(status === "anulada" ? "Asignación anulada. La sesión y la fecha quedan liberadas." : `Asignación marcada como ${status}.`);
+}
+
+async function cancelCurrentAssignment() {
+  const id = $("#assignment-form").elements.id.value;
+  if (!id) {
+    message("Selecciona una asignación para anularla.");
+    return;
+  }
+  if (!confirm("¿Anular esta asignación y liberar sesión/fecha?")) return;
+  await updateAssignmentStatus(id, "anulada");
+}
+
 async function exportBackup() {
   if (!canEdit()) {
     message("No tienes permisos para exportar la copia de seguridad.");
@@ -1037,6 +1191,10 @@ function bindEvents() {
   $("#resource-form").addEventListener("submit", (event) => saveResource(event).catch((error) => message(error.message)));
   $("#site-content-form").addEventListener("submit", (event) => saveSiteSettings(event).catch((error) => message(error.message)));
   $("#welcome-form").addEventListener("submit", (event) => saveWelcomeSettings(event).catch((error) => message(error.message)));
+  $("#assignment-form").addEventListener("submit", (event) => saveAssignment(event).catch((error) => message(assignmentConflictMessage(error))));
+  $("[data-reset-assignment]").addEventListener("click", resetAssignmentForm);
+  $("[data-cancel-assignment]").addEventListener("click", () => cancelCurrentAssignment().catch((error) => message(assignmentConflictMessage(error))));
+  $("[data-reload-assignments]").addEventListener("click", () => loadAdminData().catch((error) => message(error.message)));
   $("[data-add-welcome-section]").addEventListener("click", addWelcomeSection);
   $("[data-add-welcome-date]").addEventListener("click", addWelcomeDate);
   $("#backup-export-button").addEventListener("click", () => exportBackup().catch((error) => message(error.message)));
@@ -1054,6 +1212,10 @@ function bindEvents() {
     const restoreSpeakerId = event.target.closest("[data-restore-speaker]")?.dataset.restoreSpeaker;
     const restoreResourceId = event.target.closest("[data-restore-resource]")?.dataset.restoreResource;
     const removableWelcomeRow = event.target.closest("[data-remove-welcome-row]")?.closest(".welcome-editor-item");
+    const assignmentId = event.target.closest("[data-edit-assignment]")?.dataset.editAssignment;
+    const reviewAssignmentId = event.target.closest("[data-review-assignment]")?.dataset.reviewAssignment;
+    const confirmAssignmentId = event.target.closest("[data-confirm-assignment]")?.dataset.confirmAssignment;
+    const voidAssignmentId = event.target.closest("[data-void-assignment]")?.dataset.voidAssignment;
 
     if (sessionId) editSession(sessionId);
     if (speakerId) editSpeaker(speakerId);
@@ -1067,6 +1229,10 @@ function bindEvents() {
     if (restoreSpeakerId) restore("ponentes", restoreSpeakerId, { is_active: true }, "Persona").catch((error) => message(error.message));
     if (restoreResourceId) restore("recursos", restoreResourceId, { visible: true }, "Recurso").catch((error) => message(error.message));
     if (removableWelcomeRow) removableWelcomeRow.remove();
+    if (assignmentId) editAssignment(assignmentId);
+    if (reviewAssignmentId) updateAssignmentStatus(reviewAssignmentId, "revisada").catch((error) => message(assignmentConflictMessage(error)));
+    if (confirmAssignmentId) updateAssignmentStatus(confirmAssignmentId, "confirmada").catch((error) => message(assignmentConflictMessage(error)));
+    if (voidAssignmentId) updateAssignmentStatus(voidAssignmentId, "anulada").catch((error) => message(assignmentConflictMessage(error)));
   });
 }
 

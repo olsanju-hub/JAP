@@ -38,6 +38,7 @@
         <nav id="nav-principal" class="site-nav" aria-label="Navegación principal">
           <a href="#inicio">Inicio</a>
           <a href="#agenda">Agenda</a>
+          <a href="#inscripcion">Inscripción</a>
           <a href="#sesiones">Sesiones</a>
           <a href="#ponentes">Equipo docente</a>
           <a href="#recursos">Recursos</a>
@@ -55,6 +56,7 @@
           <p id="program-description">Cargando programa...</p>
           <div class="quick-links" aria-label="Accesos rápidos">
             <a id="home-primary-button" class="button primary" href="#agenda">Ver agenda</a>
+            <a class="button" href="#inscripcion">Inscripción</a>
             <a id="home-sessions-button" class="button" href="#sesiones">Sesiones</a>
             <a id="home-speakers-button" class="button" href="#ponentes">Equipo docente</a>
             <a id="home-resources-button" class="button" href="#recursos">Recursos</a>
@@ -106,6 +108,71 @@
           <p id="sessions-description">Contenido docente organizado por temas clínicos frecuentes en Atención Primaria.</p>
         </div>
         <div id="session-grid" class="session-grid" aria-live="polite"></div>
+      </section>
+
+      <section id="inscripcion" class="section section-muted" data-view="inscripcion" hidden>
+        <div class="section-heading">
+          <h2>Inscripción y asignación</h2>
+          <p>Escoge una sesión y una fecha disponible. La reserva se registra de forma conjunta para evitar duplicidades.</p>
+        </div>
+        <form id="signup-form" class="signup-form" novalidate>
+          <section class="signup-notice">
+            <p>Al enviar el formulario, la sesión y la fecha quedarán asignadas y dejarán de estar disponibles para otros equipos. La organización podrá revisar o ajustar la asignación si fuera necesario.</p>
+            <p>Los datos se utilizarán únicamente para la organización de las Jornadas Docentes de Atención Primaria.</p>
+          </section>
+          <div class="form-row">
+            <label>Nombre y apellidos
+              <input name="full_name" autocomplete="name" required>
+            </label>
+            <label>Correo electrónico
+              <input name="email" type="email" autocomplete="email" required>
+            </label>
+          </div>
+          <div class="form-row">
+            <label>Teléfono
+              <input name="phone" type="tel" autocomplete="tel" required>
+            </label>
+            <label>Perfil
+              <select name="profile" required>
+                <option value="">Selecciona perfil</option>
+                <option value="R1">R1</option>
+                <option value="R2">R2</option>
+                <option value="R3">R3</option>
+                <option value="R4">R4</option>
+                <option value="EIR">EIR</option>
+                <option value="FIR">FIR</option>
+                <option value="tutor/a">Tutor/a</option>
+                <option value="otro">Otro</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-row">
+            <label>Centro de salud
+              <input name="health_center" required>
+            </label>
+            <label>Tutor/a de referencia
+              <input name="tutor_name">
+            </label>
+          </div>
+          <div class="form-row">
+            <label>Sesión elegida
+              <select id="signup-session" name="session_id" required></select>
+            </label>
+            <label>Fecha elegida
+              <select id="signup-date" name="signup_date_id" required></select>
+            </label>
+          </div>
+          <label>Otros residentes implicados, opcional
+            <textarea name="other_residents" rows="3"></textarea>
+          </label>
+          <label>Comentarios, opcional
+            <textarea name="comments" rows="3"></textarea>
+          </label>
+          <div class="signup-actions">
+            <button class="button primary" type="submit">Enviar inscripción</button>
+            <p id="signup-status" class="form-message" role="status"></p>
+          </div>
+        </form>
       </section>
 
       <section id="ponentes" class="section" data-view="ponentes" hidden>
