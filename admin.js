@@ -388,9 +388,55 @@ function resetAssignmentForm() {
   $("#assignment-form-title").textContent = "Editar asignación";
 }
 
+function assignmentDateValue(assignment) {
+  return assignment.final_date || assignment.selected_public_date || assignment.created_at || "";
+}
+
+function assignmentDateKind(assignment) {
+  if (!assignment.final_date || !assignment.selected_public_date) return "Fecha pendiente de revisar";
+  return assignment.final_date === assignment.selected_public_date
+    ? "Fecha inicial elegida"
+    : "Fecha final ajustada por organización";
+}
+
+function assignmentMatchesSearch(assignment, query) {
+  if (!query) return true;
+  const sessionTitle = assignment.sesiones?.titulo || "";
+  const haystack = [
+    sessionTitle,
+    assignment.final_date,
+    assignment.selected_public_date,
+    assignment.health_center,
+    assignment.public_health_center,
+    assignment.status
+  ].join(" ").toLowerCase();
+  return haystack.includes(query);
+}
+
+function renderAssignmentSummary() {
+  const summary = $("#assignment-summary");
+  if (!summary) return;
+  const counts = state.assignments.reduce(
+    (acc, assignment) => {
+      acc.total += 1;
+      acc[assignment.status] = (acc[assignment.status] || 0) + 1;
+      return acc;
+    },
+    { total: 0, recibida: 0, revisada: 0, confirmada: 0, anulada: 0 }
+  );
+  summary.innerHTML = `
+    <article><span>Total</span><strong>${counts.total}</strong></article>
+    <article><span>Pendientes</span><strong>${counts.recibida}</strong></article>
+    <article><span>Revisadas</span><strong>${counts.revisada}</strong></article>
+    <article><span>Confirmadas</span><strong>${counts.confirmada}</strong></article>
+    <article><span>Anuladas</span><strong>${counts.anulada}</strong></article>
+  `;
+}
+
 function renderAssignments() {
   const list = $("#assignments-list");
   if (!list) return;
+  renderAssignmentSummary();
   if (!state.assignmentsAvailable) {
     list.innerHTML = '<p class="empty-note">La tabla de asignaciones todavía no está disponible. Aplica la migración antes de gestionar inscripciones.</p>';
     return;
@@ -400,13 +446,25 @@ function renderAssignments() {
     return;
   }
 
-  list.innerHTML = state.assignments
+  const statusFilter = $("#assignment-status-filter")?.value || "";
+  const query = ($("#assignment-search")?.value || "").trim().toLowerCase();
+  const assignments = state.assignments
+    .filter((assignment) => !statusFilter || assignment.status === statusFilter)
+    .filter((assignment) => assignmentMatchesSearch(assignment, query))
+    .sort((a, b) => assignmentDateValue(a).localeCompare(assignmentDateValue(b)));
+
+  if (!assignments.length) {
+    list.innerHTML = '<p class="empty-note">No hay asignaciones que coincidan con el filtro.</p>';
+    return;
+  }
+
+  list.innerHTML = assignments
     .map((assignment) => {
       const sessionTitle = assignment.sesiones?.titulo || "Sesión pendiente";
       return `
         <article class="admin-list-item">
           <h3>${escapeHtml(sessionTitle)}</h3>
-          <p>${escapeHtml(assignment.final_date || "")} · ${escapeHtml(assignment.status)} · ${escapeHtml(assignment.full_name)} · ${escapeHtml(assignment.health_center || "")}</p>
+          <p>${escapeHtml(assignmentDateValue(assignment))} · ${escapeHtml(assignmentDateKind(assignment))} · ${escapeHtml(assignment.status)} · ${escapeHtml(assignment.full_name)} · ${escapeHtml(assignment.health_center || "")}</p>
           <p>${escapeHtml(assignment.email)} · ${escapeHtml(assignment.phone)} · ${escapeHtml(assignment.profile)}</p>
           <div class="admin-actions">
             <button class="button" type="button" data-edit-assignment="${escapeHtml(assignment.id)}">Editar</button>
@@ -1195,6 +1253,8 @@ function bindEvents() {
   $("[data-reset-assignment]").addEventListener("click", resetAssignmentForm);
   $("[data-cancel-assignment]").addEventListener("click", () => cancelCurrentAssignment().catch((error) => message(assignmentConflictMessage(error))));
   $("[data-reload-assignments]").addEventListener("click", () => loadAdminData().catch((error) => message(error.message)));
+  $("#assignment-status-filter")?.addEventListener("change", renderAssignments);
+  $("#assignment-search")?.addEventListener("input", renderAssignments);
   $("[data-add-welcome-section]").addEventListener("click", addWelcomeSection);
   $("[data-add-welcome-date]").addEventListener("click", addWelcomeDate);
   $("#backup-export-button").addEventListener("click", () => exportBackup().catch((error) => message(error.message)));

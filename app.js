@@ -11,6 +11,7 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 const VIEW_IDS = ["inicio", "agenda", "inscripcion", "sesiones", "ponentes", "recursos", "contacto"];
 const ACTIVE_ASSIGNMENT_STATES = ["recibida", "revisada", "confirmada"];
+const TEMPLATE_FILE = "assets/docs/plantilla-jornadas-docentes-ap.pptx";
 const PERSON_ROLE_LABELS = {
   organizador: "Organización y coordinación",
   ponente: "Ponentes",
@@ -140,6 +141,58 @@ function isPublicResource(resource) {
 
 function resourceCategory(resource) {
   return String(resource.categoria || "").toLowerCase();
+}
+
+function publicAssignmentForSession(session) {
+  return (state.data?.publicAgenda || []).find((item) =>
+    item.status_public === "Asignada" &&
+    ((session.uuid && item.session_id === session.uuid) || item.session_slug === session.slug)
+  );
+}
+
+function sessionOperationalState(session) {
+  const assignment = publicAssignmentForSession(session);
+  if (!assignment) {
+    return {
+      label: "Disponible",
+      className: "available",
+      meta: "Tema disponible para asignación.",
+      adjusted: false
+    };
+  }
+  const adjusted = assignment.is_initial_date === false;
+  return {
+    label: adjusted ? "Fecha final asignada" : "Asignada",
+    className: "assigned",
+    meta: `${formatHumanDate(assignment.date_value)}${adjusted ? " · Fecha ajustada por organización" : ""}`,
+    adjusted
+  };
+}
+
+function renderOperationalBadges(session) {
+  const status = sessionOperationalState(session);
+  return `
+    <div class="status-row">
+      <span class="tag ${status.className === "assigned" ? "done" : ""}">${escapeHtml(status.label)}</span>
+      ${status.adjusted ? '<span class="tag subtle">Fecha ajustada por organización</span>' : ""}
+    </div>
+  `;
+}
+
+function renderPresenterPrepCard({ compact = false } = {}) {
+  return `
+    <article class="prep-card ${compact ? "compact-prep-card" : ""}">
+      <div>
+        <p class="eyebrow">Para preparar tu sesión</p>
+        <h3>Plantilla común para ponentes</h3>
+        <p>Descarga la plantilla común, prepara un caso clínico inicial y termina la sesión con un material práctico reutilizable.</p>
+      </div>
+      <div class="prep-actions">
+        <button class="button" type="button" data-open-welcome>Ver instrucciones</button>
+        <a class="button primary" href="${TEMPLATE_FILE}" download>Descargar plantilla</a>
+      </div>
+    </article>
+  `;
 }
 
 function programImageResource(programa = {}) {
@@ -394,14 +447,17 @@ function renderAssignmentAgenda(items) {
   $("#agenda-list").innerHTML = items
     .map((item, index) => {
       const assigned = item.status_public === "Asignada";
+      const adjusted = assigned && item.is_initial_date === false;
       return `
-        <article class="timeline-item ${assigned ? "assigned-date" : "available-date"}">
+        <article class="timeline-item ${assigned ? "assigned-date" : "available-date"} ${adjusted ? "adjusted-date" : ""}">
           <div class="timeline-number">${index + 1}</div>
           <div>
             <p class="eyebrow">${escapeHtml(item.label || formatHumanDate(item.date_value))}</p>
             <h3>${assigned ? escapeHtml(item.session_title || "Sesión asignada") : "Disponible"}</h3>
             <p class="compact-meta">
               <span class="tag ${assigned ? "done" : ""}">${escapeHtml(item.status_public)}</span>
+              <span class="tag subtle">${escapeHtml(adjusted ? "Fecha final asignada" : item.is_initial_date ? "Fecha inicialmente disponible" : "Fecha final")}</span>
+              ${adjusted ? '<span class="tag subtle">Fecha ajustada por organización</span>' : ""}
               ${assigned && item.health_center_public ? ` · Centro: ${escapeHtml(item.health_center_public)}` : ""}
             </p>
             ${
@@ -455,12 +511,14 @@ function renderSessions(sesiones) {
 }
 
 function renderSessionCard(session) {
+  const operationalState = sessionOperationalState(session);
   return `
     <article class="session-card">
       <div class="session-body">
         <p class="eyebrow">${escapeHtml(session.bloque)}</p>
         <h3>${escapeHtml(session.titulo)}</h3>
-        <span class="tag ${session.estado === "realizada" ? "done" : ""}">${escapeHtml(sessionStateLabel(session.estado))}</span>
+        ${renderOperationalBadges(session)}
+        <p class="compact-meta">${escapeHtml(operationalState.meta)}</p>
         <p>${escapeHtml(shortText(session.objetivo, 115))}</p>
         <ul class="key-list">
           ${session.contenidos_clave.slice(0, 3).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
@@ -514,6 +572,8 @@ async function submitSignup(event) {
   }
 
   const values = Object.fromEntries(new FormData(form).entries());
+  const selectedSessionLabel = $("#signup-session")?.selectedOptions?.[0]?.textContent || "";
+  const selectedDateLabel = $("#signup-date")?.selectedOptions?.[0]?.textContent || "";
   status.textContent = "Enviando inscripción...";
   const { error } = await state.data.supabase.rpc("create_session_assignment", {
     p_session_id: values.session_id,
@@ -538,7 +598,42 @@ async function submitSignup(event) {
 
   form.reset();
   await refreshSignupData();
-  status.textContent = "Inscripción registrada. La sesión y la fecha quedan reservadas.";
+  status.textContent = "Inscripción registrada.";
+  showSignupConfirmation({
+    session: selectedSessionLabel,
+    date: selectedDateLabel,
+    healthCenter: values.health_center
+  });
+}
+
+function showSignupConfirmation({ session, date, healthCenter }) {
+  const confirmation = $("#signup-confirmation");
+  if (!confirmation) return;
+  confirmation.hidden = false;
+  confirmation.innerHTML = `
+    <section class="confirmation-card">
+      <p class="eyebrow">Solicitud recibida</p>
+      <h3>La organización revisará la asignación definitiva</h3>
+      <div class="confirmation-summary">
+        <p><strong>Tema solicitado</strong>${escapeHtml(session || "Pendiente de revisar")}</p>
+        <p><strong>Fecha preferente</strong>${escapeHtml(date || "Pendiente de revisar")}</p>
+        <p><strong>Centro indicado</strong>${escapeHtml(healthCenter || "Pendiente de revisar")}</p>
+      </div>
+      <p>La solicitud queda recibida y será revisada por la organización antes de cerrar la asignación definitiva.</p>
+      <ol class="next-steps">
+        <li>Espera la confirmación de la organización.</li>
+        <li>Descarga la plantilla común.</li>
+        <li>Prepara un caso clínico inicial.</li>
+        <li>Coordina la revisión con el tutor o tutora.</li>
+        <li>Prepara un material final breve: algoritmo, checklist, resumen operativo o tabla de manejo.</li>
+      </ol>
+      <div class="prep-actions">
+        <button class="button" type="button" data-open-welcome>Ver instrucciones</button>
+        <a class="button primary" href="${TEMPLATE_FILE}" download>Descargar plantilla</a>
+      </div>
+    </section>
+  `;
+  confirmation.scrollIntoView({ behavior: "auto", block: "start" });
 }
 
 async function refreshSignupData() {
@@ -620,16 +715,24 @@ function renderSessionSpeakers(speakers) {
 function renderResources(recursos) {
   const publicResources = recursos.filter(isPublicResource);
   const groups = [
-    { id: "programa", title: "Programa", filter: (resource) => resourceCategory(resource).includes("programa") || String(resource.id).includes("programa") },
-    { id: "plantilla", title: "Plantilla", filter: (resource) => resourceType(resource) === "presentacion" },
-    { id: "carteles", title: "Carteles de sesiones", filter: (resource) => resourceType(resource) === "cartel" },
+    { id: "programa", title: "Programa anual", filter: (resource) => resourceCategory(resource).includes("programa") || String(resource.id).includes("programa") },
+    { id: "plantilla", title: "Plantilla para ponentes", filter: (resource) => resourceType(resource) === "presentacion" },
     {
       id: "imagenes",
-      title: "Imágenes promocionales",
+      title: "Promocionales",
       filter: (resource) =>
         resourceType(resource) === "imagen" &&
         !resourceCategory(resource).includes("programa") &&
         !String(resource.id).includes("programa")
+    },
+    { id: "carteles", title: "Carteles de sesión", filter: (resource) => resourceType(resource) === "cartel" },
+    {
+      id: "materiales-finales",
+      title: "Materiales finales",
+      filter: (resource) => {
+        const category = resourceCategory(resource);
+        return category.includes("material final") || category.includes("algoritmo") || category.includes("checklist") || category.includes("resumen") || category.includes("bibliografia") || category.includes("bibliografía");
+      }
     },
     {
       id: "otros",
@@ -637,7 +740,8 @@ function renderResources(recursos) {
       filter: (resource) =>
         !["presentacion", "cartel", "imagen"].includes(resourceType(resource)) &&
         !resourceCategory(resource).includes("programa") &&
-        !String(resource.id).includes("programa")
+        !String(resource.id).includes("programa") &&
+        !resourceCategory(resource).includes("material final")
     }
   ];
 
@@ -718,12 +822,16 @@ function showSession(slug) {
         <div class="detail-box"><strong>Fecha</strong>${escapeHtml(session.fecha)}</div>
         <div class="detail-box"><strong>Horario</strong>${escapeHtml(session.hora_inicio)} - ${escapeHtml(session.hora_fin)}</div>
         <div class="detail-box"><strong>Sede</strong>${escapeHtml(session.sede)}</div>
-        <div class="detail-box"><strong>Estado</strong><span class="tag ${session.estado === "realizada" ? "done" : ""}">${escapeHtml(sessionStateLabel(session.estado))}</span></div>
+        <div class="detail-box"><strong>Estado de asignación</strong>${renderOperationalBadges(session)}<span>${escapeHtml(sessionOperationalState(session).meta)}</span></div>
       </div>
       ${renderSessionSpeakers(session.ponentes_detalle)}
+      ${publicAssignmentForSession(session) ? renderPresenterPrepCard({ compact: true }) : ""}
       ${renderTextSection("Material previo", session.material_previo)}
       ${renderTextSection("Material posterior", session.material_posterior)}
       ${renderTextSection("Bibliografía", session.bibliografia)}
+      <section class="privacy-note">
+        Antes de publicar materiales derivados de casos clínicos, deben anonimizarse completamente y evitar cualquier dato identificable.
+      </section>
       ${renderRevisionInfo(session)}
       <h3>Recursos asociados</h3>
       <p>${session.recursos.length ? session.recursos.map(escapeHtml).join(", ") : "Pendiente de confirmar"}</p>

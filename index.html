@@ -92,6 +92,17 @@
           </div>
           <button id="welcome-button" class="button primary" type="button" data-open-welcome>Ver instrucciones y cronograma</button>
         </article>
+        <article class="prep-card" aria-labelledby="prep-card-title">
+          <div>
+            <p class="eyebrow">Para preparar tu sesión</p>
+            <h2 id="prep-card-title">Plantilla común para ponentes</h2>
+            <p>Descarga la plantilla común, prepara un caso clínico inicial y termina la sesión con un material práctico reutilizable.</p>
+          </div>
+          <div class="prep-actions">
+            <button class="button" type="button" data-open-welcome>Ver instrucciones</button>
+            <a class="button primary" href="assets/docs/plantilla-jornadas-docentes-ap.pptx" download>Descargar plantilla</a>
+          </div>
+        </article>
       </section>
 
       <section id="agenda" class="section" data-view="agenda" hidden>
@@ -115,6 +126,17 @@
           <h2>Inscripción y asignación</h2>
           <p>Escoge una sesión y una fecha disponible. La reserva se registra de forma conjunta para evitar duplicidades.</p>
         </div>
+        <article class="prep-card compact-prep-card">
+          <div>
+            <p class="eyebrow">Preparación docente</p>
+            <h3>Usa la plantilla común antes de presentar</h3>
+            <p>Parte de un caso clínico, revisa la evidencia útil y deja un material final breve para consulta.</p>
+          </div>
+          <div class="prep-actions">
+            <button class="button" type="button" data-open-welcome>Ver instrucciones</button>
+            <a class="button primary" href="assets/docs/plantilla-jornadas-docentes-ap.pptx" download>Descargar plantilla</a>
+          </div>
+        </article>
         <form id="signup-form" class="signup-form" novalidate>
           <section class="signup-notice">
             <p>Al enviar el formulario, la sesión y la fecha quedarán asignadas y dejarán de estar disponibles para otros equipos. La organización podrá revisar o ajustar la asignación si fuera necesario.</p>
@@ -173,6 +195,7 @@
             <p id="signup-status" class="form-message" role="status"></p>
           </div>
         </form>
+        <div id="signup-confirmation" class="signup-confirmation" hidden aria-live="polite"></div>
       </section>
 
       <section id="ponentes" class="section" data-view="ponentes" hidden>
