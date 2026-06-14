@@ -142,6 +142,27 @@ function resourceCategory(resource) {
   return String(resource.categoria || "").toLowerCase();
 }
 
+function programImageResource(programa = {}) {
+  if (!programa.imagen_principal) return null;
+  return {
+    id: "programa-anual-png",
+    titulo: "Programa anual visual 2026-2027",
+    tipo: "imagen",
+    formato: "PNG",
+    archivo: programa.imagen_principal,
+    categoria: "Programa"
+  };
+}
+
+function normalizeResources(programa = {}, recursos = []) {
+  const normalized = recursos.filter(isPublicResource);
+  const programImage = programImageResource(programa);
+  if (programImage && !normalized.some((resource) => resourceFile(resource) === programImage.archivo)) {
+    return [programImage, ...normalized];
+  }
+  return normalized;
+}
+
 function flattenSiteContent(content = {}) {
   const flat = {};
   function visit(prefix, value) {
@@ -602,7 +623,14 @@ function renderResources(recursos) {
     { id: "programa", title: "Programa", filter: (resource) => resourceCategory(resource).includes("programa") || String(resource.id).includes("programa") },
     { id: "plantilla", title: "Plantilla", filter: (resource) => resourceType(resource) === "presentacion" },
     { id: "carteles", title: "Carteles de sesiones", filter: (resource) => resourceType(resource) === "cartel" },
-    { id: "imagenes", title: "Imágenes promocionales", filter: (resource) => resourceType(resource) === "imagen" },
+    {
+      id: "imagenes",
+      title: "Imágenes promocionales",
+      filter: (resource) =>
+        resourceType(resource) === "imagen" &&
+        !resourceCategory(resource).includes("programa") &&
+        !String(resource.id).includes("programa")
+    },
     {
       id: "otros",
       title: "Otros",
@@ -701,6 +729,7 @@ function showSession(slug) {
       <p>${session.recursos.length ? session.recursos.map(escapeHtml).join(", ") : "Pendiente de confirmar"}</p>
       <div class="dialog-actions inline-actions">
         ${session.imagen ? `<button class="button primary" type="button" data-session-poster="${escapeHtml(session.slug)}">Ver cartel</button>` : ""}
+        ${session.imagen ? `<a class="button" href="${escapeHtml(session.imagen)}" download>Descargar cartel</a>` : ""}
         <button class="button" type="button" data-close-session>Cerrar</button>
       </div>
     </div>
@@ -782,6 +811,7 @@ function openResource(resource) {
       <button class="button" type="button" data-close-resource>Cerrar</button>
     `
     : `
+      <a class="button" href="${file}" target="_blank" rel="noopener">Ver archivo</a>
       <a class="button primary" href="${file}" download>Descargar</a>
       <button class="button" type="button" data-close-resource>Cerrar</button>
     `;
@@ -874,6 +904,8 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
       periodicidad: "Mensual",
       duracion: "45-60 minutos por sesión",
       dirigido_a: "Profesionales sanitarios",
+      imagen_principal: jornada?.imagen_url || "assets/img/programa-anual.png",
+      imagen_promocional: "assets/img/promocion.png",
       icono: "assets/icons/icon-512.png"
     },
     metodologia: [],
@@ -892,15 +924,20 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
       foto_url: speaker.foto_url || "",
       sesiones: []
     })),
-    recursos: recursos.filter(isPublicResource).map((resource) => ({
-      id: resource.id,
-      titulo: resource.titulo,
-      tipo: resource.tipo,
-      formato: resource.tipo?.toUpperCase() || "OTRO",
-      archivo: resource.url,
-      categoria: resource.categoria,
-      sesion_id: resource.sesion_id
-    })),
+    recursos: normalizeResources(
+      {
+        imagen_principal: jornada?.imagen_url || "assets/img/programa-anual.png"
+      },
+      recursos.map((resource) => ({
+        id: resource.id,
+        titulo: resource.titulo,
+        tipo: resource.tipo,
+        formato: resource.tipo?.toUpperCase() || "OTRO",
+        archivo: resource.url,
+        categoria: resource.categoria,
+        sesion_id: resource.sesion_id
+      }))
+    ),
     publicAgenda,
     signupOptions,
     supabase,
@@ -1017,7 +1054,15 @@ async function loadData() {
   }
 
   state.dataSource = "json";
-  const jsonData = { ...fallbackData, siteContent: fallbackSiteContent, sesiones: (fallbackData.sesiones || []).filter(isVisibleSession).sort(compareSessions), publicAgenda: [], signupOptions: null, supabase: null };
+  const jsonData = {
+    ...fallbackData,
+    siteContent: fallbackSiteContent,
+    sesiones: (fallbackData.sesiones || []).filter(isVisibleSession).sort(compareSessions),
+    recursos: normalizeResources(fallbackData.programa, fallbackData.recursos || []),
+    publicAgenda: [],
+    signupOptions: null,
+    supabase: null
+  };
   console.info("Datos cargados desde JSON local por fallback");
   console.info("Textos cargados desde fallback local");
   return jsonData;

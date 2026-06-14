@@ -484,6 +484,13 @@
   ],
   "recursos": [
     {
+      "id": "programa-anual-png",
+      "titulo": "Programa anual visual 2026-2027",
+      "tipo": "imagen",
+      "formato": "PNG",
+      "archivo": "assets/img/programa-anual.png"
+    },
+    {
       "id": "programa-anual-pdf",
       "titulo": "Programa anual de sesiones clínicas 2026-2027",
       "tipo": "documento",
