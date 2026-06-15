@@ -640,7 +640,7 @@ async function updateAssignmentTask(taskId, statusOverride = null) {
 
 function siteSettingValue(key, fallback = "") {
   const setting = state.siteSettings.find((item) => item.key === key);
-  return setting?.value ?? fallback;
+  return setting ? setting.value ?? "" : fallback;
 }
 
 function parseSettingJson(key, fallback) {

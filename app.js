@@ -235,15 +235,18 @@ function flattenSiteContent(content = {}) {
 function settingRowsToContent(rows = [], fallback = {}) {
   return rows.reduce(
     (content, row) => {
-      if (row.key && row.value !== null && row.value !== undefined) content[row.key] = row.value;
+      if (row.key) content[row.key] = row.value;
       return content;
     },
     { ...fallback }
   );
 }
 
-function siteText(key, fallback = "Pendiente de confirmar") {
+function siteText(key, fallback = "Pendiente de confirmar", options = {}) {
+  const hasKey = Object.prototype.hasOwnProperty.call(state.data?.siteContent || {}, key);
+  if (!hasKey) return fallback;
   const value = state.data?.siteContent?.[key];
+  if (options.allowBlank && (value === null || value === undefined || String(value).trim() === "")) return "";
   return value === null || value === undefined || value === "" ? fallback : value;
 }
 
@@ -312,7 +315,7 @@ function renderSiteContent() {
 function welcomeData() {
   return {
     visible: siteBoolean("welcome.visible", true),
-    title: siteText("welcome.title", "Bienvenida a las JAP"),
+    title: siteText("welcome.title", "Bienvenida a las JAP", { allowBlank: true }).trim(),
     subtitle: siteText("welcome.subtitle", "Jornadas Docentes de Atención Primaria 2026-2027"),
     intro: siteText("welcome.intro", ""),
     buttonLabel: siteText("welcome.button_label", "Ver instrucciones y cronograma"),
@@ -332,6 +335,7 @@ function renderWelcome() {
   if (!data.visible) return;
 
   $("#welcome-title").textContent = data.title;
+  $("#welcome-title").hidden = !data.title;
   $("#welcome-subtitle").textContent = data.subtitle;
   $("#welcome-subtitle").hidden = !data.subtitle;
   $("#welcome-intro").textContent = data.intro;
@@ -373,6 +377,7 @@ function formatWelcomeDate(item) {
 function showWelcome() {
   const data = welcomeData();
   $("#welcome-dialog-title").textContent = data.title;
+  $("#welcome-dialog-title").hidden = !data.title;
   $("#welcome-dialog-subtitle").textContent = data.subtitle;
   $("#welcome-dialog-subtitle").hidden = !data.subtitle;
   $("#welcome-dialog-content").innerHTML = `
