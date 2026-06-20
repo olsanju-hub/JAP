@@ -1,4 +1,4 @@
-const CACHE_NAME = "jap-static-v29";
+const CACHE_NAME = "jap-static-v30";
 
 const APP_ASSETS = [
   "./",
@@ -16,22 +16,26 @@ const APP_ASSETS = [
   "./assets/icons/apple-touch-icon.png",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",
-  "./assets/img/programa-anual.png",
-  "./assets/img/promocion.png",
-  "./assets/img/promocion-2.png",
-  "./assets/img/sesion-hta.png",
-  "./assets/img/sesion-diabetes.png",
-  "./assets/img/sesion-dislipemia.png",
-  "./assets/img/sesion-obesidad.png",
-  "./assets/img/sesion-epoc-asma.png",
-  "./assets/img/sesion-salud-mental.png",
-  "./assets/img/sesion-dolor-osteomuscular.png",
-  "./assets/img/sesion-dermatologia.png",
-  "./assets/img/sesion-patologia-digestiva.png",
-  "./assets/img/sesion-fragilidad.png",
-  "./assets/img/sesion-ginecologia-ap.png",
-  "./assets/img/sesion-insuficiencia-cardiaca-cronica.png",
-  "./assets/docs/programa-anual.pdf",
+  "./assets/img/infografia-jap-programa-general-01.png",
+  "./assets/img/infografia-jap-calendario-2026-2027.png",
+  "./assets/img/infografia-jap-convocatoria.png",
+  "./assets/img/infografia-jap-productos-finales.png",
+  "./assets/img/infografia-jap-funcionamiento.png",
+  "./assets/img/sesion-01-sindrome-cardiorrenal-metabolico.png",
+  "./assets/img/sesion-02-hipertension-arterial.png",
+  "./assets/img/sesion-03-diabetes-mellitus.png",
+  "./assets/img/sesion-04-dislipemia.png",
+  "./assets/img/sesion-05-insuficiencia-cardiaca.png",
+  "./assets/img/sesion-06-obesidad.png",
+  "./assets/img/sesion-07-epoc-asma.png",
+  "./assets/img/sesion-08-dispepsia-erge-sii.png",
+  "./assets/img/sesion-09-salud-mental-bzd.png",
+  "./assets/img/sesion-10-anticoncepcion-menopausia-trh.png",
+  "./assets/img/sesion-11-manejo-dolor.png",
+  "./assets/img/sesion-12-adulto-mayor.png",
+  "./assets/img/sesion-13-jornada-final.png",
+  "./assets/docs/programa-anual-jap-2026-2027.pdf",
+  "./assets/docs/programa-anual-jap-2026-2027-editable.docx",
   "./assets/docs/plantilla-jornadas-docentes-ap.pptx"
 ];
 

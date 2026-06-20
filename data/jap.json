@@ -1,18 +1,18 @@
 {
   "programa": {
-    "nombre": "Jornadas Docentes de Atención Primaria",
-    "subtitulo": "Programa anual de sesiones clínicas para profesionales de Atención Primaria",
+    "nombre": "Jornadas de Actualización en Atención Primaria (JAP)",
+    "subtitulo": "Programa docente 2026-2027",
     "ciclo": "2026-2027",
-    "descripcion": "Espacio docente anual para profesionales de Atención Primaria, centrado en sesiones clínicas breves, aplicadas y orientadas a mejorar la práctica asistencial compartida.",
-    "enfoque": "El programa aborda problemas prevalentes de la consulta, promueve la actualización basada en evidencia y facilita criterios comunes entre profesionales mediante casos, debate y materiales prácticos.",
+    "descripcion": "Programa docente anual de sesiones clínicas prácticas, centradas en problemas frecuentes de Atención Primaria y orientadas a decisiones de consulta.",
+    "enfoque": "Sesiones impartidas por R1, autorizadas y revisadas por R4 y tutores/as de Atención Primaria. Cada sesión debe generar una infografía clínica o material equivalente, revisado y reutilizable.",
     "modalidad": "Preferentemente presencial, con opción online por Teams",
     "modalidad_resumen": "Presencial preferente + Teams",
     "enlace_teams": "Enlace Teams pendiente de confirmar",
-    "periodicidad": "Mensual",
+    "periodicidad": "Aproximadamente cada tres semanas",
     "duracion": "45-60 minutos por sesión",
     "dirigido_a": "Médicos de familia, enfermería, residentes MIR/FIR/EIR y otros profesionales sanitarios",
-    "imagen_principal": "assets/img/programa-anual.png",
-    "imagen_promocional": "assets/img/promocion.png",
+    "imagen_principal": "assets/img/infografia-jap-programa-general-01.png",
+    "imagen_promocional": "assets/img/infografia-jap-convocatoria.png",
     "icono": "assets/icons/icon-512.png"
   },
   "metodologia": [
@@ -35,399 +35,523 @@
   "sesiones": [
     {
       "id": 1,
-      "slug": "hipertension-arterial",
-      "titulo": "Hipertensión arterial en Atención Primaria",
+      "orden": 1,
+      "slug": "sindrome-cardiorrenal-metabolico",
+      "titulo": "Síndrome cardiorrenal metabólico",
       "bloque": "Sesión 1",
-      "descripcion": "Diagnóstico y confirmación; estratificación del riesgo; objetivos de control; elección y ajuste de tratamiento; seguimiento, adherencia y abordaje de la HTA resistente.",
-      "objetivo": "Actualizar el abordaje diagnóstico, terapéutico y de seguimiento de la hipertensión arterial en Atención Primaria.",
+      "descripcion": "Integración clínica cardiometabólica y renal. Producto final previsto: Infografía marco del programa.",
+      "objetivo": "Integración clínica cardiometabólica y renal",
+      "orientacion_docente": "Integración clínica cardiometabólica y renal",
+      "producto_final": "Infografía marco del programa",
       "contenidos_clave": [
-        "Diagnóstico y confirmación",
-        "Estratificación del riesgo",
-        "Objetivos de control",
-        "Elección y ajuste de tratamiento",
-        "Seguimiento, adherencia y HTA resistente"
+        "Paciente cardiometabólico y renal",
+        "Cribado inicial",
+        "Estratificación de riesgo",
+        "Seguimiento longitudinal",
+        "Criterios de alarma y derivación"
       ],
-      "fecha": "Pendiente de confirmar",
-      "hora_inicio": "Pendiente de confirmar",
-      "hora_fin": "Pendiente de confirmar",
-      "sede": "Pendiente de confirmar",
+      "fecha": "2026-09-04",
+      "hora_inicio": "Por confirmar",
+      "hora_fin": "Por confirmar",
+      "sede": "Edificio J",
       "ponentes": [
-        "Pendiente de confirmar"
+        "Por asignar"
       ],
-      "imagen": "assets/img/sesion-hta.png",
-      "recursos": [],
+      "imagen": "assets/img/sesion-01-sindrome-cardiorrenal-metabolico.png",
+      "recursos": [
+        "Infografía marco del programa"
+      ],
       "estado": "publicada",
+      "is_active": true,
       "objetivos_docentes": "",
-      "metodologia": "",
+      "metodologia": "Caso clínico inicial, revisión práctica y cierre con material final reutilizable.",
       "bibliografia": "",
       "responsable_revision": "",
       "fecha_revision": "",
       "material_previo": "",
       "material_posterior": "",
-      "observaciones_internas": ""
+      "observaciones_internas": "",
+      "inscripcion_publica": true
     },
     {
       "id": 2,
-      "slug": "diabetes-tipo-2",
-      "titulo": "Diabetes mellitus tipo 2 y protección cardiorrenal",
+      "orden": 2,
+      "slug": "hipertension-arterial",
+      "titulo": "Hipertensión arterial",
       "bloque": "Sesión 2",
-      "descripcion": "Cribado y diagnóstico; objetivos individualizados; manejo escalonado; papel de iSGLT2 y arGLP-1; control de comorbilidades; seguimiento y educación terapéutica.",
-      "objetivo": "Revisar el manejo de la diabetes mellitus tipo 2 y la protección cardiorrenal desde Atención Primaria.",
+      "descripcion": "Prevención cardiovascular y manejo longitudinal. Producto final previsto: Algoritmo diagnóstico-terapéutico.",
+      "objetivo": "Prevención cardiovascular y manejo longitudinal",
+      "orientacion_docente": "Prevención cardiovascular y manejo longitudinal",
+      "producto_final": "Algoritmo diagnóstico-terapéutico",
       "contenidos_clave": [
-        "Cribado y diagnóstico",
-        "Objetivos individualizados",
-        "Manejo escalonado",
-        "iSGLT2 y arGLP-1",
-        "Comorbilidades, seguimiento y educación terapéutica"
+        "Medición correcta",
+        "AMPA y MAPA",
+        "Estratificación de riesgo",
+        "Tratamiento inicial y escalado",
+        "Seguimiento y adherencia"
       ],
-      "fecha": "Pendiente de confirmar",
-      "hora_inicio": "Pendiente de confirmar",
-      "hora_fin": "Pendiente de confirmar",
-      "sede": "Pendiente de confirmar",
+      "fecha": "2026-09-25",
+      "hora_inicio": "Por confirmar",
+      "hora_fin": "Por confirmar",
+      "sede": "Por confirmar",
       "ponentes": [
-        "Pendiente de confirmar"
+        "Por asignar"
       ],
-      "imagen": "assets/img/sesion-diabetes.png",
-      "recursos": [],
+      "imagen": "assets/img/sesion-02-hipertension-arterial.png",
+      "recursos": [
+        "Algoritmo diagnóstico-terapéutico"
+      ],
       "estado": "publicada",
+      "is_active": true,
       "objetivos_docentes": "",
-      "metodologia": "",
+      "metodologia": "Caso clínico inicial, revisión práctica y cierre con material final reutilizable.",
       "bibliografia": "",
       "responsable_revision": "",
       "fecha_revision": "",
       "material_previo": "",
       "material_posterior": "",
-      "observaciones_internas": ""
+      "observaciones_internas": "",
+      "inscripcion_publica": true
     },
     {
       "id": 3,
-      "slug": "dislipemia-prevencion-cardiovascular",
-      "titulo": "Dislipemia y prevención cardiovascular",
+      "orden": 3,
+      "slug": "diabetes-mellitus",
+      "titulo": "Diabetes mellitus",
       "bloque": "Sesión 3",
-      "descripcion": "Estimación del riesgo; indicación de estatinas y otros hipolipemiantes; objetivos de LDL; seguridad y monitorización; prevención primaria y secundaria en AP.",
-      "objetivo": "Homogeneizar criterios de prevención cardiovascular y tratamiento hipolipemiante en Atención Primaria.",
+      "descripcion": "Cronicidad, riesgo vascular y complicaciones. Producto final previsto: Tabla de manejo inicial.",
+      "objetivo": "Cronicidad, riesgo vascular y complicaciones",
+      "orientacion_docente": "Cronicidad, riesgo vascular y complicaciones",
+      "producto_final": "Tabla de manejo inicial",
       "contenidos_clave": [
-        "Estimación del riesgo",
-        "Estatinas y otros hipolipemiantes",
-        "Objetivos de LDL",
-        "Seguridad y monitorización",
-        "Prevención primaria y secundaria"
+        "Objetivos individualizados",
+        "Tratamiento inicial",
+        "Riesgo vascular y renal",
+        "Cribado de complicaciones",
+        "Educación diabetológica"
       ],
-      "fecha": "Pendiente de confirmar",
-      "hora_inicio": "Pendiente de confirmar",
-      "hora_fin": "Pendiente de confirmar",
-      "sede": "Pendiente de confirmar",
+      "fecha": "2026-10-16",
+      "hora_inicio": "Por confirmar",
+      "hora_fin": "Por confirmar",
+      "sede": "Por confirmar",
       "ponentes": [
-        "Pendiente de confirmar"
+        "Por asignar"
       ],
-      "imagen": "assets/img/sesion-dislipemia.png",
-      "recursos": [],
+      "imagen": "assets/img/sesion-03-diabetes-mellitus.png",
+      "recursos": [
+        "Tabla de manejo inicial"
+      ],
       "estado": "publicada",
+      "is_active": true,
       "objetivos_docentes": "",
-      "metodologia": "",
+      "metodologia": "Caso clínico inicial, revisión práctica y cierre con material final reutilizable.",
       "bibliografia": "",
       "responsable_revision": "",
       "fecha_revision": "",
       "material_previo": "",
       "material_posterior": "",
-      "observaciones_internas": ""
+      "observaciones_internas": "",
+      "inscripcion_publica": true
     },
     {
       "id": 4,
-      "slug": "obesidad-estilo-vida",
-      "titulo": "Obesidad, estilo de vida y entrevista motivacional",
+      "orden": 4,
+      "slug": "dislipemia",
+      "titulo": "Dislipemia",
       "bloque": "Sesión 4",
-      "descripcion": "Evaluación integral; objetivos realistas; intervención dietética y actividad física; entrevista motivacional; criterios de derivación; opciones farmacológicas y seguimiento.",
-      "objetivo": "Revisar el abordaje integral de la obesidad y los cambios de estilo de vida desde la consulta.",
+      "descripcion": "Riesgo cardiovascular y decisión terapéutica. Producto final previsto: Mapa de decisión terapéutica.",
+      "objetivo": "Riesgo cardiovascular y decisión terapéutica",
+      "orientacion_docente": "Riesgo cardiovascular y decisión terapéutica",
+      "producto_final": "Mapa de decisión terapéutica",
       "contenidos_clave": [
-        "Evaluación integral",
-        "Objetivos realistas",
-        "Intervención dietética y actividad física",
-        "Entrevista motivacional",
-        "Derivación, opciones farmacológicas y seguimiento"
+        "Perfil lipídico",
+        "Riesgo cardiovascular",
+        "Objetivos de LDL",
+        "Estatinas y ezetimiba",
+        "Intolerancia y derivación"
       ],
-      "fecha": "Pendiente de confirmar",
-      "hora_inicio": "Pendiente de confirmar",
-      "hora_fin": "Pendiente de confirmar",
-      "sede": "Pendiente de confirmar",
+      "fecha": "2026-11-06",
+      "hora_inicio": "Por confirmar",
+      "hora_fin": "Por confirmar",
+      "sede": "Por confirmar",
       "ponentes": [
-        "Pendiente de confirmar"
+        "Por asignar"
       ],
-      "imagen": "assets/img/sesion-obesidad.png",
-      "recursos": [],
+      "imagen": "assets/img/sesion-04-dislipemia.png",
+      "recursos": [
+        "Mapa de decisión terapéutica"
+      ],
       "estado": "publicada",
+      "is_active": true,
       "objetivos_docentes": "",
-      "metodologia": "",
+      "metodologia": "Caso clínico inicial, revisión práctica y cierre con material final reutilizable.",
       "bibliografia": "",
       "responsable_revision": "",
       "fecha_revision": "",
       "material_previo": "",
       "material_posterior": "",
-      "observaciones_internas": ""
+      "observaciones_internas": "",
+      "inscripcion_publica": true
     },
     {
       "id": 5,
-      "slug": "epoc-asma",
-      "titulo": "EPOC y asma",
+      "orden": 5,
+      "slug": "insuficiencia-cardiaca",
+      "titulo": "Insuficiencia cardiaca",
       "bloque": "Sesión 5",
-      "descripcion": "Diagnóstico y espirometría; clasificación y control; tratamiento inhalado; técnica inhalatoria; exacerbaciones; criterios de derivación y plan de acción.",
-      "objetivo": "Actualizar el diagnóstico, control y seguimiento de EPOC y asma en Atención Primaria.",
+      "descripcion": "Cronicidad, diagnóstico inicial y descompensación. Producto final previsto: Checklist de IC en AP.",
+      "objetivo": "Cronicidad, diagnóstico inicial y descompensación",
+      "orientacion_docente": "Cronicidad, diagnóstico inicial y descompensación",
+      "producto_final": "Checklist de IC en AP",
       "contenidos_clave": [
-        "Diagnóstico y espirometría",
-        "Clasificación y control",
-        "Tratamiento inhalado",
-        "Técnica inhalatoria",
-        "Exacerbaciones, derivación y plan de acción"
+        "Sospecha clínica",
+        "Pruebas iniciales",
+        "Pilares terapéuticos",
+        "Seguimiento en AP",
+        "Descompensación y derivación"
       ],
-      "fecha": "Pendiente de confirmar",
-      "hora_inicio": "Pendiente de confirmar",
-      "hora_fin": "Pendiente de confirmar",
-      "sede": "Pendiente de confirmar",
+      "fecha": "2026-11-27",
+      "hora_inicio": "Por confirmar",
+      "hora_fin": "Por confirmar",
+      "sede": "Por confirmar",
       "ponentes": [
-        "Pendiente de confirmar"
+        "Por asignar"
       ],
-      "imagen": "assets/img/sesion-epoc-asma.png",
-      "recursos": [],
+      "imagen": "assets/img/sesion-05-insuficiencia-cardiaca.png",
+      "recursos": [
+        "Checklist de IC en AP"
+      ],
       "estado": "publicada",
+      "is_active": true,
       "objetivos_docentes": "",
-      "metodologia": "",
+      "metodologia": "Caso clínico inicial, revisión práctica y cierre con material final reutilizable.",
       "bibliografia": "",
       "responsable_revision": "",
       "fecha_revision": "",
       "material_previo": "",
       "material_posterior": "",
-      "observaciones_internas": ""
+      "observaciones_internas": "",
+      "inscripcion_publica": true
     },
     {
       "id": 6,
-      "slug": "salud-mental-frecuente",
-      "titulo": "Trastornos de salud mental frecuentes",
+      "orden": 6,
+      "slug": "obesidad",
+      "titulo": "Obesidad",
       "bloque": "Sesión 6",
-      "descripcion": "Abordaje de ansiedad, depresión e insomnio; evaluación del riesgo suicida; intervenciones no farmacológicas; uso prudente de psicofármacos; criterios de derivación y seguimiento.",
-      "objetivo": "Revisar el abordaje inicial, seguimiento y derivación de los trastornos de salud mental frecuentes.",
+      "descripcion": "Abordaje integral y longitudinal. Producto final previsto: Infografía de intervención escalonada.",
+      "objetivo": "Abordaje integral y longitudinal",
+      "orientacion_docente": "Abordaje integral y longitudinal",
+      "producto_final": "Infografía de intervención escalonada",
       "contenidos_clave": [
-        "Ansiedad, depresión e insomnio",
-        "Evaluación del riesgo suicida",
-        "Intervenciones no farmacológicas",
-        "Uso prudente de psicofármacos",
-        "Derivación y seguimiento"
+        "Valoración integral",
+        "Comorbilidades",
+        "Entrevista motivacional",
+        "Intervención escalonada",
+        "Seguimiento longitudinal"
       ],
-      "fecha": "Pendiente de confirmar",
-      "hora_inicio": "Pendiente de confirmar",
-      "hora_fin": "Pendiente de confirmar",
-      "sede": "Pendiente de confirmar",
+      "fecha": "2026-12-18",
+      "hora_inicio": "Por confirmar",
+      "hora_fin": "Por confirmar",
+      "sede": "Por confirmar",
       "ponentes": [
-        "Pendiente de confirmar"
+        "Por asignar"
       ],
-      "imagen": "assets/img/sesion-salud-mental.png",
-      "recursos": [],
+      "imagen": "assets/img/sesion-06-obesidad.png",
+      "recursos": [
+        "Infografía de intervención escalonada"
+      ],
       "estado": "publicada",
+      "is_active": true,
       "objetivos_docentes": "",
-      "metodologia": "",
+      "metodologia": "Caso clínico inicial, revisión práctica y cierre con material final reutilizable.",
       "bibliografia": "",
       "responsable_revision": "",
       "fecha_revision": "",
       "material_previo": "",
       "material_posterior": "",
-      "observaciones_internas": ""
+      "observaciones_internas": "",
+      "inscripcion_publica": true
     },
     {
       "id": 7,
-      "slug": "dolor-osteomuscular",
-      "titulo": "Dolor osteomuscular y uso prudente de pruebas complementarias",
+      "orden": 7,
+      "slug": "epoc-asma",
+      "titulo": "EPOC y asma",
       "bloque": "Sesión 7",
-      "descripcion": "Lumbalgia, cervicalgia y artrosis; banderas rojas; indicación de imagen y analítica; manejo escalonado del dolor; ejercicio terapéutico; derivación y seguridad farmacológica.",
-      "objetivo": "Actualizar el manejo del dolor osteomuscular frecuente y el uso prudente de pruebas complementarias.",
+      "descripcion": "Respiratorio frecuente en AP. Producto final previsto: Guía de inhaladores y crisis.",
+      "objetivo": "Respiratorio frecuente en AP",
+      "orientacion_docente": "Respiratorio frecuente en AP",
+      "producto_final": "Guía de inhaladores y crisis",
       "contenidos_clave": [
-        "Lumbalgia, cervicalgia y artrosis",
-        "Banderas rojas",
-        "Imagen y analítica",
-        "Manejo escalonado del dolor",
-        "Ejercicio terapéutico, derivación y seguridad farmacológica"
+        "Historia respiratoria",
+        "Espirometría básica",
+        "Tratamiento inhalado",
+        "Técnica y adherencia",
+        "Exacerbaciones y derivación"
       ],
-      "fecha": "Pendiente de confirmar",
-      "hora_inicio": "Pendiente de confirmar",
-      "hora_fin": "Pendiente de confirmar",
-      "sede": "Pendiente de confirmar",
+      "fecha": "2027-01-15",
+      "hora_inicio": "Por confirmar",
+      "hora_fin": "Por confirmar",
+      "sede": "Por confirmar",
       "ponentes": [
-        "Pendiente de confirmar"
+        "Por asignar"
       ],
-      "imagen": "assets/img/sesion-dolor-osteomuscular.png",
-      "recursos": [],
+      "imagen": "assets/img/sesion-07-epoc-asma.png",
+      "recursos": [
+        "Guía de inhaladores y crisis"
+      ],
       "estado": "publicada",
+      "is_active": true,
       "objetivos_docentes": "",
-      "metodologia": "",
+      "metodologia": "Caso clínico inicial, revisión práctica y cierre con material final reutilizable.",
       "bibliografia": "",
       "responsable_revision": "",
       "fecha_revision": "",
       "material_previo": "",
       "material_posterior": "",
-      "observaciones_internas": ""
+      "observaciones_internas": "",
+      "inscripcion_publica": true
     },
     {
       "id": 8,
-      "slug": "dermatologia-atencion-primaria",
-      "titulo": "Dermatología en Atención Primaria",
+      "orden": 8,
+      "slug": "dispepsia-erge-sii",
+      "titulo": "Dispepsia, ERGE y SII: manejo inicial en AP y criterios de derivación",
       "bloque": "Sesión 8",
-      "descripcion": "Lesiones frecuentes; criterios de alarma; dermatoscopia básica si disponible; tratamiento inicial; indicación de biopsia o derivación; educación y fotoprotección.",
-      "objetivo": "Reforzar el reconocimiento y manejo inicial de lesiones dermatológicas frecuentes en Atención Primaria.",
+      "descripcion": "Digestivo frecuente y uso racional de pruebas. Producto final previsto: Algoritmo digestivo de AP.",
+      "objetivo": "Digestivo frecuente y uso racional de pruebas",
+      "orientacion_docente": "Digestivo frecuente y uso racional de pruebas",
+      "producto_final": "Algoritmo digestivo de AP",
       "contenidos_clave": [
-        "Lesiones frecuentes",
-        "Criterios de alarma",
-        "Dermatoscopia básica si disponible",
-        "Tratamiento inicial",
-        "Biopsia, derivación, educación y fotoprotección"
+        "Dispepsia",
+        "ERGE",
+        "SII",
+        "Uso racional de pruebas",
+        "Criterios de derivación"
       ],
-      "fecha": "Pendiente de confirmar",
-      "hora_inicio": "Pendiente de confirmar",
-      "hora_fin": "Pendiente de confirmar",
-      "sede": "Pendiente de confirmar",
+      "fecha": "2027-02-05",
+      "hora_inicio": "Por confirmar",
+      "hora_fin": "Por confirmar",
+      "sede": "Por confirmar",
       "ponentes": [
-        "Pendiente de confirmar"
+        "Por asignar"
       ],
-      "imagen": "assets/img/sesion-dermatologia.png",
-      "recursos": [],
+      "imagen": "assets/img/sesion-08-dispepsia-erge-sii.png",
+      "recursos": [
+        "Algoritmo digestivo de AP"
+      ],
       "estado": "publicada",
+      "is_active": true,
       "objetivos_docentes": "",
-      "metodologia": "",
+      "metodologia": "Caso clínico inicial, revisión práctica y cierre con material final reutilizable.",
       "bibliografia": "",
       "responsable_revision": "",
       "fecha_revision": "",
       "material_previo": "",
       "material_posterior": "",
-      "observaciones_internas": ""
+      "observaciones_internas": "",
+      "inscripcion_publica": true
     },
     {
       "id": 9,
-      "slug": "patologia-digestiva-frecuente",
-      "titulo": "Patología digestiva frecuente y señales de alarma",
+      "orden": 9,
+      "slug": "ansiedad-depresion-insomnio-bzd",
+      "titulo": "Ansiedad, depresión, insomnio y desprescripción de BZD",
       "bloque": "Sesión 9",
-      "descripcion": "Dispepsia, ERGE y SII; manejo inicial; pruebas indicadas; anemia y sangrado digestivo; pérdida de peso y otros signos de alarma; criterios de derivación preferente.",
-      "objetivo": "Homogeneizar el manejo inicial de patología digestiva frecuente y la identificación de señales de alarma.",
+      "descripcion": "Salud mental frecuente y seguridad clínica. Producto final previsto: Plan de desprescripción.",
+      "objetivo": "Salud mental frecuente y seguridad clínica",
+      "orientacion_docente": "Salud mental frecuente y seguridad clínica",
+      "producto_final": "Plan de desprescripción",
       "contenidos_clave": [
-        "Dispepsia, ERGE y SII",
-        "Manejo inicial",
-        "Pruebas indicadas",
-        "Anemia, sangrado digestivo y pérdida de peso",
-        "Signos de alarma y derivación preferente"
+        "Entrevista clínica breve",
+        "Riesgo suicida",
+        "Tratamiento inicial",
+        "Insomnio",
+        "Desprescripción de benzodiacepinas"
       ],
-      "fecha": "Pendiente de confirmar",
-      "hora_inicio": "Pendiente de confirmar",
-      "hora_fin": "Pendiente de confirmar",
-      "sede": "Pendiente de confirmar",
+      "fecha": "2027-02-26",
+      "hora_inicio": "Por confirmar",
+      "hora_fin": "Por confirmar",
+      "sede": "Por confirmar",
       "ponentes": [
-        "Pendiente de confirmar"
+        "Por asignar"
       ],
-      "imagen": "assets/img/sesion-patologia-digestiva.png",
-      "recursos": [],
+      "imagen": "assets/img/sesion-09-salud-mental-bzd.png",
+      "recursos": [
+        "Plan de desprescripción"
+      ],
       "estado": "publicada",
+      "is_active": true,
       "objetivos_docentes": "",
-      "metodologia": "",
+      "metodologia": "Caso clínico inicial, revisión práctica y cierre con material final reutilizable.",
       "bibliografia": "",
       "responsable_revision": "",
       "fecha_revision": "",
       "material_previo": "",
       "material_posterior": "",
-      "observaciones_internas": ""
+      "observaciones_internas": "",
+      "inscripcion_publica": true
     },
     {
       "id": 10,
-      "slug": "fragilidad-pluripatologia",
-      "titulo": "Fragilidad, pluripatología y seguridad farmacológica",
+      "orden": 10,
+      "slug": "anticoncepcion-menopausia-trh",
+      "titulo": "Anticoncepción, menopausia y TRH: diagnóstico y tratamiento",
       "bloque": "Sesión 10",
-      "descripcion": "Identificación de fragilidad; revisión de medicación y deprescripción; conciliación; prevención de caídas; objetivos centrados en la persona; coordinación con enfermería y trabajo social.",
-      "objetivo": "Revisar el abordaje de fragilidad, pluripatología y seguridad farmacológica con objetivos centrados en la persona.",
+      "descripcion": "Salud de la mujer en AP. Producto final previsto: Tabla de elección terapéutica.",
+      "objetivo": "Salud de la mujer en AP",
+      "orientacion_docente": "Salud de la mujer en AP",
+      "producto_final": "Tabla de elección terapéutica",
       "contenidos_clave": [
-        "Identificación de fragilidad",
-        "Revisión de medicación y deprescripción",
-        "Conciliación",
-        "Prevención de caídas",
-        "Coordinación con enfermería y trabajo social"
+        "Consejo anticonceptivo",
+        "Contraindicaciones",
+        "Menopausia",
+        "TRH",
+        "Criterios de derivación"
       ],
-      "fecha": "Pendiente de confirmar",
-      "hora_inicio": "Pendiente de confirmar",
-      "hora_fin": "Pendiente de confirmar",
-      "sede": "Pendiente de confirmar",
+      "fecha": "2027-03-19",
+      "hora_inicio": "Por confirmar",
+      "hora_fin": "Por confirmar",
+      "sede": "Por confirmar",
       "ponentes": [
-        "Pendiente de confirmar"
+        "Por asignar"
       ],
-      "imagen": "assets/img/sesion-fragilidad.png",
-      "recursos": [],
+      "imagen": "assets/img/sesion-10-anticoncepcion-menopausia-trh.png",
+      "recursos": [
+        "Tabla de elección terapéutica"
+      ],
       "estado": "publicada",
+      "is_active": true,
       "objetivos_docentes": "",
-      "metodologia": "",
+      "metodologia": "Caso clínico inicial, revisión práctica y cierre con material final reutilizable.",
       "bibliografia": "",
       "responsable_revision": "",
       "fecha_revision": "",
       "material_previo": "",
       "material_posterior": "",
-      "observaciones_internas": ""
+      "observaciones_internas": "",
+      "inscripcion_publica": true
     },
     {
       "id": 11,
-      "slug": "ginecologia-ap",
-      "titulo": "Ginecología en Atención Primaria",
+      "orden": 11,
+      "slug": "manejo-del-dolor",
+      "titulo": "Manejo del dolor",
       "bloque": "Sesión 11",
-      "descripcion": "Abordaje práctico de problemas ginecológicos frecuentes en Atención Primaria, salud sexual y reproductiva, anticoncepción, cribado, menopausia, síntomas ginecológicos frecuentes, criterios de derivación y coordinación con Ginecología.",
-      "objetivo": "Revisar el abordaje práctico de la salud de la mujer y los problemas ginecológicos frecuentes en Atención Primaria.",
+      "descripcion": "Síntoma transversal, seguridad e iatrogenia. Producto final previsto: Escalera analgésica práctica.",
+      "objetivo": "Síntoma transversal, seguridad e iatrogenia",
+      "orientacion_docente": "Síntoma transversal, seguridad e iatrogenia",
+      "producto_final": "Escalera analgésica práctica",
       "contenidos_clave": [
-        "Alteraciones menstruales",
-        "Anticoncepción y salud sexual",
-        "Síntomas vulvovaginales",
-        "Sangrado uterino anómalo y menopausia",
-        "Cribado, criterios de alarma y derivación preferente"
+        "Tipo de dolor",
+        "Seguridad farmacológica",
+        "Opioides",
+        "Dolor en paciente frágil",
+        "Banderas rojas"
       ],
-      "fecha": "Pendiente de confirmar",
-      "hora_inicio": "Pendiente de confirmar",
-      "hora_fin": "Pendiente de confirmar",
-      "sede": "Pendiente de confirmar",
+      "fecha": "2027-04-09",
+      "hora_inicio": "Por confirmar",
+      "hora_fin": "Por confirmar",
+      "sede": "Por confirmar",
       "ponentes": [
-        "Pendiente de confirmar"
+        "Por asignar"
       ],
-      "imagen": "assets/img/sesion-ginecologia-ap.png",
-      "recursos": [],
+      "imagen": "assets/img/sesion-11-manejo-dolor.png",
+      "recursos": [
+        "Escalera analgésica práctica"
+      ],
       "estado": "publicada",
+      "is_active": true,
       "objetivos_docentes": "",
-      "metodologia": "",
+      "metodologia": "Caso clínico inicial, revisión práctica y cierre con material final reutilizable.",
       "bibliografia": "",
       "responsable_revision": "",
       "fecha_revision": "",
       "material_previo": "",
       "material_posterior": "",
-      "observaciones_internas": ""
+      "observaciones_internas": "",
+      "inscripcion_publica": true
     },
     {
       "id": 12,
-      "slug": "insuficiencia-cardiaca-cronica",
-      "titulo": "Insuficiencia cardiaca crónica en Atención Primaria",
+      "orden": 12,
+      "slug": "adulto-mayor",
+      "titulo": "Atención integral del adulto mayor",
       "bloque": "Sesión 12",
-      "descripcion": "Seguimiento longitudinal de la insuficiencia cardiaca crónica desde Atención Primaria, identificación de descompensaciones, optimización terapéutica, educación sanitaria, autocuidados, coordinación con Cardiología/Urgencias y criterios de derivación.",
-      "objetivo": "Actualizar el seguimiento longitudinal de la insuficiencia cardiaca crónica desde Atención Primaria y la coordinación asistencial.",
+      "descripcion": "Geriatría AP, fragilidad y continuidad. Producto final previsto: Checklist geriátrico.",
+      "objetivo": "Geriatría AP, fragilidad y continuidad",
+      "orientacion_docente": "Geriatría AP, fragilidad y continuidad",
+      "producto_final": "Checklist geriátrico",
       "contenidos_clave": [
-        "Paciente con diagnóstico reciente",
-        "Revisión tras alta hospitalaria",
-        "Ajuste de tratamiento y control de síntomas",
-        "Control de peso, diuresis y signos de alarma",
-        "Comorbilidad, derivación y prevención de reingresos"
+        "Valoración geriátrica breve",
+        "Fragilidad",
+        "Polifarmacia",
+        "Prevención de caídas",
+        "Continuidad asistencial"
       ],
-      "fecha": "Pendiente de confirmar",
-      "hora_inicio": "Pendiente de confirmar",
-      "hora_fin": "Pendiente de confirmar",
-      "sede": "Pendiente de confirmar",
+      "fecha": "2027-04-30",
+      "hora_inicio": "Por confirmar",
+      "hora_fin": "Por confirmar",
+      "sede": "Por confirmar",
       "ponentes": [
-        "Pendiente de confirmar"
+        "Por asignar"
       ],
-      "imagen": "assets/img/sesion-insuficiencia-cardiaca-cronica.png",
-      "recursos": [],
+      "imagen": "assets/img/sesion-12-adulto-mayor.png",
+      "recursos": [
+        "Checklist geriátrico"
+      ],
       "estado": "publicada",
+      "is_active": true,
       "objetivos_docentes": "",
-      "metodologia": "",
+      "metodologia": "Caso clínico inicial, revisión práctica y cierre con material final reutilizable.",
       "bibliografia": "",
       "responsable_revision": "",
       "fecha_revision": "",
       "material_previo": "",
       "material_posterior": "",
-      "observaciones_internas": ""
+      "observaciones_internas": "",
+      "inscripcion_publica": true
+    },
+    {
+      "id": 13,
+      "orden": 13,
+      "slug": "jornada-final",
+      "titulo": "Jornada final",
+      "bloque": "Sesión 13",
+      "descripcion": "Síntesis, transferencia y banco común de materiales. Producto final previsto: Banco final de infografías.",
+      "objetivo": "Síntesis, transferencia y banco común de materiales",
+      "orientacion_docente": "Síntesis, transferencia y banco común de materiales",
+      "producto_final": "Banco final de infografías",
+      "contenidos_clave": [
+        "Presentación de productos finales",
+        "Revisión de utilidad clínica",
+        "Casos integradores",
+        "Banco común de materiales",
+        "Evaluación del programa"
+      ],
+      "fecha": "2027-05-14",
+      "hora_inicio": "Por confirmar",
+      "hora_fin": "Por confirmar",
+      "sede": "Sala de Actos D",
+      "ponentes": [
+        "Por asignar"
+      ],
+      "imagen": "assets/img/sesion-13-jornada-final.png",
+      "recursos": [
+        "Banco final de infografías"
+      ],
+      "estado": "publicada",
+      "is_active": true,
+      "objetivos_docentes": "",
+      "metodologia": "Caso clínico inicial, revisión práctica y cierre con material final reutilizable.",
+      "bibliografia": "",
+      "responsable_revision": "",
+      "fecha_revision": "",
+      "material_previo": "",
+      "material_posterior": "",
+      "observaciones_internas": "",
+      "inscripcion_publica": false
     }
   ],
   "ponentes": [
@@ -484,123 +608,185 @@
   ],
   "recursos": [
     {
-      "id": "programa-anual-png",
-      "titulo": "Programa anual visual 2026-2027",
-      "tipo": "imagen",
-      "formato": "PNG",
-      "archivo": "assets/img/programa-anual.png"
-    },
-    {
       "id": "programa-anual-pdf",
-      "titulo": "Programa anual de sesiones clínicas 2026-2027",
+      "titulo": "Programa anual JAP 2026-2027",
       "tipo": "documento",
       "formato": "PDF",
-      "archivo": "assets/docs/programa-anual.pdf"
+      "archivo": "assets/docs/programa-anual-jap-2026-2027.pdf",
+      "categoria": "Programa"
+    },
+    {
+      "id": "programa-anual-editable",
+      "titulo": "Programa anual JAP 2026-2027 editable",
+      "tipo": "documento",
+      "formato": "DOCX",
+      "archivo": "assets/docs/programa-anual-jap-2026-2027-editable.docx",
+      "categoria": "Programa"
+    },
+    {
+      "id": "infografia-programa-general",
+      "titulo": "Infografía JAP: programa general",
+      "tipo": "imagen",
+      "formato": "PNG",
+      "archivo": "assets/img/infografia-jap-programa-general-01.png",
+      "categoria": "Programa"
+    },
+    {
+      "id": "infografia-calendario",
+      "titulo": "Infografía JAP: calendario 2026-2027",
+      "tipo": "imagen",
+      "formato": "PNG",
+      "archivo": "assets/img/infografia-jap-calendario-2026-2027.png",
+      "categoria": "Programa"
+    },
+    {
+      "id": "infografia-convocatoria",
+      "titulo": "Infografía JAP: convocatoria",
+      "tipo": "imagen",
+      "formato": "PNG",
+      "archivo": "assets/img/infografia-jap-convocatoria.png",
+      "categoria": "Imágenes promocionales"
+    },
+    {
+      "id": "infografia-productos-finales",
+      "titulo": "Infografía JAP: productos finales",
+      "tipo": "imagen",
+      "formato": "PNG",
+      "archivo": "assets/img/infografia-jap-productos-finales.png",
+      "categoria": "Programa"
+    },
+    {
+      "id": "infografia-funcionamiento",
+      "titulo": "Infografía JAP: cómo funcionan las jornadas",
+      "tipo": "imagen",
+      "formato": "PNG",
+      "archivo": "assets/img/infografia-jap-funcionamiento.png",
+      "categoria": "Programa"
     },
     {
       "id": "plantilla-jornadas-docentes-ap",
       "titulo": "Plantilla Jornadas Docentes AP",
       "tipo": "presentacion",
       "formato": "PPTX",
-      "archivo": "assets/docs/plantilla-jornadas-docentes-ap.pptx"
+      "archivo": "assets/docs/plantilla-jornadas-docentes-ap.pptx",
+      "categoria": "Plantilla"
     },
     {
-      "id": "imagenes-promocionales",
-      "titulo": "Imágenes promocionales",
-      "tipo": "imagen",
+      "id": "cartel-sindrome-cardiorrenal-metabolico",
+      "titulo": "Cartel Sesión 1: Síndrome cardiorrenal metabólico",
+      "tipo": "cartel",
       "formato": "PNG",
-      "archivo": "assets/img/promocion.png"
-    },
-    {
-      "id": "imagen-promocional-2",
-      "titulo": "Imagen promocional complementaria",
-      "tipo": "imagen",
-      "formato": "PNG",
-      "archivo": "assets/img/promocion-2.png"
+      "archivo": "assets/img/sesion-01-sindrome-cardiorrenal-metabolico.png",
+      "categoria": "Carteles de sesiones",
+      "sesion_slug": "sindrome-cardiorrenal-metabolico"
     },
     {
       "id": "cartel-hipertension-arterial",
-      "titulo": "Cartel sesión 1: Hipertensión arterial",
+      "titulo": "Cartel Sesión 2: Hipertensión arterial",
       "tipo": "cartel",
       "formato": "PNG",
-      "archivo": "assets/img/sesion-hta.png"
+      "archivo": "assets/img/sesion-02-hipertension-arterial.png",
+      "categoria": "Carteles de sesiones",
+      "sesion_slug": "hipertension-arterial"
     },
     {
-      "id": "cartel-diabetes",
-      "titulo": "Cartel sesión 2: Diabetes mellitus tipo 2",
+      "id": "cartel-diabetes-mellitus",
+      "titulo": "Cartel Sesión 3: Diabetes mellitus",
       "tipo": "cartel",
       "formato": "PNG",
-      "archivo": "assets/img/sesion-diabetes.png"
+      "archivo": "assets/img/sesion-03-diabetes-mellitus.png",
+      "categoria": "Carteles de sesiones",
+      "sesion_slug": "diabetes-mellitus"
     },
     {
       "id": "cartel-dislipemia",
-      "titulo": "Cartel sesión 3: Dislipemia y prevención cardiovascular",
+      "titulo": "Cartel Sesión 4: Dislipemia",
       "tipo": "cartel",
       "formato": "PNG",
-      "archivo": "assets/img/sesion-dislipemia.png"
+      "archivo": "assets/img/sesion-04-dislipemia.png",
+      "categoria": "Carteles de sesiones",
+      "sesion_slug": "dislipemia"
+    },
+    {
+      "id": "cartel-insuficiencia-cardiaca",
+      "titulo": "Cartel Sesión 5: Insuficiencia cardiaca",
+      "tipo": "cartel",
+      "formato": "PNG",
+      "archivo": "assets/img/sesion-05-insuficiencia-cardiaca.png",
+      "categoria": "Carteles de sesiones",
+      "sesion_slug": "insuficiencia-cardiaca"
     },
     {
       "id": "cartel-obesidad",
-      "titulo": "Cartel sesión 4: Obesidad, estilo de vida y entrevista motivacional",
+      "titulo": "Cartel Sesión 6: Obesidad",
       "tipo": "cartel",
       "formato": "PNG",
-      "archivo": "assets/img/sesion-obesidad.png"
+      "archivo": "assets/img/sesion-06-obesidad.png",
+      "categoria": "Carteles de sesiones",
+      "sesion_slug": "obesidad"
     },
     {
       "id": "cartel-epoc-asma",
-      "titulo": "Cartel sesión 5: EPOC y asma",
+      "titulo": "Cartel Sesión 7: EPOC y asma",
       "tipo": "cartel",
       "formato": "PNG",
-      "archivo": "assets/img/sesion-epoc-asma.png"
+      "archivo": "assets/img/sesion-07-epoc-asma.png",
+      "categoria": "Carteles de sesiones",
+      "sesion_slug": "epoc-asma"
     },
     {
-      "id": "cartel-salud-mental",
-      "titulo": "Cartel sesión 6: Trastornos de salud mental frecuentes",
+      "id": "cartel-dispepsia-erge-sii",
+      "titulo": "Cartel Sesión 8: Dispepsia, ERGE y SII: manejo inicial en AP y criterios de derivación",
       "tipo": "cartel",
       "formato": "PNG",
-      "archivo": "assets/img/sesion-salud-mental.png"
+      "archivo": "assets/img/sesion-08-dispepsia-erge-sii.png",
+      "categoria": "Carteles de sesiones",
+      "sesion_slug": "dispepsia-erge-sii"
     },
     {
-      "id": "cartel-dolor-osteomuscular",
-      "titulo": "Cartel sesión 7: Dolor osteomuscular",
+      "id": "cartel-ansiedad-depresion-insomnio-bzd",
+      "titulo": "Cartel Sesión 9: Ansiedad, depresión, insomnio y desprescripción de BZD",
       "tipo": "cartel",
       "formato": "PNG",
-      "archivo": "assets/img/sesion-dolor-osteomuscular.png"
+      "archivo": "assets/img/sesion-09-salud-mental-bzd.png",
+      "categoria": "Carteles de sesiones",
+      "sesion_slug": "ansiedad-depresion-insomnio-bzd"
     },
     {
-      "id": "cartel-dermatologia",
-      "titulo": "Cartel sesión 8: Dermatología en Atención Primaria",
+      "id": "cartel-anticoncepcion-menopausia-trh",
+      "titulo": "Cartel Sesión 10: Anticoncepción, menopausia y TRH: diagnóstico y tratamiento",
       "tipo": "cartel",
       "formato": "PNG",
-      "archivo": "assets/img/sesion-dermatologia.png"
+      "archivo": "assets/img/sesion-10-anticoncepcion-menopausia-trh.png",
+      "categoria": "Carteles de sesiones",
+      "sesion_slug": "anticoncepcion-menopausia-trh"
     },
     {
-      "id": "cartel-patologia-digestiva",
-      "titulo": "Cartel sesión 9: Patología digestiva frecuente",
+      "id": "cartel-manejo-del-dolor",
+      "titulo": "Cartel Sesión 11: Manejo del dolor",
       "tipo": "cartel",
       "formato": "PNG",
-      "archivo": "assets/img/sesion-patologia-digestiva.png"
+      "archivo": "assets/img/sesion-11-manejo-dolor.png",
+      "categoria": "Carteles de sesiones",
+      "sesion_slug": "manejo-del-dolor"
     },
     {
-      "id": "cartel-fragilidad",
-      "titulo": "Cartel sesión 10: Fragilidad, pluripatología y seguridad farmacológica",
+      "id": "cartel-adulto-mayor",
+      "titulo": "Cartel Sesión 12: Atención integral del adulto mayor",
       "tipo": "cartel",
       "formato": "PNG",
-      "archivo": "assets/img/sesion-fragilidad.png"
+      "archivo": "assets/img/sesion-12-adulto-mayor.png",
+      "categoria": "Carteles de sesiones",
+      "sesion_slug": "adulto-mayor"
     },
     {
-      "id": "cartel-ginecologia-ap",
-      "titulo": "Cartel sesión 11: Ginecología en Atención Primaria",
+      "id": "cartel-jornada-final",
+      "titulo": "Cartel Sesión 13: Jornada final",
       "tipo": "cartel",
       "formato": "PNG",
-      "archivo": "assets/img/sesion-ginecologia-ap.png"
-    },
-    {
-      "id": "cartel-insuficiencia-cardiaca-cronica",
-      "titulo": "Cartel sesión 12: Insuficiencia cardiaca crónica",
-      "tipo": "cartel",
-      "formato": "PNG",
-      "archivo": "assets/img/sesion-insuficiencia-cardiaca-cronica.png"
+      "archivo": "assets/img/sesion-13-jornada-final.png",
+      "categoria": "Carteles de sesiones",
+      "sesion_slug": "jornada-final"
     }
   ],
   "sedes": [
@@ -712,16 +898,16 @@
   },
   "siteContent": {
     "home": {
-      "title": "Jornadas Docentes de Atención Primaria",
-      "subtitle": "Programa anual de sesiones clínicas para profesionales de Atención Primaria",
-      "description": "Espacio docente anual para profesionales de Atención Primaria, centrado en sesiones clínicas breves, aplicadas y orientadas a mejorar la práctica asistencial compartida.",
+      "title": "Jornadas de Actualización en Atención Primaria (JAP)",
+      "subtitle": "Programa docente 2026-2027",
+      "description": "Programa docente anual de sesiones clínicas prácticas, centradas en problemas frecuentes de Atención Primaria y orientadas a decisiones de consulta.",
       "primary_button": "Ver agenda",
       "secondary_button_sessions": "Sesiones",
       "secondary_button_speakers": "Equipo docente",
       "secondary_button_resources": "Recursos",
       "metrics": {
         "sessions_label": "Sesiones",
-        "sessions_value": "12",
+        "sessions_value": "13",
         "course_label": "Curso",
         "course_value": "2026-2027",
         "format_label": "Formato",
@@ -782,79 +968,79 @@
         }
       ],
       "schedule_title": "Cronograma general",
-      "schedule_text": "Las JAP se desarrollarán entre septiembre de 2026 y mayo de 2027. La propuesta inicial contempla sesiones preferentemente los viernes, con una cadencia aproximada de cada tres semanas. Aunque se proponen 12 temas, se dejan 13 fechas inicialmente disponibles para facilitar la organización, permitir ajustes por incidencias o reservar alguna fecha si fuera necesario.",
+      "schedule_text": "Las JAP se desarrollarán entre el 4 de septiembre de 2026 y el 14 de mayo de 2027, con 13 sesiones aprobadas y producto final por sesión.",
       "dates_title": "Fechas inicialmente disponibles",
       "dates": [
         {
           "date": "2026-09-04",
-          "label": "Viernes 4 de septiembre de 2026.",
+          "label": "Viernes, 4 de septiembre de 2026.",
           "status": "disponible"
         },
         {
           "date": "2026-09-25",
-          "label": "Viernes 25 de septiembre de 2026.",
+          "label": "Viernes, 25 de septiembre de 2026.",
           "status": "disponible"
         },
         {
           "date": "2026-10-16",
-          "label": "Viernes 16 de octubre de 2026.",
+          "label": "Viernes, 16 de octubre de 2026.",
           "status": "disponible"
         },
         {
           "date": "2026-11-06",
-          "label": "Viernes 6 de noviembre de 2026.",
+          "label": "Viernes, 6 de noviembre de 2026.",
           "status": "disponible"
         },
         {
           "date": "2026-11-27",
-          "label": "Viernes 27 de noviembre de 2026.",
+          "label": "Viernes, 27 de noviembre de 2026.",
           "status": "disponible"
         },
         {
           "date": "2026-12-18",
-          "label": "Viernes 18 de diciembre de 2026.",
+          "label": "Viernes, 18 de diciembre de 2026.",
           "status": "disponible"
         },
         {
-          "date": "2027-01-08",
-          "label": "Viernes 8 de enero de 2027.",
+          "date": "2027-01-15",
+          "label": "Viernes, 15 de enero de 2027.",
           "status": "disponible"
         },
         {
-          "date": "2027-01-29",
-          "label": "Viernes 29 de enero de 2027.",
+          "date": "2027-02-05",
+          "label": "Viernes, 5 de febrero de 2027.",
           "status": "disponible"
         },
         {
-          "date": "2027-02-19",
-          "label": "Viernes 19 de febrero de 2027.",
+          "date": "2027-02-26",
+          "label": "Viernes, 26 de febrero de 2027.",
           "status": "disponible"
         },
         {
-          "date": "2027-03-12",
-          "label": "Viernes 12 de marzo de 2027.",
+          "date": "2027-03-19",
+          "label": "Viernes, 19 de marzo de 2027.",
           "status": "disponible"
         },
         {
-          "date": "2027-04-02",
-          "label": "Viernes 2 de abril de 2027.",
+          "date": "2027-04-09",
+          "label": "Viernes, 9 de abril de 2027.",
           "status": "disponible"
         },
         {
-          "date": "2027-04-23",
-          "label": "Viernes 23 de abril de 2027.",
+          "date": "2027-04-30",
+          "label": "Viernes, 30 de abril de 2027.",
           "status": "disponible"
         },
         {
           "date": "2027-05-14",
-          "label": "Viernes 14 de mayo de 2027.",
-          "status": "disponible"
+          "label": "Viernes, 14 de mayo de 2027.",
+          "status": "no_publica"
         }
       ]
     },
     "agenda": {
       "title": "Agenda",
-      "description": "Vista rápida del programa. Cada sesión abre su detalle completo en una ventana emergente."
+      "description": "Vista rápida del programa 2026-2027 con 13 sesiones aprobadas."
     },
     "sessions": {
       "title": "Sesiones",
@@ -866,7 +1052,7 @@
     },
     "resources": {
       "title": "Recursos",
-      "description": "Material organizado por categorías compactas. Cada recurso se abre dentro de la app."
+      "description": "Material organizado por categorías. Cada recurso se abre dentro de la app y puede descargarse."
     },
     "contact": {
       "title": "Contacto",
@@ -882,5 +1068,124 @@
       "text": "Jornadas Docentes de Atención Primaria · Programa anual 2026-2027.",
       "admin_label": "Admin"
     }
-  }
+  },
+  "signup_dates": [
+    {
+      "id": "fecha-01",
+      "date": "2026-09-04",
+      "date_value": "2026-09-04",
+      "label": "Viernes, 4 de septiembre de 2026",
+      "sort_order": 10,
+      "status": "disponible",
+      "public_selectable": true
+    },
+    {
+      "id": "fecha-02",
+      "date": "2026-09-25",
+      "date_value": "2026-09-25",
+      "label": "Viernes, 25 de septiembre de 2026",
+      "sort_order": 20,
+      "status": "disponible",
+      "public_selectable": true
+    },
+    {
+      "id": "fecha-03",
+      "date": "2026-10-16",
+      "date_value": "2026-10-16",
+      "label": "Viernes, 16 de octubre de 2026",
+      "sort_order": 30,
+      "status": "disponible",
+      "public_selectable": true
+    },
+    {
+      "id": "fecha-04",
+      "date": "2026-11-06",
+      "date_value": "2026-11-06",
+      "label": "Viernes, 6 de noviembre de 2026",
+      "sort_order": 40,
+      "status": "disponible",
+      "public_selectable": true
+    },
+    {
+      "id": "fecha-05",
+      "date": "2026-11-27",
+      "date_value": "2026-11-27",
+      "label": "Viernes, 27 de noviembre de 2026",
+      "sort_order": 50,
+      "status": "disponible",
+      "public_selectable": true
+    },
+    {
+      "id": "fecha-06",
+      "date": "2026-12-18",
+      "date_value": "2026-12-18",
+      "label": "Viernes, 18 de diciembre de 2026",
+      "sort_order": 60,
+      "status": "disponible",
+      "public_selectable": true
+    },
+    {
+      "id": "fecha-07",
+      "date": "2027-01-15",
+      "date_value": "2027-01-15",
+      "label": "Viernes, 15 de enero de 2027",
+      "sort_order": 70,
+      "status": "disponible",
+      "public_selectable": true
+    },
+    {
+      "id": "fecha-08",
+      "date": "2027-02-05",
+      "date_value": "2027-02-05",
+      "label": "Viernes, 5 de febrero de 2027",
+      "sort_order": 80,
+      "status": "disponible",
+      "public_selectable": true
+    },
+    {
+      "id": "fecha-09",
+      "date": "2027-02-26",
+      "date_value": "2027-02-26",
+      "label": "Viernes, 26 de febrero de 2027",
+      "sort_order": 90,
+      "status": "disponible",
+      "public_selectable": true
+    },
+    {
+      "id": "fecha-10",
+      "date": "2027-03-19",
+      "date_value": "2027-03-19",
+      "label": "Viernes, 19 de marzo de 2027",
+      "sort_order": 100,
+      "status": "disponible",
+      "public_selectable": true
+    },
+    {
+      "id": "fecha-11",
+      "date": "2027-04-09",
+      "date_value": "2027-04-09",
+      "label": "Viernes, 9 de abril de 2027",
+      "sort_order": 110,
+      "status": "disponible",
+      "public_selectable": true
+    },
+    {
+      "id": "fecha-12",
+      "date": "2027-04-30",
+      "date_value": "2027-04-30",
+      "label": "Viernes, 30 de abril de 2027",
+      "sort_order": 120,
+      "status": "disponible",
+      "public_selectable": true
+    },
+    {
+      "id": "fecha-13",
+      "date": "2027-05-14",
+      "date_value": "2027-05-14",
+      "label": "Viernes, 14 de mayo de 2027",
+      "sort_order": 130,
+      "status": "no_publica",
+      "public_selectable": false
+    }
+  ]
 }

@@ -71,9 +71,66 @@ La app pública usa vistas internas en un único `index.html`. Solo una vista pr
 - `#sesiones`
 - `#ponentes`
 - `#recursos`
+- `#recurso` (vista interna de recurso)
 - `#contacto`
 
 Puedes probar una vista directamente con `http://localhost:8000#agenda` o `http://localhost:8000#recursos`. El menú cambia la vista activa, actualiza el hash y vuelve arriba.
+
+## Uso público de la app
+
+La app pública está pensada para asistentes, residentes, tutores y equipos docentes. No requiere login para consultar el programa.
+
+Flujo recomendado:
+
+1. Entrar en `https://olsanju-hub.github.io/JAP/`.
+2. Revisar el bloque de bienvenida e instrucciones.
+3. Abrir `Ver instrucciones y cronograma` para consultar objetivo, estructura recomendada, papel del residente, papel del tutor, cronograma y fechas inicialmente disponibles.
+4. Consultar `Agenda` para ver fechas disponibles o asignadas.
+5. Consultar `Sesiones` para revisar cada tema, su estado público, contenidos y cartel.
+6. Usar `Inscripción / asignación` para elegir una sesión y una fecha disponible.
+7. Descargar la plantilla común desde el bloque `Para preparar tu sesión` o desde `Recursos`.
+8. Descargar carteles, programa anual y piezas visuales desde `Recursos`.
+
+La parte pública nunca debe mostrar correo, teléfono, tutor/a, comentarios, notas internas ni checklist docente interno.
+
+### Inscripción y asignación pública
+
+El formulario público reserva simultáneamente una sesión y una fecha inicial disponible. La reserva se hace en Supabase mediante RPC atómica y restricciones de base de datos, no solo ocultando opciones en JavaScript.
+
+El formulario pide:
+
+- Nombre y apellidos.
+- Correo electrónico.
+- Teléfono.
+- Perfil.
+- Centro de salud.
+- Tutor/a de referencia.
+- Sesión elegida.
+- Fecha elegida.
+- Otros residentes implicados, opcional.
+- Comentarios, opcional.
+
+Al enviar:
+
+- la sesión deja de aparecer como disponible;
+- la fecha elegida deja de aparecer como disponible;
+- la agenda pública se actualiza como `Asignada`;
+- los datos completos quedan solo en admin.
+
+La organización puede ajustar después la fecha final desde admin. Si `final_date` cambia respecto a `selected_public_date`, la agenda pública muestra la fecha final vigente y libera la fecha inicial si no queda ocupada por otra asignación activa.
+
+### Agenda pública
+
+La agenda muestra:
+
+- las 13 fechas inicialmente disponibles;
+- fechas libres como `Disponible`;
+- fechas ocupadas como `Asignada` y el título de la sesión;
+- asignaciones activas con fecha final fuera del catálogo inicial, ordenadas cronológicamente.
+
+La agenda pública solo usa datos sanitizados. El centro solo debe mostrarse si está validado explícitamente desde admin.
+
+La Jornada final del 14 de mayo de 2027 forma parte de la agenda y del programa, pero no se ofrece como sesión inscribible en el formulario público. Su fecha se mantiene en `signup_dates` como gestionable desde admin con `public_selectable = false`.
 
 ## Datos
 
@@ -91,11 +148,13 @@ La app intenta cargar Supabase si existe `config.js` con credenciales válidas. 
 - `contacto`
 - `siteContent`
 
-Los campos no confirmados deben mantenerse como `Pendiente de confirmar`. No añadas fechas, sedes, ponentes, biografías ni datos clínicos que no estén confirmados.
+Los campos no confirmados deben mantenerse como `Por confirmar`, `Por asignar` o `Pendiente de confirmar`, según el contexto. No añadas fechas, sedes, ponentes, biografías ni datos clínicos que no estén confirmados.
 
 El documento interno de propuesta no se publica para asistentes y no debe añadirse a `recursos`.
 
 Cuando Supabase responde correctamente, sustituye a `data/jap.json`. El JSON local queda como fallback si Supabase no está configurado o falla la conexión. La consola indica `Datos cargados desde Supabase` o `Datos cargados desde JSON local por fallback`.
+
+La configuración de bienvenida vive en `site_settings` con claves `welcome.*`. Si `welcome.title` existe en Supabase y está vacío, la app respeta ese vacío y no renderiza el título. No uses espacios como truco visual.
 
 Las sedes se gestionan desde Supabase y se mantienen también en `data/jap.json` como fallback. El selector del panel muestra solo sedes activas y las ordena así: sede pendiente, online, centros de salud y Hospital Can Misses.
 
@@ -129,15 +188,30 @@ Tipos recomendados en JSON: `documento`, `presentacion`, `cartel`, `imagen`, `en
 
 ## Recursos
 
-Los recursos se abren en un modal interno:
+Los recursos se abren en una vista interna de la app:
 
 - PDF: previsualización en `iframe` cuando el navegador lo permite.
-- Imagen o cartel: imagen ajustada al modal.
+- Imagen o cartel: imagen ajustada al visor interno.
 - PPTX: ficha del recurso y descarga.
 - Enlace externo: ficha del recurso y botón para abrir.
 - Otros formatos: ficha y descarga/enlace.
 
-El modal se cierra con el botón Cerrar, tecla Escape o clic exterior.
+La vista de recurso tiene botón `Atrás` para volver a la app, visor embebido cuando el navegador lo permite y botón `Descargar` siempre visible.
+
+Cada recurso visual publicado debe tener acciones claras de visualización y descarga:
+
+- `Ver recurso`: abre el visor interno.
+- `Descargar`: descarga el archivo cuando el navegador lo permite.
+
+Organización recomendada en la app:
+
+- Programa anual.
+- Promocionales.
+- Carteles de sesión.
+- Plantilla para ponentes.
+- Materiales finales.
+
+La plantilla común para ponentes es `assets/docs/plantilla-jornadas-docentes-ap.pptx` y debe permanecer visible como recurso de preparación.
 
 ## Supabase
 
@@ -153,6 +227,11 @@ supabase/migrations/
 20260601120000_session_editorial_states.sql
 20260601130000_session_teaching_fields.sql
 20260602100000_primary_care_venues.sql
+20260613190000_add_sessions_11_12.sql
+20260621090000_programa_jap_2026_2027_13_sesiones.sql
+20260613230000_welcome_instructions_site_settings.sql
+20260614090000_session_assignments.sql
+20260614113000_assignment_tasks.sql
 ```
 
 Para una instalación manual desde SQL Editor:
@@ -163,8 +242,9 @@ Para una instalación manual desde SQL Editor:
 4. Ejecuta `supabase/migration-site-content.sql` si el proyecto ya existía antes de la edición de textos globales.
 5. Ejecuta `supabase/migration-security-backup.sql` para reforzar permisos de lectura/escritura y retirar borrado físico en tablas de contenido.
 6. Ejecuta `supabase/migration-session-speakers.sql` para añadir roles de personas y habilitar la asociación de ponentes a sesiones.
-7. Crea un usuario en Authentication.
-8. Asigna permisos al usuario desde SQL:
+7. Ejecuta las migraciones de sesiones 11-12, bienvenida, asignaciones, checklist docente y actualización JAP 2026-2027 a 13 sesiones si no forman parte del historial aplicado.
+8. Crea un usuario en Authentication.
+9. Asigna permisos al usuario desde SQL:
 
 ```sql
 update public.profiles
@@ -204,7 +284,7 @@ El token queda gestionado por la CLI en tu equipo, no en el repositorio.
 Desde la raíz del proyecto:
 
 ```bash
-cd /Users/olsanju/Desktop/JAP
+cd "/Users/olsanju/Desktop/Proyectos apps/JAP"
 ```
 
 Si no existiera `supabase/config.toml`, ejecuta:
@@ -331,6 +411,8 @@ Funciones disponibles:
 
 - Login/logout con Supabase Auth.
 - Listado, creación y edición de sesiones con botón `Nueva sesión`.
+- Gestión de bienvenida e instrucciones desde la pestaña `Bienvenida / instrucciones`.
+- Gestión de inscripciones y asignaciones desde la pestaña `Inscripciones / asignaciones`.
 - Asociación de uno o varios ponentes a cada sesión desde el bloque `Ponentes de la sesión`.
 - Edición de información docente por sesión: objetivos docentes, metodología, materiales, revisión y bibliografía.
 - Slug autogenerado desde el título si se deja vacío.
@@ -342,6 +424,10 @@ Funciones disponibles:
 - Listado, creación y edición de recursos con botón `Nuevo recurso`.
 - Asociación de recursos a sesiones.
 - Ocultar recursos con `visible = false`.
+- Filtros y búsqueda de asignaciones por estado, sesión, fecha o centro.
+- Cambio de fecha final asignada, aunque no sea una de las 13 fechas iniciales.
+- Anulación/liberación de una asignación sin borrar la fila.
+- Checklist docente interno por asignación.
 - Borrado lógico y restauración de sesiones, ponentes y recursos.
 - Archivado de sesiones con `estado = 'archivada'`.
 - Eliminación definitiva de sesiones solo para `admin`, con confirmación escribiendo `ELIMINAR` y bloqueo si la sesión tiene ponentes o recursos asociados.
@@ -358,6 +444,86 @@ Para que un elemento aparezca en la app pública desde Supabase:
 - Sesión oculta: `estado = 'borrador'`, `estado = 'archivada'` o `is_active = false`.
 - Persona/equipo: `is_active = true`.
 - Recurso: `visible = true`, con URL válida y sin apuntar a `propuesta-jornadas-docentes-ap.pdf`.
+
+### Bienvenida e instrucciones
+
+La pestaña `Bienvenida / instrucciones` permite editar:
+
+- visibilidad del bloque;
+- título;
+- subtítulo;
+- texto introductorio;
+- texto del botón;
+- secciones docentes;
+- cronograma general;
+- fechas inicialmente disponibles.
+
+El título puede dejarse vacío. Si `welcome.title` está vacío, `null` o solo contiene espacios, la app no pinta el elemento del título y conserva subtítulo, introducción, botón y diálogo de instrucciones.
+
+### Inscripciones y asignaciones
+
+La pestaña `Inscripciones / asignaciones` permite gestionar las solicitudes recibidas desde la app pública.
+
+Datos visibles solo en admin:
+
+- nombre;
+- correo;
+- teléfono;
+- perfil;
+- centro;
+- tutor/a;
+- sesión;
+- fecha pública elegida;
+- fecha final;
+- otros residentes;
+- comentarios;
+- notas internas;
+- fecha de envío.
+
+Estados de asignación:
+
+- `recibida`
+- `revisada`
+- `confirmada`
+- `anulada`
+
+Las restricciones anti-duplicado aplican solo a asignaciones activas: `recibida`, `revisada` y `confirmada`. Una asignación `anulada` libera sesión y fecha.
+
+Uso operativo:
+
+1. Abrir una solicitud.
+2. Revisar datos completos.
+3. Cambiar estado a `revisada` o `confirmada` cuando proceda.
+4. Ajustar `final_date` si la fecha real cambia.
+5. Validar `Centro validado para agenda pública` solo si debe mostrarse públicamente.
+6. Anular/liberar si la solicitud no sigue adelante.
+
+No publiques correo, teléfono, tutor/a, comentarios ni notas internas en la app pública.
+
+### Checklist docente interno
+
+Cada asignación puede tener un checklist docente persistente en `assignment_tasks`. Al abrir una asignación, admin llama a `ensure_assignment_tasks()` para crear las tareas estándar si faltan.
+
+Tareas estándar:
+
+- Plantilla común revisada.
+- Caso clínico inicial definido.
+- Revisión con tutor/a.
+- Presentación recibida.
+- Material final recibido.
+- Material anonimizado.
+- Material final publicado.
+
+Estados de tarea:
+
+- `pendiente`
+- `en_progreso`
+- `completada`
+- `no_aplica`
+
+Cada tarea puede tener fecha límite, fecha de completado y notas internas. Estas notas nunca deben mostrarse en público.
+
+Si una tarea pasa a `completada`, se establece `completed_at`. Si deja de estar completada, `completed_at` se limpia.
 
 ### Estados editoriales de sesiones
 
@@ -475,6 +641,11 @@ GitHub Pages redepliega automáticamente desde `main`.
 - `admin` y `editor` pueden crear, editar, borrar lógico y restaurar según las políticas RLS.
 - `admin` y `editor` pueden exportar copia de seguridad desde el panel.
 - `config.js` no se precachea en el service worker.
+- `anon` no debe poder leer ni escribir `session_assignments` directamente.
+- `anon` no debe poder leer ni escribir `assignment_tasks`.
+- La inscripción pública debe pasar por `create_session_assignment(...)`.
+- La agenda pública debe salir de `get_public_agenda()` o una vista/RPC sanitizada.
+- El checklist docente interno no debe exponerse en `app.js`, `index.html`, `data/jap.json` ni respuestas públicas.
 
 Para reforzar un proyecto Supabase ya creado, ejecuta `supabase/migration-security-backup.sql` despues de `supabase/migration-site-content.sql`. Para activar roles de personas y ponentes por sesión, ejecuta después `supabase/migration-session-speakers.sql`. Para estados editoriales y campos docentes, usa las migraciones CLI en `supabase/migrations/`.
 
@@ -494,4 +665,4 @@ Si no ves cambios tras editar archivos cacheados:
 3. Limpia Storage si es necesario.
 4. Recarga con hard reload.
 
-El cache actual se identifica como `jap-static-v20`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.
+El cache actual se identifica como `jap-static-v29`. `config.js` no se precachea y las llamadas externas a Supabase no se cachean para evitar datos antiguos.

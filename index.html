@@ -214,6 +214,18 @@
         <div id="resource-list" class="resource-list" aria-live="polite"></div>
       </section>
 
+      <section id="recurso" class="section resource-view-section" data-view="recurso" hidden>
+        <div class="resource-view-head">
+          <button class="button" type="button" data-back-resource>Atrás</button>
+          <div>
+            <p id="resource-view-type" class="eyebrow"></p>
+            <h2 id="resource-view-title">Recurso</h2>
+          </div>
+          <a id="resource-view-download" class="button primary" href="#" download>Descargar</a>
+        </div>
+        <div id="resource-view-content" class="resource-view-content"></div>
+      </section>
+
       <section id="contacto" class="section contact-section" data-view="contacto" hidden>
         <div class="section-heading">
           <h2 id="contact-title">Contacto</h2>
@@ -232,18 +244,6 @@
         <button class="icon-button" type="button" data-close-session aria-label="Cerrar detalle">×</button>
       </div>
       <div id="dialog-content" class="dialog-content"></div>
-    </dialog>
-
-    <dialog id="resource-dialog" class="resource-dialog" aria-labelledby="resource-dialog-title">
-      <div class="dialog-head">
-        <div>
-          <p id="resource-dialog-type" class="eyebrow"></p>
-          <h2 id="resource-dialog-title"></h2>
-        </div>
-        <button class="icon-button" type="button" data-close-resource aria-label="Cerrar recurso">×</button>
-      </div>
-      <div id="resource-dialog-content" class="resource-dialog-content"></div>
-      <div id="resource-dialog-actions" class="dialog-actions"></div>
     </dialog>
 
     <dialog id="welcome-dialog" class="welcome-dialog" aria-labelledby="welcome-dialog-title">

@@ -3,13 +3,15 @@ import { getSupabaseClient } from "./supabase-client.js";
 const state = {
   data: null,
   activeView: "inicio",
+  previousView: "recursos",
   dataSource: "json",
-  signupAvailable: false
+  signupAvailable: false,
+  activeResource: null
 };
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
-const VIEW_IDS = ["inicio", "agenda", "inscripcion", "sesiones", "ponentes", "recursos", "contacto"];
+const VIEW_IDS = ["inicio", "agenda", "inscripcion", "sesiones", "ponentes", "recursos", "recurso", "contacto"];
 const ACTIVE_ASSIGNMENT_STATES = ["recibida", "revisada", "confirmada"];
 const TEMPLATE_FILE = "assets/docs/plantilla-jornadas-docentes-ap.pptx";
 const PERSON_ROLE_LABELS = {
@@ -26,7 +28,10 @@ const escapeHtml = (value) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 
-const isPending = (value) => String(value).toLowerCase().includes("pendiente");
+const isPending = (value) => {
+  const text = String(value || "").toLowerCase();
+  return text.includes("pendiente") || text.includes("por confirmar") || text.includes("por asignar");
+};
 
 const allPending = (...values) => values.every(isPending);
 
@@ -118,6 +123,8 @@ function formatTime(value) {
 
 function resourceFormat(resource) {
   if (resource.formato) return resource.formato;
+  const extension = resourceFile(resource).split("?")[0].split(".").pop();
+  if (extension && extension !== resourceFile(resource)) return extension.toUpperCase();
   return (resource.tipo || "otro").toUpperCase();
 }
 
@@ -291,7 +298,7 @@ function renderSiteContent() {
   setText("#home-speakers-button", "home.secondary_button_speakers", "Equipo docente");
   setText("#home-resources-button", "home.secondary_button_resources", "Recursos");
   setText("#metric-sessions-label", "home.metric_sessions_label", "Sesiones");
-  setText("#metric-sessions-value", "home.metric_sessions_value", "12");
+  setText("#metric-sessions-value", "home.metric_sessions_value", String(state.data?.sesiones?.length || 13));
   setText("#metric-course-label", "home.metric_course_label", "Curso");
   setText("#metric-course-value", "home.metric_course_value", "2026-2027");
   setText("#metric-format-label", "home.metric_format_label", "Formato");
@@ -305,7 +312,7 @@ function renderSiteContent() {
   setText("#speakers-title", "speakers.title", "Equipo docente");
   setText("#speakers-description", "speakers.description", "Organización, coordinación y ponentes asociados a las sesiones.");
   setText("#resources-title", "resources.title", "Recursos");
-  setText("#resources-description", "resources.description", "Material organizado por categorías compactas. Cada recurso se abre dentro de la app.");
+  setText("#resources-description", "resources.description", "Material organizado por categorías. Cada recurso se abre dentro de la app y puede descargarse.");
   setText("#contact-title", "contact.title", "Contacto");
   setText("#contact-description", "contact.description", "Datos de coordinación del programa.");
   setText("#footer-text", "footer.text", "Jornadas Docentes de Atención Primaria · Programa anual 2026-2027.");
@@ -364,7 +371,8 @@ function formatWelcomeDate(item) {
   const statusLabels = {
     disponible: "Disponible",
     asignada: "Asignada",
-    reserva: "Reserva"
+    reserva: "Reserva",
+    no_publica: "No inscribible"
   };
   return `
     <li class="date-item">
@@ -452,13 +460,14 @@ function renderAssignmentAgenda(items) {
   $("#agenda-list").innerHTML = items
     .map((item, index) => {
       const assigned = item.status_public === "Asignada";
+      const hasPlannedSession = Boolean(item.session_slug || item.session_title);
       const adjusted = assigned && item.is_initial_date === false;
       return `
         <article class="timeline-item ${assigned ? "assigned-date" : "available-date"} ${adjusted ? "adjusted-date" : ""}">
           <div class="timeline-number">${index + 1}</div>
           <div>
             <p class="eyebrow">${escapeHtml(item.label || formatHumanDate(item.date_value))}</p>
-            <h3>${assigned ? escapeHtml(item.session_title || "Sesión asignada") : "Disponible"}</h3>
+            <h3>${escapeHtml(item.session_title || (assigned ? "Sesión asignada" : "Disponible"))}</h3>
             <p class="compact-meta">
               <span class="tag ${assigned ? "done" : ""}">${escapeHtml(item.status_public)}</span>
               <span class="tag subtle">${escapeHtml(adjusted ? "Fecha final asignada" : item.is_initial_date ? "Fecha inicialmente disponible" : "Fecha final")}</span>
@@ -466,8 +475,11 @@ function renderAssignmentAgenda(items) {
               ${assigned && item.health_center_public ? ` · Centro: ${escapeHtml(item.health_center_public)}` : ""}
             </p>
             ${
-              assigned && item.session_slug
-                ? `<button class="button" type="button" data-session="${escapeHtml(item.session_slug)}">Ver detalle</button>`
+              hasPlannedSession
+                ? `<div class="card-actions">
+                    ${item.session_slug ? `<button class="button" type="button" data-session="${escapeHtml(item.session_slug)}">Ver detalle</button>` : ""}
+                    ${!assigned && item.status_public === "Disponible" ? `<a class="button primary" href="#inscripcion">Inscribirse</a>` : ""}
+                  </div>`
                 : `<a class="button primary" href="#inscripcion">Elegir esta fecha</a>`
             }
           </div>
@@ -545,18 +557,20 @@ function renderSignup() {
   if (!form || !status || !sessionSelect || !dateSelect) return;
 
   const options = state.data?.signupOptions || { sessions: [], dates: [] };
-  const enabled = state.signupAvailable && options.sessions.length && options.dates.length;
+  const publicSessions = (options.sessions || []).filter((session) => session.slug !== "jornada-final");
+  const publicDates = (options.dates || []).filter((date) => date.date !== "2027-05-14" && date.status !== "no_publica");
+  const enabled = state.signupAvailable && publicSessions.length && publicDates.length;
 
   sessionSelect.innerHTML = enabled
     ? '<option value="">Selecciona una sesión</option>' +
-      options.sessions
+      publicSessions
         .map((session) => `<option value="${escapeHtml(session.id)}">${escapeHtml([session.block, session.title].filter(Boolean).join(" · "))}</option>`)
         .join("")
     : '<option value="">Sin sesiones disponibles</option>';
 
   dateSelect.innerHTML = enabled
     ? '<option value="">Selecciona una fecha</option>' +
-      options.dates
+      publicDates
         .map((date) => `<option value="${escapeHtml(date.id)}">${escapeHtml(date.label || formatHumanDate(date.date))}</option>`)
         .join("")
     : '<option value="">Sin fechas disponibles</option>';
@@ -827,6 +841,8 @@ function showSession(slug) {
         <div class="detail-box"><strong>Fecha</strong>${escapeHtml(session.fecha)}</div>
         <div class="detail-box"><strong>Horario</strong>${escapeHtml(session.hora_inicio)} - ${escapeHtml(session.hora_fin)}</div>
         <div class="detail-box"><strong>Sede</strong>${escapeHtml(session.sede)}</div>
+        <div class="detail-box"><strong>Orientación docente</strong>${escapeHtml(session.orientacion_docente || session.objetivo)}</div>
+        <div class="detail-box"><strong>Producto final</strong>${escapeHtml(session.producto_final || "Infografía clínica o material equivalente")}</div>
         <div class="detail-box"><strong>Estado de asignación</strong>${renderOperationalBadges(session)}<span>${escapeHtml(sessionOperationalState(session).meta)}</span></div>
       </div>
       ${renderSessionSpeakers(session.ponentes_detalle)}
@@ -909,32 +925,31 @@ function getSessionPosterResource(slug) {
   };
 }
 
-function openResource(resource) {
-  if (!resource) return;
-
+function renderResourceView(resource) {
   const rawFile = resourceFile(resource);
-  const isExternal = /^https?:\/\//i.test(rawFile);
   const file = escapeHtml(rawFile);
-  $("#resource-dialog-type").textContent = `${resourceType(resource)} · ${resourceFormat(resource)}`;
-  $("#resource-dialog-title").textContent = resource.titulo;
-  $("#resource-dialog-content").innerHTML = getResourcePreview(resource);
-  $("#resource-dialog-actions").innerHTML = isExternal
-    ? `
-      <a class="button primary" href="${file}">Abrir enlace</a>
-      <button class="button" type="button" data-close-resource>Cerrar</button>
-    `
-    : `
-      <a class="button" href="${file}" target="_blank" rel="noopener">Ver archivo</a>
-      <a class="button primary" href="${file}" download>Descargar</a>
-      <button class="button" type="button" data-close-resource>Cerrar</button>
-    `;
+  const isExternal = /^https?:\/\//i.test(rawFile);
+  const download = $("#resource-view-download");
 
-  const dialog = $("#resource-dialog");
-  if (typeof dialog.showModal === "function") {
-    dialog.showModal();
+  $("#resource-view-type").textContent = `${resourceType(resource)} · ${resourceFormat(resource)}`;
+  $("#resource-view-title").textContent = resource.titulo;
+  $("#resource-view-content").innerHTML = getResourcePreview(resource);
+
+  download.href = rawFile || "#";
+  download.textContent = isExternal ? "Abrir enlace" : "Descargar";
+  download.toggleAttribute("download", !isExternal);
+  if (isExternal) {
+    download.setAttribute("target", "_blank");
+    download.setAttribute("rel", "noopener");
   } else {
-    dialog.setAttribute("open", "");
+    download.removeAttribute("target");
+    download.removeAttribute("rel");
   }
+
+  const secondaryLink = isExternal
+    ? `<a class="button" href="${file}" target="_blank" rel="noopener">Abrir en pestaña</a>`
+    : `<a class="button" href="${file}" target="_blank" rel="noopener">Abrir archivo</a>`;
+  $("#resource-view-content").insertAdjacentHTML("beforeend", `<div class="resource-view-actions">${secondaryLink}</div>`);
 }
 
 function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [], sedes = [], siteContent = {}, publicAgenda = [], signupOptions = null, supabase = null }) {
@@ -975,6 +990,8 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
       bloque: session.bloque || `Sesión ${session.orden || index + 1}`,
       descripcion: session.descripcion || "Pendiente de confirmar",
       objetivo: session.objetivo || "Pendiente de confirmar",
+      orientacion_docente: session.orientacion_docente || "",
+      producto_final: session.producto_final || "",
       objetivos_docentes: session.objetivos_docentes || "",
       metodologia: session.metodologia || "",
       contenidos_clave: session.contenidos_clave?.length ? session.contenidos_clave : ["Pendiente de confirmar"],
@@ -986,8 +1003,8 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
       fecha: formatDate(assignedDatesBySession.get(session.id) || session.fecha),
       hora_inicio: formatTime(session.hora_inicio),
       hora_fin: formatTime(session.hora_fin),
-      sede: session.sedes?.nombre || "Pendiente de confirmar",
-      ponentes: sessionSpeakers.length ? sessionSpeakers.map((speaker) => speaker.nombre) : ["Pendiente de confirmar"],
+      sede: session.sedes?.nombre || "Por confirmar",
+      ponentes: sessionSpeakers.length ? sessionSpeakers.map((speaker) => speaker.nombre) : ["Por asignar"],
       ponentes_detalle: sessionSpeakers,
       imagen: session.imagen_url || "",
       recursos: sessionResources.map((resource) => resource.titulo),
@@ -1017,8 +1034,8 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
       periodicidad: "Mensual",
       duracion: "45-60 minutos por sesión",
       dirigido_a: "Profesionales sanitarios",
-      imagen_principal: jornada?.imagen_url || "assets/img/programa-anual.png",
-      imagen_promocional: "assets/img/promocion.png",
+      imagen_principal: "assets/img/infografia-jap-programa-general-01.png",
+      imagen_promocional: "assets/img/infografia-jap-convocatoria.png",
       icono: "assets/icons/icon-512.png"
     },
     metodologia: [],
@@ -1039,7 +1056,7 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
     })),
     recursos: normalizeResources(
       {
-        imagen_principal: jornada?.imagen_url || "assets/img/programa-anual.png"
+        imagen_principal: "assets/img/infografia-jap-programa-general-01.png"
       },
       recursos.map((resource) => ({
         id: resource.id,
@@ -1182,23 +1199,22 @@ async function loadData() {
 }
 
 function showResource(resourceId) {
-  openResource(state.data.recursos.find((item) => item.id === resourceId));
+  const resource = state.data.recursos.find((item) => item.id === resourceId);
+  if (!resource) return;
+  state.activeResource = resource;
+  renderResourceView(resource);
+  setActiveView("recurso");
 }
 
 function showSessionPoster(slug) {
   if ($("#session-dialog").open) {
     closeSessionDialog();
   }
-  openResource(getSessionPosterResource(slug));
-}
-
-function closeResourceDialog() {
-  const dialog = $("#resource-dialog");
-  if (typeof dialog.close === "function") {
-    dialog.close();
-  } else {
-    dialog.removeAttribute("open");
-  }
+  const resource = getSessionPosterResource(slug);
+  if (!resource) return;
+  state.activeResource = resource;
+  renderResourceView(resource);
+  setActiveView("recurso");
 }
 
 function getViewFromHash() {
@@ -1208,6 +1224,9 @@ function getViewFromHash() {
 
 function setActiveView(viewId, { updateHash = true } = {}) {
   const nextView = VIEW_IDS.includes(viewId) ? viewId : "inicio";
+  if (nextView !== "recurso") {
+    state.previousView = nextView;
+  }
   state.activeView = nextView;
 
   $$("[data-view]").forEach((section) => {
@@ -1272,8 +1291,8 @@ function bindInteractions() {
       closeSessionDialog();
     }
 
-    if (event.target.closest("[data-close-resource]")) {
-      closeResourceDialog();
+    if (event.target.closest("[data-back-resource]")) {
+      setActiveView(state.previousView || "recursos");
     }
 
     if (event.target.closest("[data-close-welcome]")) {
@@ -1284,12 +1303,6 @@ function bindInteractions() {
   $("#session-dialog").addEventListener("click", (event) => {
     if (event.target.id === "session-dialog") {
       closeSessionDialog();
-    }
-  });
-
-  $("#resource-dialog").addEventListener("click", (event) => {
-    if (event.target.id === "resource-dialog") {
-      closeResourceDialog();
     }
   });
 
