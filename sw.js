@@ -1,4 +1,4 @@
-const CACHE_NAME = "jap-static-v30";
+const CACHE_NAME = "jap-static-v32";
 
 const APP_ASSETS = [
   "./",
@@ -21,6 +21,10 @@ const APP_ASSETS = [
   "./assets/img/infografia-jap-convocatoria.png",
   "./assets/img/infografia-jap-productos-finales.png",
   "./assets/img/infografia-jap-funcionamiento.png",
+  "./assets/img/infografia-jap-calendario-circular-2026-2027.png",
+  "./assets/img/infografia-jap-calendario-lineal-2026-2027.png",
+  "./assets/img/infografia-jap-calendario-ruta-2026-2027.png",
+  "./assets/img/infografia-jap-programa-general-02.png",
   "./assets/img/sesion-01-sindrome-cardiorrenal-metabolico.png",
   "./assets/img/sesion-02-hipertension-arterial.png",
   "./assets/img/sesion-03-diabetes-mellitus.png",

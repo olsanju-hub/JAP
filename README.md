@@ -1,4 +1,4 @@
-# JAP - Jornadas Docentes de Atención Primaria
+# JAP - Jornadas de Actualización en Atención Primaria
 
 PWA en HTML, CSS y JavaScript vanilla para publicar el programa anual 2026-2027 de sesiones clínicas de Atención Primaria.
 
@@ -85,52 +85,30 @@ Flujo recomendado:
 1. Entrar en `https://olsanju-hub.github.io/JAP/`.
 2. Revisar el bloque de bienvenida e instrucciones.
 3. Abrir `Ver instrucciones y cronograma` para consultar objetivo, estructura recomendada, papel del residente, papel del tutor, cronograma y fechas inicialmente disponibles.
-4. Consultar `Agenda` para ver fechas disponibles o asignadas.
+4. Consultar `Agenda` para ver el calendario y el estado de cada sesión.
 5. Consultar `Sesiones` para revisar cada tema, su estado público, contenidos y cartel.
-6. Usar `Inscripción / asignación` para elegir una sesión y una fecha disponible.
-7. Descargar la plantilla común desde el bloque `Para preparar tu sesión` o desde `Recursos`.
-8. Descargar carteles, programa anual y piezas visuales desde `Recursos`.
+6. Descargar la plantilla común, carteles, programa anual y piezas visuales desde `Recursos`.
 
 La parte pública nunca debe mostrar correo, teléfono, tutor/a, comentarios, notas internas ni checklist docente interno.
 
-### Inscripción y asignación pública
+### Asignación gestionada por organización
 
-El formulario público reserva simultáneamente una sesión y una fecha inicial disponible. La reserva se hace en Supabase mediante RPC atómica y restricciones de base de datos, no solo ocultando opciones en JavaScript.
+La app pública no muestra formulario de inscripción ni permite reservar sesiones directamente. La asignación de ponente, tutor/a, centro, fecha, estado y notas internas se gestiona desde el panel admin.
 
-El formulario pide:
-
-- Nombre y apellidos.
-- Correo electrónico.
-- Teléfono.
-- Perfil.
-- Centro de salud.
-- Tutor/a de referencia.
-- Sesión elegida.
-- Fecha elegida.
-- Otros residentes implicados, opcional.
-- Comentarios, opcional.
-
-Al enviar:
-
-- la sesión deja de aparecer como disponible;
-- la fecha elegida deja de aparecer como disponible;
-- la agenda pública se actualiza como `Asignada`;
-- los datos completos quedan solo en admin.
-
-La organización puede ajustar después la fecha final desde admin. Si `final_date` cambia respecto a `selected_public_date`, la agenda pública muestra la fecha final vigente y libera la fecha inicial si no queda ocupada por otra asignación activa.
+La agenda pública muestra el calendario y el estado de las sesiones con datos sanitizados. Los datos completos quedan solo en admin.
 
 ### Agenda pública
 
 La agenda muestra:
 
 - las 13 fechas inicialmente disponibles;
-- fechas libres como `Disponible`;
+- fechas pendientes de asignación como gestionadas por organización;
 - fechas ocupadas como `Asignada` y el título de la sesión;
 - asignaciones activas con fecha final fuera del catálogo inicial, ordenadas cronológicamente.
 
 La agenda pública solo usa datos sanitizados. El centro solo debe mostrarse si está validado explícitamente desde admin.
 
-La Jornada final del 14 de mayo de 2027 forma parte de la agenda y del programa, pero no se ofrece como sesión inscribible en el formulario público. Su fecha se mantiene en `signup_dates` como gestionable desde admin con `public_selectable = false`.
+La Jornada final del 14 de mayo de 2027 forma parte de la agenda y del programa, pero no se ofrece para inscripción pública. Su fecha se mantiene en `signup_dates` como gestionable desde admin con `public_selectable = false`.
 
 ## Datos
 
@@ -211,7 +189,7 @@ Organización recomendada en la app:
 - Plantilla para ponentes.
 - Materiales finales.
 
-La plantilla común para ponentes es `assets/docs/plantilla-jornadas-docentes-ap.pptx` y debe permanecer visible como recurso de preparación.
+La plantilla de presentación es `assets/docs/plantilla-jornadas-docentes-ap.pptx` y debe permanecer visible como recurso descargable.
 
 ## Supabase
 
@@ -412,7 +390,7 @@ Funciones disponibles:
 - Login/logout con Supabase Auth.
 - Listado, creación y edición de sesiones con botón `Nueva sesión`.
 - Gestión de bienvenida e instrucciones desde la pestaña `Bienvenida / instrucciones`.
-- Gestión de inscripciones y asignaciones desde la pestaña `Inscripciones / asignaciones`.
+- Gestión de asignaciones desde la pestaña `Asignaciones`.
 - Asociación de uno o varios ponentes a cada sesión desde el bloque `Ponentes de la sesión`.
 - Edición de información docente por sesión: objetivos docentes, metodología, materiales, revisión y bibliografía.
 - Slug autogenerado desde el título si se deja vacío.
@@ -460,9 +438,9 @@ La pestaña `Bienvenida / instrucciones` permite editar:
 
 El título puede dejarse vacío. Si `welcome.title` está vacío, `null` o solo contiene espacios, la app no pinta el elemento del título y conserva subtítulo, introducción, botón y diálogo de instrucciones.
 
-### Inscripciones y asignaciones
+### Asignaciones
 
-La pestaña `Inscripciones / asignaciones` permite gestionar las solicitudes recibidas desde la app pública.
+La pestaña `Asignaciones` permite crear y editar asignaciones manuales desde la organización.
 
 Datos visibles solo en admin:
 
@@ -643,7 +621,7 @@ GitHub Pages redepliega automáticamente desde `main`.
 - `config.js` no se precachea en el service worker.
 - `anon` no debe poder leer ni escribir `session_assignments` directamente.
 - `anon` no debe poder leer ni escribir `assignment_tasks`.
-- La inscripción pública debe pasar por `create_session_assignment(...)`.
+- La inscripción pública queda desactivada; `anon` no debe poder ejecutar `create_session_assignment(...)`.
 - La agenda pública debe salir de `get_public_agenda()` o una vista/RPC sanitizada.
 - El checklist docente interno no debe exponerse en `app.js`, `index.html`, `data/jap.json` ni respuestas públicas.
 

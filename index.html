@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JAP - Jornadas Docentes de Atención Primaria</title>
+    <title>JAP - Jornadas de Actualización en Atención Primaria</title>
     <meta name="description" content="Programa anual de sesiones clínicas para profesionales de Atención Primaria.">
     <meta name="theme-color" content="#0b5c78">
-    <meta property="og:title" content="Jornadas Docentes de Atención Primaria">
+    <meta property="og:title" content="Jornadas de Actualización en Atención Primaria (JAP)">
     <meta property="og:description" content="Programa anual de sesiones clínicas para profesionales de Atención Primaria.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="assets/icons/icon-512.png">
@@ -38,7 +38,6 @@
         <nav id="nav-principal" class="site-nav" aria-label="Navegación principal">
           <a href="#inicio">Inicio</a>
           <a href="#agenda">Agenda</a>
-          <a href="#inscripcion">Inscripción</a>
           <a href="#sesiones">Sesiones</a>
           <a href="#ponentes">Equipo docente</a>
           <a href="#recursos">Recursos</a>
@@ -51,12 +50,11 @@
       <section id="inicio" class="hero section" data-view="inicio">
         <div class="hero-copy">
           <img class="hero-mark" src="assets/icons/icon-512.png" alt="Icono JAP">
-          <h1 id="home-title">Jornadas Docentes de Atención Primaria</h1>
+          <h1 id="home-title">Jornadas de Actualización en Atención Primaria (JAP)</h1>
           <p id="home-subtitle" class="hero-subtitle">Programa anual de sesiones clínicas para profesionales de Atención Primaria</p>
           <p id="program-description">Cargando programa...</p>
           <div class="quick-links" aria-label="Accesos rápidos">
             <a id="home-primary-button" class="button primary" href="#agenda">Ver agenda</a>
-            <a class="button" href="#inscripcion">Inscripción</a>
             <a id="home-sessions-button" class="button" href="#sesiones">Sesiones</a>
             <a id="home-speakers-button" class="button" href="#ponentes">Equipo docente</a>
             <a id="home-resources-button" class="button" href="#recursos">Recursos</a>
@@ -84,25 +82,6 @@
             </dl>
           </div>
         </figure>
-        <article id="welcome-card" class="welcome-card" hidden>
-          <div>
-            <p id="welcome-subtitle" class="eyebrow"></p>
-            <h2 id="welcome-title"></h2>
-            <p id="welcome-intro"></p>
-          </div>
-          <button id="welcome-button" class="button primary" type="button" data-open-welcome>Ver instrucciones y cronograma</button>
-        </article>
-        <article class="prep-card" aria-labelledby="prep-card-title">
-          <div>
-            <p class="eyebrow">Para preparar tu sesión</p>
-            <h2 id="prep-card-title">Plantilla común para ponentes</h2>
-            <p>Descarga la plantilla común, prepara un caso clínico inicial y termina la sesión con un material práctico reutilizable.</p>
-          </div>
-          <div class="prep-actions">
-            <button class="button" type="button" data-open-welcome>Ver instrucciones</button>
-            <a class="button primary" href="assets/docs/plantilla-jornadas-docentes-ap.pptx" download>Descargar plantilla</a>
-          </div>
-        </article>
       </section>
 
       <section id="agenda" class="section" data-view="agenda" hidden>
@@ -119,83 +98,6 @@
           <p id="sessions-description">Contenido docente organizado por temas clínicos frecuentes en Atención Primaria.</p>
         </div>
         <div id="session-grid" class="session-grid" aria-live="polite"></div>
-      </section>
-
-      <section id="inscripcion" class="section section-muted" data-view="inscripcion" hidden>
-        <div class="section-heading">
-          <h2>Inscripción y asignación</h2>
-          <p>Escoge una sesión y una fecha disponible. La reserva se registra de forma conjunta para evitar duplicidades.</p>
-        </div>
-        <article class="prep-card compact-prep-card">
-          <div>
-            <p class="eyebrow">Preparación docente</p>
-            <h3>Usa la plantilla común antes de presentar</h3>
-            <p>Parte de un caso clínico, revisa la evidencia útil y deja un material final breve para consulta.</p>
-          </div>
-          <div class="prep-actions">
-            <button class="button" type="button" data-open-welcome>Ver instrucciones</button>
-            <a class="button primary" href="assets/docs/plantilla-jornadas-docentes-ap.pptx" download>Descargar plantilla</a>
-          </div>
-        </article>
-        <form id="signup-form" class="signup-form" novalidate>
-          <section class="signup-notice">
-            <p>Al enviar el formulario, la sesión y la fecha quedarán asignadas y dejarán de estar disponibles para otros equipos. La organización podrá revisar o ajustar la asignación si fuera necesario.</p>
-            <p>Los datos se utilizarán únicamente para la organización de las Jornadas Docentes de Atención Primaria.</p>
-          </section>
-          <div class="form-row">
-            <label>Nombre y apellidos
-              <input name="full_name" autocomplete="name" required>
-            </label>
-            <label>Correo electrónico
-              <input name="email" type="email" autocomplete="email" required>
-            </label>
-          </div>
-          <div class="form-row">
-            <label>Teléfono
-              <input name="phone" type="tel" autocomplete="tel" required>
-            </label>
-            <label>Perfil
-              <select name="profile" required>
-                <option value="">Selecciona perfil</option>
-                <option value="R1">R1</option>
-                <option value="R2">R2</option>
-                <option value="R3">R3</option>
-                <option value="R4">R4</option>
-                <option value="EIR">EIR</option>
-                <option value="FIR">FIR</option>
-                <option value="tutor/a">Tutor/a</option>
-                <option value="otro">Otro</option>
-              </select>
-            </label>
-          </div>
-          <div class="form-row">
-            <label>Centro de salud
-              <input name="health_center" required>
-            </label>
-            <label>Tutor/a de referencia
-              <input name="tutor_name">
-            </label>
-          </div>
-          <div class="form-row">
-            <label>Sesión elegida
-              <select id="signup-session" name="session_id" required></select>
-            </label>
-            <label>Fecha elegida
-              <select id="signup-date" name="signup_date_id" required></select>
-            </label>
-          </div>
-          <label>Otros residentes implicados, opcional
-            <textarea name="other_residents" rows="3"></textarea>
-          </label>
-          <label>Comentarios, opcional
-            <textarea name="comments" rows="3"></textarea>
-          </label>
-          <div class="signup-actions">
-            <button class="button primary" type="submit">Enviar inscripción</button>
-            <p id="signup-status" class="form-message" role="status"></p>
-          </div>
-        </form>
-        <div id="signup-confirmation" class="signup-confirmation" hidden aria-live="polite"></div>
       </section>
 
       <section id="ponentes" class="section" data-view="ponentes" hidden>
@@ -262,7 +164,7 @@
 
     <footer class="site-footer">
       <img src="assets/icons/icon-192.png" alt="" width="42" height="42">
-      <p id="footer-text">Jornadas Docentes de Atención Primaria · Programa anual 2026-2027.</p>
+      <p id="footer-text">Jornadas de Actualización en Atención Primaria (JAP) · Programa anual 2026-2027.</p>
       <a id="footer-admin-link" class="footer-admin-link" href="admin.html">Admin</a>
     </footer>
 

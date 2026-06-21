@@ -5,13 +5,12 @@ const state = {
   activeView: "inicio",
   previousView: "recursos",
   dataSource: "json",
-  signupAvailable: false,
   activeResource: null
 };
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
-const VIEW_IDS = ["inicio", "agenda", "inscripcion", "sesiones", "ponentes", "recursos", "recurso", "contacto"];
+const VIEW_IDS = ["inicio", "agenda", "sesiones", "ponentes", "recursos", "recurso", "contacto"];
 const ACTIVE_ASSIGNMENT_STATES = ["recibida", "revisada", "confirmada"];
 const TEMPLATE_FILE = "assets/docs/plantilla-jornadas-docentes-ap.pptx";
 const PERSON_ROLE_LABELS = {
@@ -135,6 +134,23 @@ function resourceType(resource) {
   if (resource.tipo === "cartel") return "cartel";
   if (resource.tipo === "enlace") return "enlace";
   return resource.tipo || "otro";
+}
+
+function resourceTypeLabel(resource) {
+  const format = resourceFormat(resource).toLowerCase();
+  const type = resourceType(resource);
+  if (format === "pptx") return "PowerPoint";
+  if (format === "docx") return "Word";
+  const labels = {
+    documento: "Documento",
+    presentacion: "Presentación",
+    imagen: "Imagen",
+    cartel: "Cartel",
+    enlace: "Enlace",
+    bibliografia: "Bibliografía",
+    otro: "Archivo"
+  };
+  return labels[type] || type;
 }
 
 function resourceFile(resource) {
@@ -278,19 +294,13 @@ function siteJson(key, fallback = []) {
   }
 }
 
-function signupUnavailableMessage() {
-  return state.dataSource === "supabase"
-    ? "La inscripción estará disponible cuando se active el módulo de asignaciones en Supabase."
-    : "La inscripción requiere conexión con Supabase. Ahora estás viendo datos locales de respaldo.";
-}
-
 function renderSiteContent() {
   const setText = (selector, key, fallback) => {
     const element = $(selector);
     if (element) element.textContent = siteText(key, fallback);
   };
 
-  setText("#home-title", "home.title", "Jornadas Docentes de Atención Primaria");
+  setText("#home-title", "home.title", "Jornadas de Actualización en Atención Primaria (JAP)");
   setText("#home-subtitle", "home.subtitle", "Programa anual de sesiones clínicas para profesionales de Atención Primaria");
   setText("#program-description", "home.description", state.data?.programa?.descripcion || "Pendiente de confirmar");
   setText("#home-primary-button", "home.primary_button", "Ver agenda");
@@ -315,7 +325,7 @@ function renderSiteContent() {
   setText("#resources-description", "resources.description", "Material organizado por categorías. Cada recurso se abre dentro de la app y puede descargarse.");
   setText("#contact-title", "contact.title", "Contacto");
   setText("#contact-description", "contact.description", "Datos de coordinación del programa.");
-  setText("#footer-text", "footer.text", "Jornadas Docentes de Atención Primaria · Programa anual 2026-2027.");
+  setText("#footer-text", "footer.text", "Jornadas de Actualización en Atención Primaria (JAP) · Programa anual 2026-2027.");
   setText("#footer-admin-link", "footer.admin_label", "Admin");
 }
 
@@ -323,7 +333,7 @@ function welcomeData() {
   return {
     visible: siteBoolean("welcome.visible", true),
     title: siteText("welcome.title", "Bienvenida a las JAP", { allowBlank: true }).trim(),
-    subtitle: siteText("welcome.subtitle", "Jornadas Docentes de Atención Primaria 2026-2027"),
+    subtitle: siteText("welcome.subtitle", "Jornadas de Actualización en Atención Primaria (JAP) 2026-2027"),
     intro: siteText("welcome.intro", ""),
     buttonLabel: siteText("welcome.button_label", "Ver instrucciones y cronograma"),
     sections: siteJson("welcome.sections", []),
@@ -370,6 +380,7 @@ function formatWelcomeDate(item) {
   const status = item.status || "disponible";
   const statusLabels = {
     disponible: "Disponible",
+    gestion_organizacion: "Gestionada por organización",
     asignada: "Asignada",
     reserva: "Reserva",
     no_publica: "No inscribible"
@@ -462,6 +473,7 @@ function renderAssignmentAgenda(items) {
       const assigned = item.status_public === "Asignada";
       const hasPlannedSession = Boolean(item.session_slug || item.session_title);
       const adjusted = assigned && item.is_initial_date === false;
+      const publicStatus = assigned ? item.status_public : "Gestionada por organización";
       return `
         <article class="timeline-item ${assigned ? "assigned-date" : "available-date"} ${adjusted ? "adjusted-date" : ""}">
           <div class="timeline-number">${index + 1}</div>
@@ -469,7 +481,7 @@ function renderAssignmentAgenda(items) {
             <p class="eyebrow">${escapeHtml(item.label || formatHumanDate(item.date_value))}</p>
             <h3>${escapeHtml(item.session_title || (assigned ? "Sesión asignada" : "Disponible"))}</h3>
             <p class="compact-meta">
-              <span class="tag ${assigned ? "done" : ""}">${escapeHtml(item.status_public)}</span>
+              <span class="tag ${assigned ? "done" : ""}">${escapeHtml(publicStatus)}</span>
               <span class="tag subtle">${escapeHtml(adjusted ? "Fecha final asignada" : item.is_initial_date ? "Fecha inicialmente disponible" : "Fecha final")}</span>
               ${adjusted ? '<span class="tag subtle">Fecha ajustada por organización</span>' : ""}
               ${assigned && item.health_center_public ? ` · Centro: ${escapeHtml(item.health_center_public)}` : ""}
@@ -478,9 +490,8 @@ function renderAssignmentAgenda(items) {
               hasPlannedSession
                 ? `<div class="card-actions">
                     ${item.session_slug ? `<button class="button" type="button" data-session="${escapeHtml(item.session_slug)}">Ver detalle</button>` : ""}
-                    ${!assigned && item.status_public === "Disponible" ? `<a class="button primary" href="#inscripcion">Inscribirse</a>` : ""}
                   </div>`
-                : `<a class="button primary" href="#inscripcion">Elegir esta fecha</a>`
+                : `<p class="empty-note">La asignación de sesiones será gestionada por la organización de las JAP. El calendario se actualizará progresivamente en la app.</p>`
             }
           </div>
         </article>
@@ -547,125 +558,6 @@ function renderSessionCard(session) {
       </div>
     </article>
   `;
-}
-
-function renderSignup() {
-  const form = $("#signup-form");
-  const status = $("#signup-status");
-  const sessionSelect = $("#signup-session");
-  const dateSelect = $("#signup-date");
-  if (!form || !status || !sessionSelect || !dateSelect) return;
-
-  const options = state.data?.signupOptions || { sessions: [], dates: [] };
-  const publicSessions = (options.sessions || []).filter((session) => session.slug !== "jornada-final");
-  const publicDates = (options.dates || []).filter((date) => date.date !== "2027-05-14" && date.status !== "no_publica");
-  const enabled = state.signupAvailable && publicSessions.length && publicDates.length;
-
-  sessionSelect.innerHTML = enabled
-    ? '<option value="">Selecciona una sesión</option>' +
-      publicSessions
-        .map((session) => `<option value="${escapeHtml(session.id)}">${escapeHtml([session.block, session.title].filter(Boolean).join(" · "))}</option>`)
-        .join("")
-    : '<option value="">Sin sesiones disponibles</option>';
-
-  dateSelect.innerHTML = enabled
-    ? '<option value="">Selecciona una fecha</option>' +
-      publicDates
-        .map((date) => `<option value="${escapeHtml(date.id)}">${escapeHtml(date.label || formatHumanDate(date.date))}</option>`)
-        .join("")
-    : '<option value="">Sin fechas disponibles</option>';
-
-  form.querySelectorAll("input, select, textarea, button[type='submit']").forEach((field) => {
-    field.disabled = !enabled;
-  });
-  status.textContent = enabled ? "" : signupUnavailableMessage();
-}
-
-async function submitSignup(event) {
-  event.preventDefault();
-  const form = event.currentTarget;
-  const status = $("#signup-status");
-  if (!state.signupAvailable) {
-    status.textContent = signupUnavailableMessage();
-    return;
-  }
-
-  const values = Object.fromEntries(new FormData(form).entries());
-  const selectedSessionLabel = $("#signup-session")?.selectedOptions?.[0]?.textContent || "";
-  const selectedDateLabel = $("#signup-date")?.selectedOptions?.[0]?.textContent || "";
-  status.textContent = "Enviando inscripción...";
-  const { error } = await state.data.supabase.rpc("create_session_assignment", {
-    p_session_id: values.session_id,
-    p_signup_date_id: values.signup_date_id,
-    p_full_name: values.full_name,
-    p_email: values.email,
-    p_phone: values.phone,
-    p_profile: values.profile,
-    p_health_center: values.health_center,
-    p_tutor_name: values.tutor_name || null,
-    p_other_residents: values.other_residents || null,
-    p_comments: values.comments || null
-  });
-
-  if (error) {
-    status.textContent = error.message?.includes("reservada")
-      ? "La sesión o la fecha acaba de ser reservada. Elige otra opción."
-      : error.message || "No se pudo registrar la inscripción.";
-    await refreshSignupData();
-    return;
-  }
-
-  form.reset();
-  await refreshSignupData();
-  status.textContent = "Inscripción registrada.";
-  showSignupConfirmation({
-    session: selectedSessionLabel,
-    date: selectedDateLabel,
-    healthCenter: values.health_center
-  });
-}
-
-function showSignupConfirmation({ session, date, healthCenter }) {
-  const confirmation = $("#signup-confirmation");
-  if (!confirmation) return;
-  confirmation.hidden = false;
-  confirmation.innerHTML = `
-    <section class="confirmation-card">
-      <p class="eyebrow">Solicitud recibida</p>
-      <h3>La organización revisará la asignación definitiva</h3>
-      <div class="confirmation-summary">
-        <p><strong>Tema solicitado</strong>${escapeHtml(session || "Pendiente de revisar")}</p>
-        <p><strong>Fecha preferente</strong>${escapeHtml(date || "Pendiente de revisar")}</p>
-        <p><strong>Centro indicado</strong>${escapeHtml(healthCenter || "Pendiente de revisar")}</p>
-      </div>
-      <p>La solicitud queda recibida y será revisada por la organización antes de cerrar la asignación definitiva.</p>
-      <ol class="next-steps">
-        <li>Espera la confirmación de la organización.</li>
-        <li>Descarga la plantilla común.</li>
-        <li>Prepara un caso clínico inicial.</li>
-        <li>Coordina la revisión con el tutor o tutora.</li>
-        <li>Prepara un material final breve: algoritmo, checklist, resumen operativo o tabla de manejo.</li>
-      </ol>
-      <div class="prep-actions">
-        <button class="button" type="button" data-open-welcome>Ver instrucciones</button>
-        <a class="button primary" href="${TEMPLATE_FILE}" download>Descargar plantilla</a>
-      </div>
-    </section>
-  `;
-  confirmation.scrollIntoView({ behavior: "auto", block: "start" });
-}
-
-async function refreshSignupData() {
-  if (!state.data?.supabase) return;
-  const [agenda, options] = await Promise.all([
-    loadPublicAgenda(state.data.supabase),
-    loadSignupOptions(state.data.supabase)
-  ]);
-  state.data.publicAgenda = agenda;
-  state.data.signupOptions = options;
-  state.signupAvailable = Boolean(options);
-  renderAgenda(state.data.sesiones);
-  renderSignup();
 }
 
 function renderSpeakers(ponentes) {
@@ -792,8 +684,9 @@ function renderResourceItem(resource) {
   return `
     <article class="resource-card">
       <div>
-        <p class="eyebrow">${escapeHtml(resourceType(resource))} · ${escapeHtml(resourceFormat(resource))}</p>
+        <p class="eyebrow">${escapeHtml(resourceTypeLabel(resource))} · ${escapeHtml(resourceFormat(resource))}</p>
         <h3>${escapeHtml(resource.titulo)}</h3>
+        ${resource.descripcion ? `<p>${escapeHtml(resource.descripcion)}</p>` : ""}
       </div>
       <div class="resource-actions">
         <button class="button primary" type="button" data-resource="${escapeHtml(resource.id)}">Ver recurso</button>
@@ -886,6 +779,7 @@ function getResourcePreview(resource) {
   const title = escapeHtml(resource.titulo);
   const type = resourceType(resource).toLowerCase();
   const format = resourceFormat(resource).toLowerCase();
+  const description = resource.descripcion || "Recurso descargable de las JAP 2026-2027.";
 
   if (type === "imagen" || type === "cartel" || ["png", "jpg", "jpeg", "webp", "gif"].includes(format)) {
     return `
@@ -904,10 +798,22 @@ function getResourcePreview(resource) {
     `;
   }
 
+  if (format === "pptx") {
+    return `
+      <div class="resource-preview resource-fallback">
+        <strong>${title}</strong>
+        <p>${escapeHtml(description)}</p>
+        <p><strong>Tipo de archivo:</strong> PowerPoint / PPTX</p>
+        <p>Esta plantilla debe descargarse para editarse en PowerPoint, Keynote, LibreOffice o similar.</p>
+      </div>
+    `;
+  }
+
   return `
     <div class="resource-preview resource-fallback">
       <strong>${title}</strong>
-      <p>${escapeHtml(resourceType(resource))} · ${escapeHtml(resourceFormat(resource))}</p>
+      <p>${escapeHtml(description)}</p>
+      <p>${escapeHtml(resourceTypeLabel(resource))} · ${escapeHtml(resourceFormat(resource))}</p>
       <p>Este tipo de archivo no se previsualiza de forma fiable dentro del navegador. Puedes descargarlo desde esta ficha.</p>
     </div>
   `;
@@ -931,7 +837,7 @@ function renderResourceView(resource) {
   const isExternal = /^https?:\/\//i.test(rawFile);
   const download = $("#resource-view-download");
 
-  $("#resource-view-type").textContent = `${resourceType(resource)} · ${resourceFormat(resource)}`;
+  $("#resource-view-type").textContent = `${resourceTypeLabel(resource)} · ${resourceFormat(resource)}`;
   $("#resource-view-title").textContent = resource.titulo;
   $("#resource-view-content").innerHTML = getResourcePreview(resource);
 
@@ -952,7 +858,7 @@ function renderResourceView(resource) {
   $("#resource-view-content").insertAdjacentHTML("beforeend", `<div class="resource-view-actions">${secondaryLink}</div>`);
 }
 
-function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [], sedes = [], siteContent = {}, publicAgenda = [], signupOptions = null, supabase = null }) {
+function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [], sedes = [], siteContent = {}, publicAgenda = [], supabase = null }) {
   const modalidad = jornada?.modalidad || "Preferentemente presencial, con opción online por Teams";
   const teamsUrl = jornada?.teams_url || "Enlace Teams pendiente de confirmar";
   const assignedDatesBySession = new Map(
@@ -980,6 +886,9 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
       .filter(Boolean);
 
     const sessionResources = recursos.filter((resource) => resource.sesion_id === session.id);
+    const posterResource = sessionResources.find((resource) =>
+      resource.tipo === "cartel" || String(resource.categoria || "").toLowerCase().includes("cartel")
+    );
 
     return {
       id: session.orden || index + 1,
@@ -1006,7 +915,7 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
       sede: session.sedes?.nombre || "Por confirmar",
       ponentes: sessionSpeakers.length ? sessionSpeakers.map((speaker) => speaker.nombre) : ["Por asignar"],
       ponentes_detalle: sessionSpeakers,
-      imagen: session.imagen_url || "",
+      imagen: session.imagen_url || posterResource?.url || "",
       recursos: sessionResources.map((resource) => resource.titulo),
       estado: session.estado || "publicada",
       is_active: session.is_active
@@ -1023,7 +932,7 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
 
   return {
     programa: {
-      nombre: jornada?.titulo || "Jornadas Docentes de Atención Primaria",
+      nombre: jornada?.titulo || "Jornadas de Actualización en Atención Primaria (JAP)",
       subtitulo: jornada?.subtitulo || "Programa anual de sesiones clínicas para profesionales de Atención Primaria",
       ciclo: jornada?.curso || "2026-2027",
       descripcion: jornada?.descripcion || "Espacio docente anual para profesionales de Atención Primaria.",
@@ -1069,7 +978,6 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
       }))
     ),
     publicAgenda,
-    signupOptions,
     supabase,
     sedes: sedes.map((venue) => ({
       id: venue.id,
@@ -1109,25 +1017,11 @@ async function loadPublicAgenda(supabase) {
   }
 }
 
-async function loadSignupOptions(supabase) {
-  try {
-    const { data, error } = await supabase.rpc("get_signup_options");
-    if (error) throw error;
-    return data || { sessions: [], dates: [] };
-  } catch (error) {
-    console.warn("Opciones de inscripción no disponibles", error);
-    return null;
-  }
-}
-
 async function loadSupabaseData(fallbackSiteContent) {
   const supabase = await getSupabaseClient();
   if (!supabase) return null;
   const siteContent = await loadSupabaseSiteContent(supabase, fallbackSiteContent);
-  const [publicAgenda, signupOptions] = await Promise.all([
-    loadPublicAgenda(supabase),
-    loadSignupOptions(supabase)
-  ]);
+  const publicAgenda = await loadPublicAgenda(supabase);
 
   const [{ data: jornadas, error: jornadaError }, { data: sesiones, error: sesionesError }, { data: ponentes, error: ponentesError }, { data: recursos, error: recursosError }, { data: sedes, error: sedesError }] = await Promise.all([
     supabase.from("jornadas").select("*").limit(1),
@@ -1158,7 +1052,6 @@ async function loadSupabaseData(fallbackSiteContent) {
     sedes: sedes || [],
     siteContent,
     publicAgenda,
-    signupOptions,
     supabase
   });
 }
@@ -1190,7 +1083,6 @@ async function loadData() {
     sesiones: (fallbackData.sesiones || []).filter(isVisibleSession).sort(compareSessions),
     recursos: normalizeResources(fallbackData.programa, fallbackData.recursos || []),
     publicAgenda: [],
-    signupOptions: null,
     supabase: null
   };
   console.info("Datos cargados desde JSON local por fallback");
@@ -1228,6 +1120,7 @@ function setActiveView(viewId, { updateHash = true } = {}) {
     state.previousView = nextView;
   }
   state.activeView = nextView;
+  document.body.dataset.activeView = nextView;
 
   $$("[data-view]").forEach((section) => {
     section.hidden = section.dataset.view !== nextView;
@@ -1320,11 +1213,6 @@ function bindInteractions() {
     setActiveView(getViewFromHash(), { updateHash: false });
   });
 
-  $("#signup-form")?.addEventListener("submit", (event) => {
-    submitSignup(event).catch((error) => {
-      $("#signup-status").textContent = error.message || "No se pudo registrar la inscripción.";
-    });
-  });
 }
 
 async function init() {
@@ -1333,13 +1221,10 @@ async function init() {
 
   try {
     state.data = await loadData();
-    state.signupAvailable = Boolean(state.data.signupOptions);
-
     renderSiteContent();
     renderWelcome();
     renderProgram(state.data.programa);
     renderAgenda(state.data.sesiones);
-    renderSignup();
     renderSessions(state.data.sesiones);
     renderSpeakers(state.data.ponentes);
     renderResources(state.data.recursos);

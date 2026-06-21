@@ -51,8 +51,8 @@ const SITE_SETTING_DEFINITIONS = [
 const WELCOME_DEFAULTS = {
   visible: true,
   title: "Bienvenida a las JAP",
-  subtitle: "Jornadas Docentes de Atención Primaria 2026-2027",
-  intro: "Las Jornadas Docentes de Atención Primaria (JAP) son un programa anual de sesiones clínicas rotatorias, aprobado por la Comisión de Docencia, orientado a reforzar la formación práctica, la actualización basada en la evidencia y la integración entre residentes, tutores y profesionales del área.",
+  subtitle: "Jornadas de Actualización en Atención Primaria (JAP) 2026-2027",
+  intro: "Las Jornadas de Actualización en Atención Primaria (JAP) son un programa anual de sesiones clínicas rotatorias, aprobado por la Comisión de Docencia, orientado a reforzar la formación práctica, la actualización basada en la evidencia y la integración entre residentes, tutores y profesionales del área.",
   button_label: "Ver instrucciones y cronograma",
   sections: [
     {
@@ -100,22 +100,22 @@ const WELCOME_DEFAULTS = {
     }
   ],
   schedule_title: "Cronograma general",
-  schedule_text: "Las JAP se desarrollarán entre septiembre de 2026 y mayo de 2027. La propuesta inicial contempla sesiones preferentemente los viernes, con una cadencia aproximada de cada tres semanas. Aunque se proponen 12 temas, se dejan 13 fechas inicialmente disponibles para facilitar la organización, permitir ajustes por incidencias o reservar alguna fecha si fuera necesario.",
+  schedule_text: "Las JAP se desarrollarán entre el 4 de septiembre de 2026 y el 14 de mayo de 2027, con 13 sesiones aprobadas y producto final por sesión. La asignación de ponentes, tutores, centros y fechas se gestionará desde la organización.",
   dates_title: "Fechas inicialmente disponibles",
   dates: [
-    { date: "2026-09-04", label: "Viernes 4 de septiembre de 2026.", status: "disponible" },
-    { date: "2026-09-25", label: "Viernes 25 de septiembre de 2026.", status: "disponible" },
-    { date: "2026-10-16", label: "Viernes 16 de octubre de 2026.", status: "disponible" },
-    { date: "2026-11-06", label: "Viernes 6 de noviembre de 2026.", status: "disponible" },
-    { date: "2026-11-27", label: "Viernes 27 de noviembre de 2026.", status: "disponible" },
-    { date: "2026-12-18", label: "Viernes 18 de diciembre de 2026.", status: "disponible" },
-    { date: "2027-01-08", label: "Viernes 8 de enero de 2027.", status: "disponible" },
-    { date: "2027-01-29", label: "Viernes 29 de enero de 2027.", status: "disponible" },
-    { date: "2027-02-19", label: "Viernes 19 de febrero de 2027.", status: "disponible" },
-    { date: "2027-03-12", label: "Viernes 12 de marzo de 2027.", status: "disponible" },
-    { date: "2027-04-02", label: "Viernes 2 de abril de 2027.", status: "disponible" },
-    { date: "2027-04-23", label: "Viernes 23 de abril de 2027.", status: "disponible" },
-    { date: "2027-05-14", label: "Viernes 14 de mayo de 2027.", status: "disponible" }
+    { date: "2026-09-04", label: "Viernes 4 de septiembre de 2026.", status: "no_publica" },
+    { date: "2026-09-25", label: "Viernes 25 de septiembre de 2026.", status: "no_publica" },
+    { date: "2026-10-16", label: "Viernes 16 de octubre de 2026.", status: "no_publica" },
+    { date: "2026-11-06", label: "Viernes 6 de noviembre de 2026.", status: "no_publica" },
+    { date: "2026-11-27", label: "Viernes 27 de noviembre de 2026.", status: "no_publica" },
+    { date: "2026-12-18", label: "Viernes 18 de diciembre de 2026.", status: "no_publica" },
+    { date: "2027-01-15", label: "Viernes 15 de enero de 2027.", status: "no_publica" },
+    { date: "2027-02-05", label: "Viernes 5 de febrero de 2027.", status: "no_publica" },
+    { date: "2027-02-26", label: "Viernes 26 de febrero de 2027.", status: "no_publica" },
+    { date: "2027-03-19", label: "Viernes 19 de marzo de 2027.", status: "no_publica" },
+    { date: "2027-04-09", label: "Viernes 9 de abril de 2027.", status: "no_publica" },
+    { date: "2027-04-30", label: "Viernes 30 de abril de 2027.", status: "no_publica" },
+    { date: "2027-05-14", label: "Viernes 14 de mayo de 2027.", status: "no_publica" }
   ]
 };
 
@@ -387,7 +387,7 @@ function resetAssignmentForm() {
   if (!form) return;
   form.reset();
   form.elements.id.value = "";
-  $("#assignment-form-title").textContent = "Editar asignación";
+  $("#assignment-form-title").textContent = "Crear asignación";
   renderAssignmentTasks(null);
 }
 
@@ -461,11 +461,11 @@ function renderAssignments() {
   if (!list) return;
   renderAssignmentSummary();
   if (!state.assignmentsAvailable) {
-    list.innerHTML = '<p class="empty-note">La tabla de asignaciones todavía no está disponible. Aplica la migración antes de gestionar inscripciones.</p>';
+    list.innerHTML = '<p class="empty-note">La tabla de asignaciones todavía no está disponible. Aplica la migración antes de gestionarlas.</p>';
     return;
   }
   if (!state.assignments.length) {
-    list.innerHTML = '<p class="empty-note">No hay inscripciones recibidas.</p>';
+    list.innerHTML = '<p class="empty-note">No hay asignaciones creadas.</p>';
     return;
   }
 
@@ -1200,14 +1200,13 @@ async function saveAssignment(event) {
   if (!canEdit() || !state.assignmentsAvailable) return;
   const form = event.currentTarget;
   const values = formData(form);
-  if (!values.id) {
-    message("Selecciona una asignación existente para editarla.");
-    return;
-  }
 
   const status = values.status || "recibida";
+  const signupDate = state.signupDates.find((date) => date.date_value === values.final_date);
   const payload = {
     session_id: values.session_id,
+    signup_date_id: signupDate?.id || null,
+    selected_public_date: values.selected_public_date || values.final_date,
     final_date: values.final_date,
     status,
     full_name: values.full_name.trim(),
@@ -1226,10 +1225,13 @@ async function saveAssignment(event) {
   if (status === "confirmada") payload.confirmed_at = new Date().toISOString();
   if (status === "anulada") payload.cancelled_at = new Date().toISOString();
 
-  const { error } = await state.supabase.from("session_assignments").update(payload).eq("id", values.id);
+  const query = values.id
+    ? state.supabase.from("session_assignments").update(payload).eq("id", values.id)
+    : state.supabase.from("session_assignments").insert(payload);
+  const { error } = await query;
   if (error) throw error;
   await loadAdminData();
-  message("Asignación guardada.");
+  message(values.id ? "Asignación guardada." : "Asignación creada.");
 }
 
 async function updateAssignmentStatus(id, status) {

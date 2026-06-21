@@ -59,7 +59,7 @@
           <button class="button primary" type="button" data-admin-tab="sesiones">Sesiones</button>
           <button class="button" type="button" data-admin-tab="ponentes">Equipo docente</button>
           <button class="button" type="button" data-admin-tab="recursos">Recursos</button>
-          <button class="button" type="button" data-admin-tab="asignaciones">Inscripciones / asignaciones</button>
+          <button class="button" type="button" data-admin-tab="asignaciones">Asignaciones</button>
           <button class="button" type="button" data-admin-tab="bienvenida">Bienvenida / instrucciones</button>
           <button class="button" type="button" data-admin-tab="textos">Textos de la app</button>
           <button class="button" type="button" data-admin-tab="backup">Copia de seguridad</button>
@@ -99,7 +99,7 @@
                 <label>Bibliografía <textarea name="bibliografia" rows="7"></textarea></label>
               </fieldset>
               <label>Contenidos clave, uno por línea <textarea name="contenidos_clave" rows="5"></textarea></label>
-              <p id="session-assignment-warning" class="form-message" hidden>Esta sesión tiene una asignación activa. La fecha de agenda debe gestionarse desde “Inscripciones / asignaciones”.</p>
+              <p id="session-assignment-warning" class="form-message" hidden>Esta sesión tiene una asignación activa. La fecha de agenda debe gestionarse desde “Asignaciones”.</p>
               <label>Fecha <input name="fecha" type="date"></label>
               <div class="form-row">
                 <label>Inicio <input name="hora_inicio" type="time"></label>
@@ -223,7 +223,7 @@
           <div class="admin-grid">
             <form id="assignment-form" class="admin-form admin-card">
               <div class="admin-form-head">
-                <h2 id="assignment-form-title">Editar asignación</h2>
+                <h2 id="assignment-form-title">Crear asignación</h2>
                 <button class="button" type="button" data-reset-assignment>Limpiar</button>
               </div>
               <p class="form-message">La fecha final puede ser cualquier fecha. No se permite duplicar fecha final en asignaciones activas.</p>
