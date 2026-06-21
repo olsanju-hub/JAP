@@ -177,9 +177,9 @@ function sessionOperationalState(session) {
   const assignment = publicAssignmentForSession(session);
   if (!assignment) {
     return {
-      label: "Disponible",
+      label: "Programada",
       className: "available",
-      meta: "Tema disponible para asignación.",
+      meta: "Asignación gestionada por organización.",
       adjusted: false
     };
   }
@@ -474,15 +474,18 @@ function renderAssignmentAgenda(items) {
       const hasPlannedSession = Boolean(item.session_slug || item.session_title);
       const adjusted = assigned && item.is_initial_date === false;
       const publicStatus = assigned ? item.status_public : "Gestionada por organización";
+      const plannedSession = state.data?.sesiones?.find((session) => session.slug === item.session_slug);
+      const venue = plannedSession?.sede && !isPending(plannedSession.sede) ? plannedSession.sede : "";
       return `
         <article class="timeline-item ${assigned ? "assigned-date" : "available-date"} ${adjusted ? "adjusted-date" : ""}">
           <div class="timeline-number">${index + 1}</div>
           <div>
             <p class="eyebrow">${escapeHtml(item.label || formatHumanDate(item.date_value))}</p>
-            <h3>${escapeHtml(item.session_title || (assigned ? "Sesión asignada" : "Disponible"))}</h3>
+            <h3>${escapeHtml(item.session_title || (assigned ? "Sesión asignada" : "Fecha programada"))}</h3>
             <p class="compact-meta">
               <span class="tag ${assigned ? "done" : ""}">${escapeHtml(publicStatus)}</span>
               <span class="tag subtle">${escapeHtml(adjusted ? "Fecha final asignada" : item.is_initial_date ? "Fecha inicialmente disponible" : "Fecha final")}</span>
+              ${venue ? `<span class="tag subtle">${escapeHtml(venue)}</span>` : ""}
               ${adjusted ? '<span class="tag subtle">Fecha ajustada por organización</span>' : ""}
               ${assigned && item.health_center_public ? ` · Centro: ${escapeHtml(item.health_center_public)}` : ""}
             </p>
@@ -562,26 +565,17 @@ function renderSessionCard(session) {
 
 function renderSpeakers(ponentes) {
   const groups = [
-    { role: "organizador", title: "Organización y coordinación", empty: "" },
-    { role: "ponente", title: "Ponentes", empty: "Los ponentes de cada sesión se incorporarán cuando estén confirmados." },
-    { role: "apoyo", title: "Apoyo docente", empty: "" }
+    { title: "Organización y coordinación", empty: "La organización de las JAP gestionará las asignaciones docentes desde el panel interno." },
+    { title: "Equipo de sesión", empty: "La asignación de sesiones será gestionada por la organización de las JAP. El calendario se actualizará progresivamente en la app." }
   ];
 
   $("#speaker-grid").innerHTML = groups
     .map((group) => {
-      const items = ponentes.filter((speaker) =>
-        group.role === "ponente" ? speaker.rol_persona === "ponente" || speaker.es_ponente_sesion : speaker.rol_persona === group.role
-      );
-      if (!items.length && !group.empty) return "";
       return `
         <section class="speaker-group">
           <h3>${escapeHtml(group.title)}</h3>
           <div class="speaker-group-grid">
-            ${
-              items.length
-                ? items.map(renderSpeakerCard).join("")
-                : `<article class="speaker-card"><h4>Pendiente de confirmar</h4><p>${escapeHtml(group.empty)}</p></article>`
-            }
+            <article class="speaker-card"><h4>Gestión interna</h4><p>${escapeHtml(group.empty)}</p></article>
           </div>
         </section>
       `;
@@ -602,32 +596,14 @@ function renderSpeakerCard(speaker) {
 }
 
 function renderSessionSpeakers(speakers) {
-  if (!speakers?.length) return "";
-  return `
-    <h3>Ponentes</h3>
-    <div class="session-speaker-detail">
-      ${speakers
-        .map(
-          (speaker) => `
-            <article class="speaker-card">
-              ${speaker.foto_url ? `<img src="${escapeHtml(speaker.foto_url)}" alt="Foto de ${escapeHtml(speaker.nombre)}">` : ""}
-              <h4>${escapeHtml(speaker.nombre)}</h4>
-              <p><strong>${escapeHtml(speaker.rol_sesion || "Ponente")}</strong></p>
-              <p>${escapeHtml([speaker.especialidad, speaker.centro].filter(Boolean).join(" · ") || "Pendiente de confirmar")}</p>
-              ${speaker.bio && !isPending(speaker.bio) ? `<p>${escapeHtml(speaker.bio)}</p>` : ""}
-            </article>
-          `
-        )
-        .join("")}
-    </div>
-  `;
+  return "";
 }
 
 function renderResources(recursos) {
   const publicResources = recursos.filter(isPublicResource);
   const groups = [
     { id: "programa", title: "Programa anual", filter: (resource) => resourceCategory(resource).includes("programa") || String(resource.id).includes("programa") },
-    { id: "plantilla", title: "Plantilla para ponentes", filter: (resource) => resourceType(resource) === "presentacion" },
+    { id: "plantilla", title: "Plantilla", filter: (resource) => resourceType(resource) === "presentacion" },
     {
       id: "imagenes",
       title: "Promocionales",
@@ -790,9 +766,10 @@ function getResourcePreview(resource) {
   }
 
   if (format === "pdf") {
+    const pdfFile = `${file}#view=FitH&toolbar=1&navpanes=0`;
     return `
       <div class="resource-preview pdf-preview">
-        <iframe src="${file}" title="Previsualización de ${title}"></iframe>
+        <iframe src="${pdfFile}" title="Previsualización de ${title}"></iframe>
         <p>Si el navegador no muestra el PDF correctamente, usa el botón de descarga.</p>
       </div>
     `;
@@ -1023,31 +1000,27 @@ async function loadSupabaseData(fallbackSiteContent) {
   const siteContent = await loadSupabaseSiteContent(supabase, fallbackSiteContent);
   const publicAgenda = await loadPublicAgenda(supabase);
 
-  const [{ data: jornadas, error: jornadaError }, { data: sesiones, error: sesionesError }, { data: ponentes, error: ponentesError }, { data: recursos, error: recursosError }, { data: sedes, error: sedesError }] = await Promise.all([
+  const [{ data: jornadas, error: jornadaError }, { data: sesiones, error: sesionesError }, { data: recursos, error: recursosError }, { data: sedes, error: sedesError }] = await Promise.all([
     supabase.from("jornadas").select("*").limit(1),
     supabase
       .from("sesiones")
-      .select("*, sedes(nombre), sesion_ponentes(rol, orden, ponentes(*))")
+      .select("*, sedes(nombre)")
       .in("estado", PUBLIC_SESSION_STATES)
       .eq("is_active", true)
       .order("fecha", { ascending: true, nullsFirst: false })
       .order("orden", { ascending: true }),
-    supabase.from("ponentes").select("*").eq("is_active", true).order("nombre", { ascending: true }),
     supabase.from("recursos").select("*").eq("visible", true).order("orden", { ascending: true }),
     supabase.from("sedes").select("*").order("nombre", { ascending: true })
   ]);
 
-  const error = jornadaError || sesionesError || ponentesError || recursosError || sedesError;
+  const error = jornadaError || sesionesError || recursosError || sedesError;
   if (error) throw error;
   if (!jornadas?.[0]) return null;
-  if (ponentes?.length && !Object.prototype.hasOwnProperty.call(ponentes[0], "rol_persona")) {
-    throw new Error("Ejecuta supabase/migration-session-speakers.sql para activar roles de personas.");
-  }
 
   return mapSupabaseData({
     jornada: jornadas[0],
     sesiones: sesiones || [],
-    ponentes: ponentes || [],
+    ponentes: [],
     recursos: recursos || [],
     sedes: sedes || [],
     siteContent,

@@ -1,4 +1,4 @@
-const CACHE_NAME = "jap-static-v32";
+const CACHE_NAME = "jap-static-v33";
 
 const APP_ASSETS = [
   "./",
@@ -39,7 +39,6 @@ const APP_ASSETS = [
   "./assets/img/sesion-12-adulto-mayor.png",
   "./assets/img/sesion-13-jornada-final.png",
   "./assets/docs/programa-anual-jap-2026-2027.pdf",
-  "./assets/docs/programa-anual-jap-2026-2027-editable.docx",
   "./assets/docs/plantilla-jornadas-docentes-ap.pptx"
 ];
 

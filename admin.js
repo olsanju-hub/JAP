@@ -79,16 +79,6 @@ const WELCOME_DEFAULTS = {
       ]
     },
     {
-      title: "Papel del residente ponente",
-      text: "El residente preparará y presentará la sesión con un enfoque práctico, claro y aplicable. Se recomienda evitar revisiones teóricas extensas y priorizar decisiones clínicas, casos y mensajes útiles para la consulta.",
-      bullets: []
-    },
-    {
-      title: "Papel del tutor",
-      text: "El tutor acompañará la preparación de la sesión, revisará el enfoque clínico, ayudará a seleccionar la evidencia principal y asegurará que el contenido sea adecuado para la práctica real en Atención Primaria.",
-      bullets: []
-    },
-    {
       title: "Apoyo de R3/R4",
       text: "Los residentes de tercer y cuarto año podrán apoyar en la estructura docente, revisión de bibliografía, preparación del caso clínico, diseño de la presentación y elaboración del material final.",
       bullets: []

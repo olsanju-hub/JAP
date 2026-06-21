@@ -539,15 +539,7 @@ La tabla `ponentes` funciona como tabla de personas. El campo `rol_persona` dist
 - `ponente`: ponente de sesión.
 - `apoyo`: apoyo docente o colaborador.
 
-El equipo organizador inicial está formado por:
-
-- Guillermo José Olivero Sanjuanelo
-- Julio Fernando Ospino Arias
-- Kelly Esther Escorcia Reyes
-- Valenska Vania Arellano Flores
-- Jorvi José Aguilar Valero
-
-Las cinco personas figuran como residentes de 4.º año de Medicina Familiar y Comunitaria y no se asignan como ponentes de sesiones por defecto. Los ponentes reales se asocian desde el formulario de sesión mediante la tabla `sesion_ponentes`.
+El equipo organizador y las personas asociadas se gestionan solo desde el panel admin. La app pública no consulta ni muestra datos personales de `ponentes` ni de `sesion_ponentes`.
 
 ### Textos de la app
 

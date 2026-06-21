@@ -161,6 +161,15 @@ a {
   background: var(--primary);
 }
 
+.site-nav .nav-admin-link {
+  color: var(--primary);
+  border: 1px solid var(--border);
+}
+
+.site-nav .nav-admin-link:hover {
+  border-color: var(--primary);
+}
+
 .menu-toggle {
   display: inline-grid;
   gap: 5px;
@@ -1194,7 +1203,7 @@ h1 {
 }
 
 .resource-view-content .pdf-preview iframe {
-  height: min(72vh, 760px);
+  height: max(720px, calc(100svh - 220px));
 }
 
 .resource-view-actions {
@@ -1378,7 +1387,11 @@ h1 {
   }
 
   .pdf-preview iframe {
-    height: 58vh;
+    height: 64vh;
+  }
+
+  .resource-view-content .pdf-preview iframe {
+    height: max(620px, calc(100svh - 190px));
   }
 }
 

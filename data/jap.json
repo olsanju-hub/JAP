@@ -554,58 +554,7 @@
       "inscripcion_publica": false
     }
   ],
-  "ponentes": [
-    {
-      "id": "julio-fernando-ospino-arias",
-      "nombre": "Julio Fernando Ospino Arias",
-      "rol": "Organizador / coordinación R4",
-      "rol_persona": "organizador",
-      "especialidad": "Residente de 4.º año de Medicina Familiar y Comunitaria",
-      "centro": "",
-      "bio": "Organizador / coordinación R4",
-      "sesiones": []
-    },
-    {
-      "id": "guillermo-jose-olivero-sanjuanelo",
-      "nombre": "Guillermo José Olivero Sanjuanelo",
-      "rol": "Organizador / coordinación R4",
-      "rol_persona": "organizador",
-      "especialidad": "Residente de 4.º año de Medicina Familiar y Comunitaria",
-      "centro": "",
-      "bio": "Organizador / coordinación R4",
-      "sesiones": []
-    },
-    {
-      "id": "kelly-esther-escorcia-reyes",
-      "nombre": "Kelly Esther Escorcia Reyes",
-      "rol": "Organizadora / coordinación R4",
-      "rol_persona": "organizador",
-      "especialidad": "Residente de 4.º año de Medicina Familiar y Comunitaria",
-      "centro": "",
-      "bio": "Organizadora / coordinación R4",
-      "sesiones": []
-    },
-    {
-      "id": "valenska-vania-arellano-flores",
-      "nombre": "Valenska Vania Arellano Flores",
-      "rol": "Organizadora / coordinación R4",
-      "rol_persona": "organizador",
-      "especialidad": "Residente de 4.º año de Medicina Familiar y Comunitaria",
-      "centro": "",
-      "bio": "Organizadora / coordinación R4",
-      "sesiones": []
-    },
-    {
-      "id": "jorvi-jose-aguilar-valero",
-      "nombre": "Jorvi José Aguilar Valero",
-      "rol": "Organizador / coordinación R4",
-      "rol_persona": "organizador",
-      "especialidad": "Residente de 4.º año de Medicina Familiar y Comunitaria",
-      "centro": "",
-      "bio": "Organizador / coordinación R4",
-      "sesiones": []
-    }
-  ],
+  "ponentes": [],
   "recursos": [
     {
       "id": "programa-anual-pdf",
@@ -613,14 +562,6 @@
       "tipo": "documento",
       "formato": "PDF",
       "archivo": "assets/docs/programa-anual-jap-2026-2027.pdf",
-      "categoria": "Programa"
-    },
-    {
-      "id": "programa-anual-editable",
-      "titulo": "Programa anual JAP 2026-2027 editable",
-      "tipo": "documento",
-      "formato": "DOCX",
-      "archivo": "assets/docs/programa-anual-jap-2026-2027-editable.docx",
       "categoria": "Programa"
     },
     {
@@ -984,16 +925,6 @@
           ]
         },
         {
-          "title": "Papel del residente ponente",
-          "text": "El residente preparará y presentará la sesión con un enfoque práctico, claro y aplicable. Se recomienda evitar revisiones teóricas extensas y priorizar decisiones clínicas, casos y mensajes útiles para la consulta.",
-          "bullets": []
-        },
-        {
-          "title": "Papel del tutor",
-          "text": "El tutor acompañará la preparación de la sesión, revisará el enfoque clínico, ayudará a seleccionar la evidencia principal y asegurará que el contenido sea adecuado para la práctica real en Atención Primaria.",
-          "bullets": []
-        },
-        {
           "title": "Apoyo de R3/R4",
           "text": "Los residentes de tercer y cuarto año podrán apoyar en la estructura docente, revisión de bibliografía, preparación del caso clínico, diseño de la presentación y elaboración del material final.",
           "bullets": []
@@ -1005,7 +936,7 @@
         }
       ],
       "schedule_title": "Cronograma general",
-      "schedule_text": "Las JAP se desarrollarán entre el 4 de septiembre de 2026 y el 14 de mayo de 2027, con 13 sesiones aprobadas y producto final por sesión. La asignación de ponentes, tutores, centros y fechas se gestionará desde la organización.",
+      "schedule_text": "Las JAP se desarrollarán entre el 4 de septiembre de 2026 y el 14 de mayo de 2027, con 13 sesiones aprobadas y producto final por sesión. La asignación de sesiones será gestionada por la organización.",
       "dates_title": "Fechas inicialmente disponibles",
       "dates": [
         {
@@ -1085,7 +1016,7 @@
     },
     "speakers": {
       "title": "Equipo docente",
-      "description": "Organización, coordinación y ponentes asociados a las sesiones."
+      "description": "La asignación docente será gestionada por la organización de las JAP."
     },
     "resources": {
       "title": "Recursos",
