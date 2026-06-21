@@ -1,4 +1,4 @@
-const CACHE_NAME = "jap-static-v33";
+const CACHE_NAME = "jap-static-v35";
 
 const APP_ASSETS = [
   "./",

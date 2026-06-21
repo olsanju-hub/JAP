@@ -5,7 +5,8 @@ const state = {
   activeView: "inicio",
   previousView: "recursos",
   dataSource: "json",
-  activeResource: null
+  activeResource: null,
+  storageObjectUrls: new Map()
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -13,6 +14,7 @@ const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 const VIEW_IDS = ["inicio", "agenda", "sesiones", "ponentes", "recursos", "recurso", "contacto"];
 const ACTIVE_ASSIGNMENT_STATES = ["recibida", "revisada", "confirmada"];
 const TEMPLATE_FILE = "assets/docs/plantilla-jornadas-docentes-ap.pptx";
+const RESOURCE_BUCKET = "jap-resources";
 const PERSON_ROLE_LABELS = {
   organizador: "Organización y coordinación",
   ponente: "Ponentes",
@@ -122,8 +124,9 @@ function formatTime(value) {
 
 function resourceFormat(resource) {
   if (resource.formato) return resource.formato;
-  const extension = resourceFile(resource).split("?")[0].split(".").pop();
-  if (extension && extension !== resourceFile(resource)) return extension.toUpperCase();
+  const path = resource.file_path || resourceFile(resource) || "";
+  const extension = path.split("?")[0].split(".").pop();
+  if (extension && extension !== path) return extension.toUpperCase();
   return (resource.tipo || "otro").toUpperCase();
 }
 
@@ -154,16 +157,21 @@ function resourceTypeLabel(resource) {
 }
 
 function resourceFile(resource) {
-  return resource.archivo || resource.url || "";
+  return resource.resolvedUrl || resource.public_url || resource.archivo || resource.url || "";
 }
 
 function isPublicResource(resource) {
-  const file = resourceFile(resource);
-  return file && !file.includes("propuesta-jornadas-docentes-ap.pdf");
+  const file = resourceFile(resource) || resource.file_path || "";
+  const status = resource.status || (resource.visible === false ? "hidden" : "visible");
+  return file && status === "visible" && resource.visible !== false && !file.includes("propuesta-jornadas-docentes-ap.pdf");
 }
 
 function resourceCategory(resource) {
   return String(resource.categoria || "").toLowerCase();
+}
+
+function isStorageResource(resource) {
+  return Boolean(resource.file_path);
 }
 
 function publicAssignmentForSession(session) {
@@ -436,9 +444,30 @@ function closeWelcomeDialog() {
 function renderProgram(programa) {
   if (!state.data?.siteContent) {
     $("#program-description").textContent = programa.descripcion;
-    $("#program-modality-short").textContent = programa.modalidad_resumen || programa.modalidad;
-    $("#program-duration-short").textContent = programa.duracion.replace("utos por sesión", "");
   }
+}
+
+function shortDate(value) {
+  if (!value || isPending(value)) return "Pte.";
+  const date = new Date(`${value}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "short" }).format(date).replace(".", "");
+}
+
+function renderHomeProgram(sesiones) {
+  const calendar = $("#home-program-calendar");
+  if (!calendar) return;
+  const items = sesiones.slice().sort(compareSessions).slice(0, 13);
+  calendar.innerHTML = items
+    .map((session) => `
+      <button class="home-program-item" type="button" data-session="${escapeHtml(session.slug)}">
+        <span>${escapeHtml(String(session.orden || session.id).padStart(2, "0"))}</span>
+        <strong>${escapeHtml(shortDate(session.fecha))}</strong>
+        <em>${escapeHtml(session.titulo)}</em>
+        ${session.sede && !isPending(session.sede) ? `<small>${escapeHtml(session.sede)}</small>` : ""}
+      </button>
+    `)
+    .join("");
 }
 
 function renderAgenda(sesiones) {
@@ -653,7 +682,9 @@ function renderResources(recursos) {
 function renderResourceItem(resource) {
   const file = resourceFile(resource);
   const isExternal = /^https?:\/\//i.test(file);
-  const secondaryAction = isExternal
+  const secondaryAction = isStorageResource(resource)
+    ? `<button class="button" type="button" data-resource-download="${escapeHtml(resource.id)}">Descargar</button>`
+    : isExternal
     ? `<a class="button" href="${escapeHtml(file)}">Abrir enlace</a>`
     : `<a class="button" href="${escapeHtml(file)}" download>Descargar</a>`;
 
@@ -766,10 +797,9 @@ function getResourcePreview(resource) {
   }
 
   if (format === "pdf") {
-    const pdfFile = `${file}#view=FitH&toolbar=1&navpanes=0`;
     return `
       <div class="resource-preview pdf-preview">
-        <iframe src="${pdfFile}" title="Previsualización de ${title}"></iframe>
+        <iframe class="pdf-document" src="${file}" title="Previsualización de ${title}"></iframe>
         <p>Si el navegador no muestra el PDF correctamente, usa el botón de descarga.</p>
       </div>
     `;
@@ -808,17 +838,33 @@ function getSessionPosterResource(slug) {
   };
 }
 
-function renderResourceView(resource) {
+async function resolveResourceUrl(resource) {
+  if (!isStorageResource(resource)) return resourceFile(resource);
+  if (state.storageObjectUrls.has(resource.file_path)) {
+    return state.storageObjectUrls.get(resource.file_path);
+  }
+  const supabase = state.data?.supabase || (await getSupabaseClient());
+  if (!supabase) throw new Error("No se pudo resolver el archivo de Storage.");
+  const { data, error } = await supabase.storage.from(RESOURCE_BUCKET).download(resource.file_path);
+  if (error) throw error;
+  const objectUrl = URL.createObjectURL(data);
+  state.storageObjectUrls.set(resource.file_path, objectUrl);
+  return objectUrl;
+}
+
+async function renderResourceView(resource) {
   const rawFile = resourceFile(resource);
-  const file = escapeHtml(rawFile);
+  const resolvedFile = await resolveResourceUrl(resource);
+  const file = escapeHtml(resolvedFile);
   const isExternal = /^https?:\/\//i.test(rawFile);
   const download = $("#resource-view-download");
+  const resolvedResource = { ...resource, resolvedUrl: resolvedFile };
 
   $("#resource-view-type").textContent = `${resourceTypeLabel(resource)} · ${resourceFormat(resource)}`;
   $("#resource-view-title").textContent = resource.titulo;
-  $("#resource-view-content").innerHTML = getResourcePreview(resource);
+  $("#resource-view-content").innerHTML = getResourcePreview(resolvedResource);
 
-  download.href = rawFile || "#";
+  download.href = resolvedFile || "#";
   download.textContent = isExternal ? "Abrir enlace" : "Descargar";
   download.toggleAttribute("download", !isExternal);
   if (isExternal) {
@@ -948,10 +994,17 @@ function mapSupabaseData({ jornada, sesiones = [], ponentes = [], recursos = [],
         id: resource.id,
         titulo: resource.titulo,
         tipo: resource.tipo,
-        formato: resource.tipo?.toUpperCase() || "OTRO",
         archivo: resource.url,
+        url: resource.url,
+        file_path: resource.file_path,
+        public_url: resource.public_url,
+        mime_type: resource.mime_type,
+        size_bytes: resource.size_bytes,
         categoria: resource.categoria,
-        sesion_id: resource.sesion_id
+        descripcion: resource.descripcion,
+        sesion_id: resource.sesion_id,
+        visible: resource.visible,
+        status: resource.status || (resource.visible === false ? "hidden" : "visible")
       }))
     ),
     publicAgenda,
@@ -1063,28 +1116,62 @@ async function loadData() {
   return jsonData;
 }
 
-function showResource(resourceId) {
+async function showResource(resourceId) {
   const resource = state.data.recursos.find((item) => item.id === resourceId);
   if (!resource) return;
   state.activeResource = resource;
-  renderResourceView(resource);
+  $("#resource-view-title").textContent = resource.titulo;
+  $("#resource-view-content").innerHTML = '<div class="resource-preview resource-fallback"><strong>Cargando recurso...</strong></div>';
   setActiveView("recurso");
+  try {
+    await renderResourceView(resource);
+  } catch (error) {
+    $("#resource-view-content").innerHTML = `
+      <div class="resource-preview resource-fallback">
+        <strong>No se pudo abrir el recurso</strong>
+        <p>${escapeHtml(error.message || "Revisa permisos o disponibilidad del archivo.")}</p>
+      </div>
+    `;
+  }
 }
 
-function showSessionPoster(slug) {
+async function showSessionPoster(slug) {
   if ($("#session-dialog").open) {
     closeSessionDialog();
   }
   const resource = getSessionPosterResource(slug);
   if (!resource) return;
   state.activeResource = resource;
-  renderResourceView(resource);
+  await renderResourceView(resource);
   setActiveView("recurso");
+}
+
+async function downloadResource(resourceId) {
+  const resource = state.data.recursos.find((item) => item.id === resourceId);
+  if (!resource) return;
+  try {
+    const file = await resolveResourceUrl(resource);
+    const link = document.createElement("a");
+    link.href = file;
+    link.download = `${resource.titulo || "recurso"}.${resourceFormat(resource).toLowerCase()}`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.warn("No se pudo descargar el recurso", error);
+  }
 }
 
 function getViewFromHash() {
   const hash = window.location.hash.replace("#", "");
-  return VIEW_IDS.includes(hash) ? hash : "inicio";
+  const [viewId] = hash.split("=");
+  return VIEW_IDS.includes(viewId) ? viewId : "inicio";
+}
+
+function resourceIdFromHash() {
+  const hash = window.location.hash.replace("#", "");
+  if (!hash.startsWith("recurso=")) return "";
+  return decodeURIComponent(hash.slice("recurso=".length));
 }
 
 function setActiveView(viewId, { updateHash = true } = {}) {
@@ -1148,6 +1235,11 @@ function bindInteractions() {
       showResource(resourceTrigger.dataset.resource);
     }
 
+    const resourceDownload = event.target.closest("[data-resource-download]");
+    if (resourceDownload) {
+      downloadResource(resourceDownload.dataset.resourceDownload);
+    }
+
     const posterTrigger = event.target.closest("[data-session-poster]");
     if (posterTrigger) {
       showSessionPoster(posterTrigger.dataset.sessionPoster);
@@ -1179,10 +1271,20 @@ function bindInteractions() {
   });
 
   window.addEventListener("hashchange", () => {
+    const resourceId = resourceIdFromHash();
+    if (resourceId && state.data) {
+      showResource(resourceId);
+      return;
+    }
     setActiveView(getViewFromHash(), { updateHash: false });
   });
 
   window.addEventListener("popstate", () => {
+    const resourceId = resourceIdFromHash();
+    if (resourceId && state.data) {
+      showResource(resourceId);
+      return;
+    }
     setActiveView(getViewFromHash(), { updateHash: false });
   });
 
@@ -1197,11 +1299,14 @@ async function init() {
     renderSiteContent();
     renderWelcome();
     renderProgram(state.data.programa);
+    renderHomeProgram(state.data.sesiones);
     renderAgenda(state.data.sesiones);
     renderSessions(state.data.sesiones);
     renderSpeakers(state.data.ponentes);
     renderResources(state.data.recursos);
     renderContact(state.data.contacto);
+    const initialResourceId = resourceIdFromHash();
+    if (initialResourceId) await showResource(initialResourceId);
   } catch (error) {
     $("#program-description").textContent = "No se han podido cargar los datos locales del programa.";
     console.error("Error cargando data/jap.json", error);

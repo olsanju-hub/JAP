@@ -7,6 +7,16 @@ const DEFAULT_MODALITY = "Preferentemente presencial, con opción online por Tea
 const DEFAULT_TEAMS = "Enlace Teams pendiente de confirmar";
 const DELETE_MESSAGE = "¿Seguro que quieres borrar este elemento? No se eliminará definitivamente, pero dejará de mostrarse públicamente.";
 const PERMANENT_DELETE_WORD = "ELIMINAR";
+const RESOURCE_BUCKET = "jap-resources";
+const RESOURCE_MAX_SIZE_BYTES = 25 * 1024 * 1024;
+const RESOURCE_ALLOWED_TYPES = new Map([
+  ["pdf", { mime: "application/pdf", tipo: "pdf" }],
+  ["png", { mime: "image/png", tipo: "imagen" }],
+  ["jpg", { mime: "image/jpeg", tipo: "imagen" }],
+  ["jpeg", { mime: "image/jpeg", tipo: "imagen" }],
+  ["webp", { mime: "image/webp", tipo: "imagen" }],
+  ["pptx", { mime: "application/vnd.openxmlformats-officedocument.presentationml.presentation", tipo: "pptx" }]
+]);
 const PERSON_ROLE_LABELS = {
   organizador: "organizador/coordinador",
   ponente: "ponente",
@@ -193,6 +203,88 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "");
 }
 
+function resourceStatus(resource) {
+  if (resource?.status) return resource.status;
+  return resource?.visible === false ? "hidden" : "visible";
+}
+
+function resourceVisibleFromStatus(status) {
+  return status === "visible";
+}
+
+function resourceDisplayPath(resource) {
+  return resource.file_path ? `${RESOURCE_BUCKET}/${resource.file_path}` : resource.url || "";
+}
+
+function resourceSourceLabel(resource) {
+  if (resource.file_path) return "Storage";
+  if (String(resource.url || "").startsWith("assets/")) return "Local";
+  return "URL";
+}
+
+function extensionFromName(name) {
+  const parts = String(name || "").toLowerCase().split(".");
+  return parts.length > 1 ? parts.pop() : "";
+}
+
+function validateResourceFile(file) {
+  if (!file) return null;
+  if (file.size > RESOURCE_MAX_SIZE_BYTES) {
+    throw new Error("El archivo supera el límite de 25 MB.");
+  }
+
+  const extension = extensionFromName(file.name);
+  const allowed = RESOURCE_ALLOWED_TYPES.get(extension);
+  if (!allowed) {
+    throw new Error("Tipo no permitido. Usa PDF, PNG, JPG/JPEG, WEBP o PPTX.");
+  }
+
+  if (file.type && file.type !== allowed.mime) {
+    throw new Error("El MIME del archivo no coincide con su extensión permitida.");
+  }
+
+  return { extension, ...allowed };
+}
+
+function validateResourcePath(path) {
+  if (!path) return null;
+  const cleanPath = String(path).split("?")[0].split("#")[0];
+  const extension = extensionFromName(cleanPath);
+  const allowed = RESOURCE_ALLOWED_TYPES.get(extension);
+  if (!allowed) {
+    throw new Error("La ruta local/URL debe apuntar a PDF, PNG, JPG/JPEG, WEBP o PPTX.");
+  }
+  return { extension, ...allowed };
+}
+
+function storagePathForResource({ title, file, existingPath = "" }) {
+  const extension = extensionFromName(file.name);
+  const baseName = slugify(title || file.name.replace(/\.[^.]+$/, "")) || "recurso";
+  const datePrefix = new Date().toISOString().slice(0, 10);
+  const randomSuffix = crypto.randomUUID ? crypto.randomUUID().slice(0, 8) : String(Date.now());
+  const existingFolder = existingPath && existingPath.includes("/") ? existingPath.split("/").slice(0, -1).join("/") : "";
+  const folder = existingFolder || `${datePrefix}`;
+  return `${folder}/${baseName}-${randomSuffix}.${extension}`;
+}
+
+function fileUrlForResource(resource) {
+  return resource.file_path ? "" : resource.url || "";
+}
+
+async function downloadStorageResource(resource) {
+  if (!resource?.file_path) return;
+  const { data, error } = await state.supabase.storage.from(RESOURCE_BUCKET).download(resource.file_path);
+  if (error) throw error;
+  const url = URL.createObjectURL(data);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = resource.file_path.split("/").pop() || "recurso";
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 function nextOrder(items, field = "orden") {
   return Math.max(0, ...items.map((item) => Number(item[field]) || 0)) + 1;
 }
@@ -214,7 +306,7 @@ function setMode(type, mode) {
     },
     resource: {
       title: mode === "create" ? "Crear nuevo recurso" : "Editar recurso existente",
-      submit: mode === "create" ? "Crear recurso" : "Guardar cambios"
+      submit: mode === "create" ? "Subir/crear recurso" : "Guardar cambios"
     }
   };
 
@@ -250,10 +342,12 @@ function resetResourceForm() {
   const form = $("#resource-form");
   form.reset();
   form.elements.id.value = "";
-  form.elements.tipo.value = "enlace";
+  form.elements.file_path.value = "";
+  form.elements.tipo.value = "pdf";
   form.elements.categoria.value = "Otros";
+  form.elements.status.value = "visible";
+  form.elements.url.value = "";
   form.elements.orden.value = nextOrder(state.recursos);
-  form.elements.visible.checked = true;
   setMode("resource", "create");
 }
 
@@ -295,6 +389,17 @@ function setSessionOptions() {
       .map((session) => `<option value="${escapeHtml(session.id)}">${escapeHtml(session.orden || "")} ${escapeHtml(session.titulo)}</option>`)
       .join("");
   }
+}
+
+function setResourceCategoryOptions() {
+  const select = $("#resource-category-filter");
+  if (!select) return;
+  const current = select.value;
+  const categories = Array.from(new Set(state.recursos.map((resource) => resource.categoria).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+  select.innerHTML =
+    '<option value="">Todas</option>' +
+    categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join("");
+  select.value = categories.includes(current) ? current : "";
 }
 
 function defaultSessionRole(speaker) {
@@ -780,6 +885,7 @@ async function loadAdminData() {
   setJourneyOptions();
   setVenueOptions();
   setSessionOptions();
+  setResourceCategoryOptions();
   renderLists();
   renderSiteSettings();
   renderWelcomeEditor();
@@ -838,7 +944,9 @@ async function loadAssignmentsData() {
 function renderLists() {
   const showInactiveSessions = $("#show-inactive-sessions").checked;
   const showInactiveSpeakers = $("#show-inactive-speakers").checked;
-  const showHiddenResources = $("#show-hidden-resources").checked;
+  const resourceStatusFilter = $("#resource-status-filter")?.value || "visible";
+  const resourceTypeFilter = $("#resource-type-filter")?.value || "";
+  const resourceCategoryFilter = $("#resource-category-filter")?.value || "";
 
   const sessions = showInactiveSessions ? state.sesiones : state.sesiones.filter((session) => session.is_active);
   $("#sessions-list").innerHTML = sessions.length
@@ -882,20 +990,28 @@ function renderLists() {
         .join("")
     : '<p class="empty-note">No hay personas en este listado.</p>';
 
-  const resources = showHiddenResources ? state.recursos : state.recursos.filter((resource) => resource.visible);
+  const resources = state.recursos.filter((resource) => {
+    const status = resourceStatus(resource);
+    if (resourceStatusFilter !== "all" && status !== resourceStatusFilter) return false;
+    if (resourceTypeFilter && resource.tipo !== resourceTypeFilter) return false;
+    if (resourceCategoryFilter && resource.categoria !== resourceCategoryFilter) return false;
+    return true;
+  });
   $("#resources-list").innerHTML = resources.length
     ? resources
         .map((resource) => `
           <article class="admin-list-item">
             <h3>${escapeHtml(resource.titulo)}</h3>
-            <p>${escapeHtml(resource.tipo)} · ${resource.visible ? "visible" : "oculto"} · ${escapeHtml(resource.categoria || "sin categoría")} · ${escapeHtml(resource.sesiones?.titulo || "sin sesión")}</p>
+            <p>${escapeHtml(resource.tipo)} · ${escapeHtml(resourceStatus(resource))} · ${escapeHtml(resource.categoria || "sin categoría")} · ${escapeHtml(resource.sesiones?.titulo || "sin sesión")} · ${escapeHtml(resourceSourceLabel(resource))}</p>
+            <p>${escapeHtml(resourceDisplayPath(resource) || "sin archivo")}</p>
             <div class="admin-actions">
               <button class="button" type="button" data-edit-resource="${escapeHtml(resource.id)}">Editar</button>
-              ${
-                resource.visible
-                  ? `<button class="button danger" type="button" data-delete-resource="${escapeHtml(resource.id)}">Borrar</button>`
-                  : `<button class="button" type="button" data-restore-resource="${escapeHtml(resource.id)}">Restaurar</button>`
-              }
+              ${resourceStatus(resource) !== "visible" ? `<button class="button" type="button" data-show-resource="${escapeHtml(resource.id)}">Publicar</button>` : `<button class="button" type="button" data-hide-resource="${escapeHtml(resource.id)}">Ocultar</button>`}
+              ${resourceStatus(resource) !== "archived" ? `<button class="button" type="button" data-archive-resource="${escapeHtml(resource.id)}">Archivar</button>` : `<button class="button" type="button" data-restore-resource="${escapeHtml(resource.id)}">Restaurar</button>`}
+              ${resource.file_path ? `<button class="button danger secondary-danger" type="button" data-delete-resource-file="${escapeHtml(resource.id)}">Borrar archivo Storage</button>` : ""}
+              <a class="button" href="index.html#recurso=${escapeHtml(resource.id)}">Ver en visor</a>
+              ${resource.file_path ? `<button class="button" type="button" data-download-admin-resource="${escapeHtml(resource.id)}">Descargar</button>` : ""}
+              ${resource.url ? `<a class="button" href="${escapeHtml(resource.url)}" download>Descargar</a>` : ""}
             </div>
           </article>
         `)
@@ -945,7 +1061,12 @@ function editSpeaker(id) {
 function editResource(id) {
   const resource = state.recursos.find((item) => item.id === id);
   if (!resource) return;
-  fillForm($("#resource-form"), resource);
+  fillForm($("#resource-form"), {
+    ...resource,
+    status: resourceStatus(resource),
+    url: fileUrlForResource(resource),
+    orden: resource.sort_order || resource.orden
+  });
   setMode("resource", "edit");
   message(`Editando recurso: ${resource.titulo}`);
   $("#resource-form").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1042,19 +1163,59 @@ async function saveSpeaker(event) {
 
 async function saveResource(event) {
   event.preventDefault();
-  if (!canEdit()) return;
+  if (!canAdmin()) {
+    message("Solo un usuario admin puede gestionar recursos y archivos.");
+    return;
+  }
   const form = event.currentTarget;
   const values = formData(form);
-  const isProposal = values.url.includes("propuesta-jornadas-docentes-ap.pdf");
+  const file = form.elements.resource_file.files[0] || null;
+  const fileInfo = validateResourceFile(file);
+  const status = values.status || "hidden";
+  const localUrl = values.url.trim();
+  const pathInfo = file ? null : validateResourcePath(localUrl);
+  if (!values.id && !file && !localUrl) {
+    throw new Error("Selecciona un archivo o indica una ruta local existente.");
+  }
+  if (!values.id && localUrl && state.recursos.some((resource) => resource.url === localUrl)) {
+    throw new Error("Ya existe un recurso registrado con esa ruta local o URL.");
+  }
+
+  let uploadedPath = values.file_path || null;
+  let uploadedMetadata = {};
+  if (file) {
+    const path = storagePathForResource({ title: values.titulo, file, existingPath: uploadedPath });
+    const { error: uploadError } = await state.supabase.storage.from(RESOURCE_BUCKET).upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: fileInfo.mime
+    });
+    if (uploadError) throw uploadError;
+    uploadedPath = path;
+    uploadedMetadata = {
+      mime_type: fileInfo.mime,
+      size_bytes: file.size
+    };
+  }
+
+  const finalTipo = fileInfo?.tipo || pathInfo?.tipo || values.tipo;
+  const isProposal = localUrl.includes("propuesta-jornadas-docentes-ap.pdf");
+  const finalStatus = isProposal ? "hidden" : status;
   const payload = {
     titulo: values.titulo.trim(),
-    tipo: values.tipo,
+    tipo: finalTipo,
     categoria: emptyToNull(values.categoria),
-    url: values.url.trim(),
+    url: uploadedPath ? "" : localUrl,
+    file_path: uploadedPath,
+    public_url: null,
     sesion_id: emptyToNull(values.sesion_id),
     descripcion: emptyToNull(values.descripcion),
     orden: values.orden ? Number(values.orden) : nextOrder(state.recursos),
-    visible: form.elements.visible.checked && !isProposal
+    sort_order: values.orden ? Number(values.orden) : nextOrder(state.recursos),
+    status: finalStatus,
+    visible: resourceVisibleFromStatus(finalStatus),
+    created_by: state.user?.id || null,
+    ...uploadedMetadata
   };
   if (values.id) payload.id = values.id;
 
@@ -1315,6 +1476,51 @@ async function restore(table, id, payload, label) {
   message(`${label} restaurado.`);
 }
 
+async function updateResourceStatus(id, status) {
+  if (!canAdmin()) {
+    message("Solo un usuario admin puede cambiar el estado de recursos.");
+    return;
+  }
+  const { error } = await state.supabase
+    .from("recursos")
+    .update({ status, visible: resourceVisibleFromStatus(status) })
+    .eq("id", id);
+  if (error) throw error;
+  await loadAdminData();
+  const labels = { visible: "publicado", hidden: "oculto", archived: "archivado" };
+  message(`Recurso ${labels[status] || status}.`);
+}
+
+async function permanentlyDeleteResourceFile(id) {
+  if (!canAdmin()) {
+    message("Solo un usuario admin puede borrar archivos de Storage.");
+    return;
+  }
+  const resource = state.recursos.find((item) => item.id === id);
+  if (!resource?.file_path) {
+    message("Este recurso no tiene archivo en Storage. Los archivos locales assets/... no se pueden borrar desde admin.");
+    return;
+  }
+
+  const first = confirm("Vas a borrar físicamente el archivo de Storage. El registro se archivará y el archivo dejará de estar disponible. ¿Continuar?");
+  if (!first) return;
+  const confirmation = prompt(`Escribe ${PERMANENT_DELETE_WORD} para borrar el archivo de Storage.`);
+  if (confirmation !== PERMANENT_DELETE_WORD) {
+    message("Borrado físico cancelado.");
+    return;
+  }
+
+  const { error: storageError } = await state.supabase.storage.from(RESOURCE_BUCKET).remove([resource.file_path]);
+  if (storageError) throw storageError;
+  const { error: updateError } = await state.supabase
+    .from("recursos")
+    .update({ status: "archived", visible: false, file_path: null, url: "", mime_type: null, size_bytes: null })
+    .eq("id", id);
+  if (updateError) throw updateError;
+  await loadAdminData();
+  message("Archivo de Storage borrado y recurso archivado.");
+}
+
 async function permanentlyDeleteSession(id) {
   if (!canAdmin()) {
     message("Solo un usuario admin puede eliminar definitivamente una sesión.");
@@ -1405,7 +1611,9 @@ function bindEvents() {
 
   $("#show-inactive-sessions").addEventListener("change", renderLists);
   $("#show-inactive-speakers").addEventListener("change", renderLists);
-  $("#show-hidden-resources").addEventListener("change", renderLists);
+  $("#resource-status-filter").addEventListener("change", renderLists);
+  $("#resource-type-filter").addEventListener("change", renderLists);
+  $("#resource-category-filter").addEventListener("change", renderLists);
 
   $("#session-form").addEventListener("submit", (event) => saveSession(event).catch((error) => message(error.message)));
   $("#speaker-form").addEventListener("submit", (event) => saveSpeaker(event).catch((error) => message(error.message)));
@@ -1430,7 +1638,11 @@ function bindEvents() {
     const archiveSessionId = event.target.closest("[data-archive-session]")?.dataset.archiveSession;
     const permanentDeleteSessionId = event.target.closest("[data-permanent-delete-session]")?.dataset.permanentDeleteSession;
     const deleteSpeakerId = event.target.closest("[data-delete-speaker]")?.dataset.deleteSpeaker;
-    const deleteResourceId = event.target.closest("[data-delete-resource]")?.dataset.deleteResource;
+    const hideResourceId = event.target.closest("[data-hide-resource]")?.dataset.hideResource;
+    const showResourceId = event.target.closest("[data-show-resource]")?.dataset.showResource;
+    const archiveResourceId = event.target.closest("[data-archive-resource]")?.dataset.archiveResource;
+    const deleteResourceFileId = event.target.closest("[data-delete-resource-file]")?.dataset.deleteResourceFile;
+    const downloadAdminResourceId = event.target.closest("[data-download-admin-resource]")?.dataset.downloadAdminResource;
     const restoreSessionId = event.target.closest("[data-restore-session]")?.dataset.restoreSession;
     const restoreSpeakerId = event.target.closest("[data-restore-speaker]")?.dataset.restoreSpeaker;
     const restoreResourceId = event.target.closest("[data-restore-resource]")?.dataset.restoreResource;
@@ -1449,10 +1661,17 @@ function bindEvents() {
     if (deleteSessionId) softDelete("sesiones", deleteSessionId, { is_active: false }, "Sesión").catch((error) => message(error.message));
     if (permanentDeleteSessionId) permanentlyDeleteSession(permanentDeleteSessionId).catch((error) => message(error.message));
     if (deleteSpeakerId) softDelete("ponentes", deleteSpeakerId, { is_active: false }, "Persona").catch((error) => message(error.message));
-    if (deleteResourceId) softDelete("recursos", deleteResourceId, { visible: false }, "Recurso").catch((error) => message(error.message));
+    if (hideResourceId) updateResourceStatus(hideResourceId, "hidden").catch((error) => message(error.message));
+    if (showResourceId) updateResourceStatus(showResourceId, "visible").catch((error) => message(error.message));
+    if (archiveResourceId) updateResourceStatus(archiveResourceId, "archived").catch((error) => message(error.message));
+    if (deleteResourceFileId) permanentlyDeleteResourceFile(deleteResourceFileId).catch((error) => message(error.message));
+    if (downloadAdminResourceId) {
+      const resource = state.recursos.find((item) => item.id === downloadAdminResourceId);
+      downloadStorageResource(resource).catch((error) => message(error.message));
+    }
     if (restoreSessionId) restore("sesiones", restoreSessionId, { is_active: true }, "Sesión").catch((error) => message(error.message));
     if (restoreSpeakerId) restore("ponentes", restoreSpeakerId, { is_active: true }, "Persona").catch((error) => message(error.message));
-    if (restoreResourceId) restore("recursos", restoreResourceId, { visible: true }, "Recurso").catch((error) => message(error.message));
+    if (restoreResourceId) updateResourceStatus(restoreResourceId, "hidden").catch((error) => message(error.message));
     if (removableWelcomeRow) removableWelcomeRow.remove();
     if (assignmentId) editAssignment(assignmentId).catch((error) => message(error.message));
     if (reviewAssignmentId) updateAssignmentStatus(reviewAssignmentId, "revisada").catch((error) => message(assignmentConflictMessage(error)));

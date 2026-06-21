@@ -154,6 +154,29 @@
   gap: 0.75rem;
 }
 
+.resource-admin-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.resource-admin-filters label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--primary-dark);
+  font-weight: 800;
+}
+
+.resource-admin-filters select {
+  width: 100%;
+  padding: 0.7rem;
+  color: var(--ink);
+  font: inherit;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
 .admin-list-item {
   display: grid;
   gap: 0.5rem;
@@ -171,6 +194,12 @@
 .admin-list-item p {
   margin: 0;
   color: var(--muted);
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .assignment-tasks-fieldset {

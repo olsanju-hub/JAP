@@ -180,6 +180,7 @@
                 <button class="button" type="button" data-new-resource>Nuevo recurso</button>
               </div>
               <input name="id" type="hidden">
+              <input name="file_path" type="hidden">
               <label>Título <input name="titulo" required></label>
               <label>Tipo
                 <select name="tipo">
@@ -187,9 +188,6 @@
                   <option value="pptx">pptx</option>
                   <option value="imagen">imagen</option>
                   <option value="cartel">cartel</option>
-                  <option value="enlace">enlace</option>
-                  <option value="bibliografia">bibliografia</option>
-                  <option value="otro">otro</option>
                 </select>
               </label>
               <label>Categoría
@@ -201,18 +199,51 @@
                   <option value="Otros">Otros</option>
                 </select>
               </label>
-              <label>URL <input name="url" required></label>
+              <label>Estado
+                <select name="status">
+                  <option value="visible">visible</option>
+                  <option value="hidden">oculto</option>
+                  <option value="archived">archivado</option>
+                </select>
+              </label>
+              <label>Archivo nuevo o reemplazo
+                <input name="resource_file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.pptx,application/pdf,image/png,image/jpeg,image/webp,application/vnd.openxmlformats-officedocument.presentationml.presentation">
+                <span class="setting-description">PDF, PNG, JPG/JPEG, WEBP o PPTX. Max. 25 MB. Los recursos locales existentes no se borran desde admin.</span>
+              </label>
+              <label>Ruta local/URL existente <input name="url" placeholder="assets/docs/... o assets/img/..."></label>
               <label>Sesión asociada <select name="sesion_id"></select></label>
               <label>Descripción <textarea name="descripcion" rows="3"></textarea></label>
               <label>Orden <input name="orden" type="number" min="1"></label>
-              <label class="check-row"><input name="visible" type="checkbox" checked> Visible</label>
               <button id="resource-submit" class="button primary" type="submit">Crear recurso</button>
               <button class="button" type="reset">Limpiar</button>
             </form>
             <div class="admin-card">
               <div class="admin-list-head">
                 <h2>Recursos</h2>
-                <label class="check-row"><input id="show-hidden-resources" type="checkbox"> Ver ocultos</label>
+              </div>
+              <div class="resource-admin-filters">
+                <label>Estado
+                  <select id="resource-status-filter">
+                    <option value="visible">Visibles</option>
+                    <option value="hidden">Ocultos</option>
+                    <option value="archived">Archivados</option>
+                    <option value="all">Todos</option>
+                  </select>
+                </label>
+                <label>Tipo
+                  <select id="resource-type-filter">
+                    <option value="">Todos</option>
+                    <option value="pdf">pdf</option>
+                    <option value="pptx">pptx</option>
+                    <option value="imagen">imagen</option>
+                    <option value="cartel">cartel</option>
+                  </select>
+                </label>
+                <label>Categoría
+                  <select id="resource-category-filter">
+                    <option value="">Todas</option>
+                  </select>
+                </label>
               </div>
               <div id="resources-list" class="admin-list"></div>
             </div>
