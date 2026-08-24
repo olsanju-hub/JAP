@@ -4,9 +4,9 @@ PWA en HTML, CSS y JavaScript vanilla para publicar el programa anual 2026-2027 
 
 ## URLs
 
-- App pública: `https://olsanju-hub.github.io/JAP/`
 - Repositorio: `https://github.com/olsanju-hub/JAP`
-- Admin: `https://olsanju-hub.github.io/JAP/admin.html`
+
+No hay despliegue público activo. La publicación anterior en GitHub Pages fue retirada.
 
 ## Stack
 
@@ -80,9 +80,9 @@ Puedes probar una vista directamente con `http://localhost:8000#agenda` o `http:
 
 La app pública está pensada para asistentes, residentes, tutores y equipos docentes. No requiere login para consultar el programa.
 
-Flujo recomendado:
+Flujo recomendado en entorno local:
 
-1. Entrar en `https://olsanju-hub.github.io/JAP/`.
+1. Entrar en `http://localhost:8000`.
 2. Revisar el bloque de bienvenida e instrucciones.
 3. Abrir `Ver instrucciones y cronograma` para consultar objetivo, estructura recomendada, papel del residente, papel del tutor, cronograma y fechas inicialmente disponibles.
 4. Consultar `Agenda` para ver el calendario y el estado de cada sesión.
@@ -585,21 +585,7 @@ La importación automática queda pendiente para una fase posterior.
 
 ## Publicación
 
-### GitHub Pages
-
-1. Sube el contenido de esta carpeta al repositorio `olsanju-hub/JAP`.
-2. Activa Pages desde `main` y la carpeta raíz.
-3. Comprueba que `manifest.webmanifest`, `sw.js`, `data/jap.json`, `config.js` si aplica y los assets se sirven con rutas relativas.
-
-Actualizar y volver a publicar:
-
-```bash
-git add .
-git commit -m "feat: publish JAP functional version"
-git push
-```
-
-GitHub Pages redepliega automáticamente desde `main`.
+La app no debe tener despliegue público activo. GitHub Pages está desactivado para este repositorio y no debe reactivarse desde `main` ni desde otra rama sin una decisión explícita.
 
 ## Seguridad
 
